@@ -3,6 +3,7 @@ import Roadmap from "@/components/Roadmap";
 import About from "@/components/About";
 import Projects from "@/components/Projects";
 import WhyBlockchain from "@/components/WhyBlockchain";
+import FAQ from "@/components/FAQ";
 
 import { Separator } from "@/components/ui/separator";
 
@@ -15,6 +16,7 @@ export default function Home() {
       <Projects />
       <WhyBlockchain />
       <Roadmap />
+      <FAQ />
     </div>
   );
 }
