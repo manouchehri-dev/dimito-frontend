@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import TokenPriceDashboard from "./TokenPriceDashboard";
+import TokenPriceDashboard from "./module/TokenPriceDashboard";
 
 import CustomConnectButton from "./module/CustomConnectButton";
 
@@ -49,7 +49,7 @@ export const Hero = () => {
           />
 
           <Button className="bg-transparent border border-secondary border-2 text-secondary w-1/2 px-8 lg:text-[30px] lg:px-20 lg:py-8 cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-[16px]">
-            Roadmap
+            <a href="#roadmap">Roadmap</a>
           </Button>
         </div>
       </div>

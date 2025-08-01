@@ -5,25 +5,25 @@ const TokenPriceDashboard = () => {
   return (
     <div className="w-full max-w-md mx-auto p-4">
       <Card className="bg-white/95 backdrop-blur border-2 rounded-2xl shadow-lg">
-        <CardContent className=" space-y-6">
+        <CardContent className="space-y-6">
           {/* Tabs */}
           <Tabs defaultValue="price" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-gray-100 rounded-xl p-1 ">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-100 rounded-xl p-1">
               <TabsTrigger
                 value="statistics"
-                className="rounded-lg text-gray-600 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm lg:text-[24px]"
+                className="rounded-lg text-gray-600 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
               >
                 Statistics
               </TabsTrigger>
               <TabsTrigger
                 value="operation"
-                className="rounded-lg text-gray-600 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm lg:text-[24px]"
+                className="rounded-lg text-gray-600 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
               >
                 Operation
               </TabsTrigger>
               <TabsTrigger
                 value="price"
-                className="rounded-lg text-gray-600 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm lg:text-[24px]"
+                className="rounded-lg text-gray-600 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
               >
                 Price
               </TabsTrigger>
@@ -44,10 +44,10 @@ const TokenPriceDashboard = () => {
 
               {/* Statistics Cards */}
               <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4">
-                <Card className="bg-[#F6F6F6] border-0 ">
+                <Card className="bg-[#F6F6F6] border-0">
                   <CardContent className="flex lg:flex-col justify-between items-center">
                     <span className="text-gray-700 font-medium">
-                      Live price
+                      Market cap
                     </span>
                     <span className="font-bold text-lg">$0.00047</span>
                   </CardContent>
@@ -56,7 +56,7 @@ const TokenPriceDashboard = () => {
                 <Card className="bg-[#F6F6F6] border-0">
                   <CardContent className="flex lg:flex-col justify-between items-center">
                     <span className="text-gray-700 font-medium">
-                      Market cap
+                      Live price
                     </span>
                     <span className="font-bold text-lg">$0.00047</span>
                   </CardContent>
