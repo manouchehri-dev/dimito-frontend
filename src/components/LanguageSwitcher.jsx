@@ -27,9 +27,9 @@ export default function LanguageSwitcher() {
 
     try {
       // Remove current locale from pathname
-      const pathWithoutLocale = pathname.replace(`/${locale}`, "");
+      const path = pathname.split("/").slice(2).join("/");
       // Navigate to new locale
-      await router.push(`/${newLocale}${pathWithoutLocale}`);
+      router.push(`/${newLocale}/${path}`);
     } catch (error) {
       console.error("Error switching language:", error);
     } finally {
