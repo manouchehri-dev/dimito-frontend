@@ -38,8 +38,11 @@ const About = () => {
         </p>
       </div>
       <div className="my-10 lg:my-30 flex flex-col lg:flex-row-reverse lg:justify-center lg:gap-12">
-        {cardData.map((card) => (
-          <Card className="text-center px-8 lg:py-12 my-5 max-h-full h-60 lg:w-[434px] lg:h-[364px]">
+        {cardData.map((card, index) => (
+          <Card
+            className="text-center px-8 lg:py-12 my-5 max-h-full h-60 lg:w-[434px] lg:h-[364px]"
+            key={index}
+          >
             <CardHeader>
               <CardTitle className="flex flex-col items-center space-y-5">
                 <div

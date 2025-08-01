@@ -22,7 +22,7 @@ const Projects = () => {
     },
   ];
   return (
-    <section id="projects" className="my-20">
+    <section id="projects" className="mt-20 mb-10">
       <div className="flex flex-col items-center justify-center lg:items-start">
         <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
           Assets backing the token:
@@ -33,8 +33,11 @@ const Projects = () => {
         </p>
       </div>
       <div className="my-10 lg:my-30 flex flex-col lg:flex-row lg:justify-center lg:gap-12">
-        {projectData.map((project) => (
-          <Card className="text-center lg:py-12 my-5 max-h-full h-50 lg:w-[434px] lg:h-[277px]">
+        {projectData.map((project, index) => (
+          <Card
+            className="text-center lg:py-12 my-5 max-h-full h-50 lg:w-[434px] lg:h-[277px]"
+            key={index}
+          >
             <CardHeader>
               <CardTitle className="flex flex-col items-center space-y-5">
                 <p className="text-[14px] lg:text-[24px] font-bold">
