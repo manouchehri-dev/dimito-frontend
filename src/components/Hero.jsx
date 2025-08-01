@@ -3,7 +3,7 @@ import TokenPriceDashboard from "./module/TokenPriceDashboard";
 
 import CustomConnectButton from "./module/CustomConnectButton";
 
-export const Hero = () => {
+const Hero = () => {
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 pt-[100px] lg:pt-[140px]">
       {/* Background image - left */}
@@ -59,3 +59,5 @@ export const Hero = () => {
     </section>
   );
 };
+
+export default Hero;
