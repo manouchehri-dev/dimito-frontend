@@ -1,16 +1,10 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header";
-import { Footer } from "./components/Footer";
-
-// Keep Geist fonts for fallback
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Provider from "@/providers/WagmiProvider";
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -22,12 +16,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased font-iransans`}
-      >
-        <Header />
-        {children}
-        <Footer />
+      <body className={`antialiased font-iransans`}>
+        <Provider>
+          <main className="flex-1">
+            <Header />
+            {children}
+            <Footer />
+          </main>
+        </Provider>
       </body>
     </html>
   );
