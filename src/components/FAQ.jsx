@@ -2,35 +2,36 @@
 
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const FAQ = () => {
+  const t = useTranslations("faq");
   const [openItems, setOpenItems] = useState([0]); // First item open by default
 
   const faqData = [
     {
-      question: "How can I buy tokens?",
-      answer:
-        "Through reputable online exchanges or directly from the official IMD Token website with a digital wallet connection. Step-by-step purchasing instructions are also available on the site.",
+      question: t("questions.buyTokens.question"),
+      answer: t("questions.buyTokens.answer"),
     },
     {
-      question: "How is the token's value maintained?",
-      answer:
-        "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability.",
+      question: t("questions.tokenValue.question"),
+      answer: t("questions.tokenValue.answer"),
     },
     {
-      question: "How is the token's value maintained?",
-      answer:
-        "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability.",
+      question: t("questions.tokenValue2.question"),
+      answer: t("questions.tokenValue2.answer"),
     },
     {
-      question: "How is the token's value maintained?",
-      answer:
-        "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability.",
+      question: t("questions.tokenValue3.question"),
+      answer: t("questions.tokenValue3.answer"),
     },
     {
-      question: "How is the token's value maintained?",
-      answer:
-        "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability.",
+      question: t("questions.tokenValue4.question"),
+      answer: t("questions.tokenValue4.answer"),
+    },
+    {
+      question: t("questions.tokenValue5.question"),
+      answer: t("questions.tokenValue5.answer"),
     },
   ];
 
@@ -45,10 +46,10 @@ const FAQ = () => {
   return (
     <section className="py-16 lg:py-24 px-4 lg:px-20 bg-[#F5F3F0]">
       {/* Header */}
-      <div className="text-start lg:text-left mb-6 lg:mb-16">
+      <div className="text-start lg:text-start mb-6 lg:mb-16">
         <div className="inline-block">
           <h2 className="text-[14px] lg:text-2xl font-bold text-primary mb-2">
-            FAQ
+            {t("title")}
           </h2>
         </div>
       </div>
@@ -63,7 +64,7 @@ const FAQ = () => {
             {/* Question Header */}
             <button
               onClick={() => toggleItem(index)}
-              className="w-full flex items-center justify-between p-4 lg:p-6 text-left hover:bg-gray-50 transition-colors duration-200"
+              className="w-full flex items-center justify-between p-4 lg:p-6 text-start hover:bg-gray-50 transition-colors duration-200"
             >
               <div className="flex items-center gap-3">
                 {/* Red dot indicator */}

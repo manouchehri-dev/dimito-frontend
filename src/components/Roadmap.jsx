@@ -1,23 +1,27 @@
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 const Roadmap = () => {
+  const t = useTranslations("roadmap");
+  const isRtl = useLocale() === "fa";
   const roadmapItems = [
     {
       id: 1,
-      title: "Initial Coin Offering (ICO/IDO)",
+      title: t("items.ico"),
       status: "1",
     },
     {
       id: 2,
-      title: "Development of contracts",
+      title: t("items.contracts"),
       status: "2",
     },
     {
       id: 3,
-      title: "Connecting to the secondary market",
+      title: t("items.market"),
       status: "3",
     },
     {
       id: 4,
-      title: "Physical withdrawal/conversion",
+      title: t("items.physical"),
       status: "4",
     },
   ];
@@ -32,10 +36,10 @@ const Roadmap = () => {
 
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center lg:text-left mb-6 lg:mb-16">
+        <div className="text-center lg:text-start mb-6 lg:mb-16">
           <div className="inline-block">
             <h2 className="text-[14px] lg:text-2xl font-bold text-primary mb-2">
-              road map
+              {t("title")}
             </h2>
             <div className="w-32 h-0.5 bg-orange-500"></div>{" "}
             {/* Adjust w-32 to desired length */}
@@ -49,7 +53,13 @@ const Roadmap = () => {
               <div
                 key={item.id}
                 className={`relative flex items-start justify-center gap-5 ${
-                  index % 2 == 0 ? "flex-row pr-100" : "flex-row-reverse pl-100"
+                  isRtl
+                    ? index % 2 == 0
+                      ? "flex-row-reverse pr-100"
+                      : "flex-row pl-100"
+                    : index % 2 == 0
+                    ? "flex-row pr-100"
+                    : "flex-row-reverse pl-100"
                 }`}
               >
                 {/* Content */}

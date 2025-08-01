@@ -1,6 +1,7 @@
 "use client";
 
 import "@rainbow-me/rainbowkit/styles.css";
+import { useEffect, useState } from "react";
 
 import {
   getDefaultConfig,
@@ -17,9 +18,27 @@ const config = getDefaultConfig({
   chains: [mainnet],
 });
 
-const queryClient = new QueryClient();
+// Create a stable query client instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+    },
+  },
+});
 
 const Provider = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return <div className="min-h-screen bg-gray-50" />;
+  }
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>

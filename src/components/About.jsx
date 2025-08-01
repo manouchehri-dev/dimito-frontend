@@ -1,25 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 const About = () => {
+  const t = useTranslations("about");
+  const isRTL = useLocale() === "fa";
+
   const cardData = [
     {
-      title: "Global access",
-      description:
-        "Investment in the mining industry for everyone around the world without restrictions",
+      title: t("globalAccess.title"),
+      description: t("globalAccess.description"),
       icon: "/icons/globe.png",
       bgColor: "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E]",
     },
     {
-      title: "Full transparency",
-      description:
-        "All transactions and assets are traceable on the blockchain.",
+      title: t("fullTransparency.title"),
+      description: t("fullTransparency.description"),
       icon: "/icons/overview.png",
       bgColor: "bg-gradient-to-r from-[#A463FF] to-[#8036FF]",
     },
     {
-      title: "Real support",
-      description: "Each token is backed by real mining assets.",
+      title: t("realSupport.title"),
+      description: t("realSupport.description"),
       icon: "/icons/sack-dollar.png",
       bgColor: "bg-gradient-to-r from-[#FAD43B] to-[#FFAB36]",
     },
@@ -28,13 +29,14 @@ const About = () => {
     <section id="about">
       <div className="flex flex-col items-center justify-center lg:items-start">
         <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
-          What Is IMD Token?
+          {t("title")}
         </h1>
-        <p className="text-center lg:text-start px-1.5 lg:px-0 lg:pr-32 text-[12px] lg:text-[24px] font-normal mt-3 lg:mt-6 leading-[170%]">
-          MineToken is a blockchain-based digital asset backed by real-world
-          mineral reserves. We bridge the gap between traditional mining and
-          decentralized finance — making resource investing easy, secure, and
-          accessible to everyone.
+        <p
+          className={`text-center lg:text-start px-1.5 lg:px-0 ${
+            isRTL ? "lg:pl-32" : "lg:pr-32"
+          } text-[12px] lg:text-[24px] font-normal mt-3 lg:mt-6 leading-[170%]`}
+        >
+          {t("description")}
         </p>
       </div>
       <div className="my-10 lg:my-30 flex flex-col lg:flex-row-reverse lg:justify-center lg:gap-12">

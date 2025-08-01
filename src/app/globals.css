@@ -110,6 +110,7 @@ body {
   --color-primary: #2D2D2D;
   --color-secondary: #FF4135;
   --font-poppins: 'Poppins', Arial, Helvetica, sans-serif;
+  --font-iransans: "IRANSansX", Arial, Helvetica, sans-serif;
 }
 
 .dark {
@@ -152,5 +153,83 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+
   }
+  html[dir="rtl"] {
+    direction: rtl;
+  }
+  
+  html[dir="ltr"] {
+    direction: ltr;
+  }
+}
+
+@layer utilities {
+  /* Force LTR direction for specific elements */
+  .force-ltr {
+    direction: ltr;
+    text-align: left;
+  }
+  
+  /* Force RTL direction for specific elements */
+  .force-rtl {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  /* Responsive text alignment based on direction */
+  .text-start {
+    text-align: start;
+  }
+  
+  .text-end {
+    text-align: end;
+  }
+  
+  /* Custom utilities for mixed content */
+  .content-start {
+    text-align: start;
+  }
+  
+  .content-end {
+    text-align: end;
+  }
+  
+  /* For elements that should maintain their direction */
+  .maintain-ltr {
+    direction: ltr;
+  }
+  
+  .maintain-rtl {
+    direction: rtl;
+  }
+}
+
+
+h1 {
+  @apply font-iransans;
+}
+
+h2 {
+  @apply font-iransans;
+}
+
+h3 {
+  @apply font-iransans;
+}
+
+p {
+  @apply font-iransans;
+}
+
+span {
+  @apply font-iransans;
+}
+
+button {
+  @apply font-iransans;
+}
+
+a {
+  @apply font-iransans;
 }

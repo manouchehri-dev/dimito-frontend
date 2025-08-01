@@ -1,11 +1,14 @@
-import React from "react";
-
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 const WhyBlockchain = () => {
+  const locale = useLocale();
+  const isRTL = locale === "fa";
+  const t = useTranslations("whyBlockchain");
   const benefits = [
-    "Transparency and tracking of transactions",
-    "Smart contracts for profit distribution",
-    "Resistance to corruption and manipulation",
-    "Global access to investment",
+    t("benefits.transparency"),
+    t("benefits.smartContracts"),
+    t("benefits.resistance"),
+    t("benefits.globalAccess"),
   ];
 
   return (
@@ -18,27 +21,49 @@ const WhyBlockchain = () => {
           {/* Header */}
           <div className="flex flex-col items-center justify-center lg:items-start mb-2">
             <h1 className="text-[14px] lg:text-[24px] font-bold text-center font-poppins">
-              Why do we use blockchain?
+              {t("title")}
             </h1>
           </div>
 
           {/* Benefits List with Connected Design */}
-          <div className="relative max-w-2xl mx-auto lg:mx-0 border-l-4 border-[#FF5D1B] border-t-4 rounded-t-xl rounded-r-none py-10">
+          <div
+            className={`relative max-w-2xl mx-auto lg:mx-0  border-[#FF5D1B] border-t-4 rounded-t-xl py-10 ${
+              isRTL ? "rounded-l-none border-r-4" : "rounded-r-none border-l-4"
+            }`}
+          >
             {/* Benefits */}
             <div className="space-y-8">
               {benefits.map((benefit, index) => (
                 <div key={index} className="relative flex items-center">
                   {/* Horizontal connector line */}
-                  <div className="absolute left-0 w-12 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"></div>
 
-                  {/* Arrow/connector dot */}
-                  <div className="absolute left-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-md transform -translate-x-1/2"></div>
+                  {isRTL ? (
+                    <>
+                      {/* Arrow/connector dot */}
+                      <div className="absolute right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-md transform translate-x-1/2"></div>
 
-                  {/* Arrow shape */}
-                  <div className="absolute left-12 w-0 h-0 border-t-[6px] border-b-[6px] border-l-[8px] border-t-transparent border-b-transparent border-l-red-500"></div>
+                      {/* Arrow shape */}
+                      <div className="absolute right-10 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[8px] border-t-transparent border-b-transparent border-r-red-500"></div>
+                      <div className="absolute right-0 w-12 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"></div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="absolute left-0 w-12 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"></div>
+
+                      {/* Arrow/connector dot */}
+                      <div className="absolute left-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-md transform -translate-x-1/2"></div>
+
+                      {/* Arrow shape */}
+                      <div className="absolute left-12 w-0 h-0 border-t-[6px] border-b-[6px] border-l-[8px] border-t-transparent border-b-transparent border-l-red-500"></div>
+                    </>
+                  )}
 
                   {/* Benefit text */}
-                  <div className="ml-16 bg-white w-full px-1 py-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                  <div
+                    className={`${
+                      isRTL ? "mr-16" : "ml-16"
+                    } bg-white w-full px-1 py-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200`}
+                  >
                     <p className="text-[14px] lg:text-[24px]">{benefit}</p>
                   </div>
                 </div>

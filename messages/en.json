@@ -1,0 +1,136 @@
+{
+  "header": {
+    "title": "IMD Token",
+    "home": "Home",
+    "tokenomics": "Tokenomics",
+    "whitepaper": "White paper",
+    "connectWallet": "Connect wallet"
+  },
+  "Navbar": {
+    "home": "Home",
+    "tokenomics": "Tokenomics",
+    "whitepaper": "White paper",
+    "connect_wallet": "Connect wallet"
+  },
+  "Hero": {
+    "title": "Real-World Mining Meets Web3",
+    "description": "Invest in real, verified mineral assets through blockchain.",
+    "connect_wallet": "Connect Wallet",
+    "roadmap": "Roadmap"
+  },
+  "tokenDashboard": {
+    "statistics": "Statistics",
+    "operation": "Operation",
+    "price": "Price",
+    "livePrice": "Live price",
+    "marketCap": "Market cap",
+    "holders": "Holders",
+    "apy": "APY"
+  },
+  "about": {
+    "title": "What Is IMD Token?",
+    "description": "MineToken is a blockchain-based digital asset backed by real-world mineral reserves. We bridge the gap between traditional mining and decentralized finance — making resource investing easy, secure, and accessible to everyone.",
+    "globalAccess": {
+      "title": "Global access",
+      "description": "Investment in the mining industry for everyone around the world without restrictions"
+    },
+    "fullTransparency": {
+      "title": "Full transparency",
+      "description": "All transactions and assets are traceable on the blockchain."
+    },
+    "realSupport": {
+      "title": "Real support",
+      "description": "Each token is backed by real mining assets."
+    }
+  },
+  "projects": {
+    "title": "Assets backing the token",
+    "description": "A list of mining projects, reserves, or contracts that are presented as the real backing for the token.",
+    "quantity": "Quantity",
+    "value": "Value",
+    "status": "Status",
+    "lithium": {
+      "title": "Lithium reserves",
+      "quantity": "8",
+      "value": "$1.2M",
+      "status": "true"
+    },
+    "gold_mine_kerman": {
+      "title": "Gold mine in Kerman province",
+      "quantity": "10",
+      "value": "$1.2M",
+      "status": "true"
+    }
+  },
+  "roadmap": {
+    "title": "road map",
+    "items": {
+      "ico": "Initial Coin Offering (ICO/IDO)",
+      "contracts": "Development of contracts",
+      "market": "Connecting to the secondary market",
+      "physical": "Physical withdrawal/conversion"
+    }
+  },
+  "whyBlockchain": {
+    "title": "Why do we use blockchain?",
+    "benefits": {
+      "transparency": "Transparency and tracking of transactions",
+      "smartContracts": "Smart contracts for profit distribution",
+      "resistance": "Resistance to corruption and manipulation",
+      "globalAccess": "Global access to investment"
+    }
+  },
+  "faq": {
+    "title": "FAQ",
+    "questions": {
+      "buyTokens": {
+        "question": "How can I buy tokens?",
+        "answer": "Through reputable online exchanges or directly from the official MID Token website with a digital wallet connection. Step-by-step purchasing instructions are also available on the site."
+      },
+      "tokenValue": {
+        "question": "How is the token's value maintained?",
+        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+      },
+      "tokenValue2": {
+        "question": "How is the token's value maintained?",
+        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+      },
+      "tokenValue3": {
+        "question": "How is the token's value maintained?",
+        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+      },
+      "tokenValue4": {
+        "question": "How is the token's value maintained?",
+        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+      },
+      "tokenValue5": {
+        "question": "How is the token's value maintained?",
+        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+      }
+    }
+  },
+  "notFound": {
+    "title": "Oops! Page Not Found",
+    "description": "The page you're looking for seems to have wandered off into the digital mining tunnels. Don't worry, we'll help you find your way back to the surface!",
+    "suggestions": {
+      "title": "Here's what you can try",
+      "checkUrl": "Check if the URL is spelled correctly",
+      "useNavigation": "Use the navigation menu to find what you need",
+      "searchBelow": "Try the actions below to get back on track"
+    },
+    "actions": {
+      "goHome": "Go to Homepage",
+      "explore": "Explore Website",
+      "goBack": "Go Back"
+    },
+    "help": "Still having trouble? Contact our support team for assistance."
+  },
+  "footer": {
+    "title": "IMD Token",
+    "subtitle": "The Future of Investing in the Mining Industry with Blockchain",
+    "description": "The first digital token backed by real, mined assets. A bridge between the physical and digital worlds.",
+    "subscribe": "Subscribe to our newsletter",
+    "email": "Email or phone number",
+    "button": "Register in the newsletter"
+  }
+}
