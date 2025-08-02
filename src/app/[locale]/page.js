@@ -6,6 +6,21 @@ import WhyBlockchain from "@/components/WhyBlockchain";
 import FAQ from "@/components/FAQ";
 
 import { Separator } from "@/components/ui/separator";
+import { hasLocale } from "next-intl";
+import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  return {
+    title: "Home - MID Token",
+    description: "Home - MID Token",
+  };
+}
 
 export default function Home() {
   return (
