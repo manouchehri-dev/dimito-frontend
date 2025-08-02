@@ -14,6 +14,17 @@ const poppins = Poppins({
   subsets: ["latin"],
 });
 
+export async function generateViewport({ params }) {
+  const { locale } = await params;
+
+  return {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    themeColor: "#ffffff",
+  };
+}
+
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) {
@@ -50,7 +61,7 @@ export async function generateMetadata({ params }) {
       siteName: "IMD Token",
       images: [
         {
-          url: "/og-image.png", // Add this image to public folder
+          url: "/og-image.png",
           width: 1200,
           height: 630,
         },
@@ -82,12 +93,6 @@ export async function generateMetadata({ params }) {
       ],
     },
     manifest: "/site.webmanifest",
-    themeColor: "#FF5D1B",
-    viewport: {
-      width: "device-width",
-      initialScale: 1,
-      maximumScale: 1,
-    },
     robots: {
       index: true,
       follow: true,

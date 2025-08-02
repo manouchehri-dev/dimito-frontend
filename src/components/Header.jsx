@@ -5,9 +5,11 @@ import { useTranslations } from "next-intl";
 import NavLink from "./module/NavLink";
 import CustomConnectButton from "./module/CustomConnectButton";
 import LanguageSwitcher from "./LanguageSwitcher";
-
+import { usePathname } from "next/navigation";
 const Header = () => {
   const t = useTranslations("Navbar");
+  const pathname = usePathname();
+  const pathWithoutLocale = pathname.replace(/^\/(en|fa)/, "") || "/";
 
   return (
     <header className="grid grid-cols-2 lg:grid-cols-3 fixed top-0 left-0 right-0 z-50 justify-between items-center p-4 lg:p-6 bg-white text-primary rounded-[8px] lg:rounded-[24px] mt-[13px] mx-[14px] lg:mx-[71px] ">
@@ -22,13 +24,25 @@ const Header = () => {
       <nav className="hidden lg:flex justify-center">
         <ul className="flex items-center gap-10 text-[18px]">
           <li>
-            <NavLink href="/">{t("home")}</NavLink>
+            <NavLink href="/" active={pathWithoutLocale === "/"}>
+              {t("home")}
+            </NavLink>
           </li>
           <li>
-            <NavLink href="/tokenomics">{t("tokenomics")}</NavLink>
+            <NavLink
+              href="/tokenomics"
+              active={pathWithoutLocale === "/tokenomics"}
+            >
+              {t("tokenomics")}
+            </NavLink>
           </li>
           <li>
-            <NavLink href="/whitepaper">{t("whitepaper")}</NavLink>
+            <NavLink
+              href="/whitepaper"
+              active={pathWithoutLocale === "/whitepaper"}
+            >
+              {t("whitepaper")}
+            </NavLink>
           </li>
         </ul>
       </nav>
