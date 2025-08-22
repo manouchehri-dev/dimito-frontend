@@ -44,6 +44,11 @@ const Header = () => {
               {t("whitepaper")}
             </NavLink>
           </li>
+          <li>
+            <NavLink href="/about" active={pathWithoutLocale === "/about"}>
+              {t("about")}
+            </NavLink>
+          </li>
         </ul>
       </nav>
       <nav className="lg:hidden flex items-center justify-end gap-2">

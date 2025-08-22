@@ -10,7 +10,8 @@
     "home": "Home",
     "tokenomics": "Tokenomics",
     "whitepaper": "White paper",
-    "connect_wallet": "Connect wallet"
+    "connect_wallet": "Connect wallet",
+    "about": "About"
   },
   "Hero": {
     "title": "Real-World Mining Meets Web3",
