@@ -9,7 +9,7 @@ const MarketSection = () => {
         </h1>
         <p
           className={`text-start 
-          text-[12px] lg:text-[24px] font-normal mt-3 lg:mt-6 leading-[170%]`}
+          text-[12px] lg:text-[18px] font-normal mt-3 lg:mt-6 leading-[170%]`}
         >
           توکن پروژه قابلیت معامله در بازار ثانویه و به صورت P2P (کاربر به
           کاربر) رو داره.

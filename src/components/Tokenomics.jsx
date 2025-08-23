@@ -127,12 +127,12 @@ const Tokenomics = () => {
             <div className="flex flex-col text-start space-y-5 text-[14px]">
               <Button
                 className={
-                  "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-8 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-1/2"
+                  "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-8 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-[16px]"
                 }
               >
                 <a href="#roadmap">اکسپلورر قرارداد هوشمند</a>
               </Button>
-              <Button className="bg-transparent border border-secondary border-2 text-secondary w-full px-8 lg:text-[20px] lg:px-20 lg:py-8 cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-1/2">
+              <Button className="bg-transparent border border-secondary border-2 text-secondary w-full px-8 lg:text-[20px] lg:px-20 lg:py-8 cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-[16px]">
                 <a href="#roadmap">وایت پیپر</a>
               </Button>
             </div>

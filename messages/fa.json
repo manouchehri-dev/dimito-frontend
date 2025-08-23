@@ -30,11 +30,11 @@
     },
     "fullTransparency": {
       "title": "شفافیت کامل",
-      "description": "تمام تراکنش‌ها و دارایی‌ها در بلاک چین قابل ردیابی هستند."
+      "description": "تمام تراکنش‌ها و دارایی‌ها در بلاکچین قابل رهگیری"
     },
     "realSupport": {
       "title": "پشتیبانی واقعی",
-      "description": "هر توکن توسط دارایی‌های معدنی واقعی پشتیبانی می‌شود."
+      "description": "هر توکن با دارایی‌های معدنی واقعی پشتیبانی می‌شود."
     }
   },
   "projects": {
@@ -45,13 +45,19 @@
     "status": "وضعیت",
     "lithium": {
       "title": "ذخایر لیتیوم",
-      "quantity": "8",
+      "quantity": "8 تن",
+      "value": "1.2 میلیون دلار",
+      "status": "true"
+    },
+    "cooper": {
+      "title": "قرارداد بهره‌برداری مس",
+      "quantity": "8 تن",
       "value": "1.2 میلیون دلار",
       "status": "true"
     },
     "gold_mine_kerman": {
       "title": "معدن طلا در استان کرمان",
-      "quantity": "10",
+      "quantity": "8 تن",
       "value": "1.2 میلیون دلار",
       "status": "true"
     }

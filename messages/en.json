@@ -61,6 +61,12 @@
       "quantity": "10",
       "value": "$1.2M",
       "status": "true"
+    },
+    "cooper": {
+      "title": "قرارداد بهره‌برداری مس",
+      "quantity": "8 تن",
+      "value": "1.2 میلیون دلار",
+      "status": "true"
     }
   },
   "roadmap": {

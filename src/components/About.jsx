@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations, useLocale } from "next-intl";
+import { Button } from "./ui/button";
 
 const About = () => {
   const t = useTranslations("about");
@@ -28,9 +29,20 @@ const About = () => {
   return (
     <section id="about">
       <div className="flex flex-col items-center justify-center lg:items-start">
-        <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
-          {t("title")}
-        </h1>
+        <div className="w-full flex justify-between">
+          <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
+            {t("title")}
+          </h1>
+          <div className="flex items-end">
+            <Button
+              className={
+                "hidden lg:flex bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-8 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-[16px]"
+              }
+            >
+              <a href="#roadmap">مشاهده وایت پیپر</a>
+            </Button>
+          </div>
+        </div>
         <p
           className={`text-center lg:text-start px-1.5 lg:px-0 ${
             isRTL ? "lg:pl-32" : "lg:pr-32"
@@ -39,7 +51,7 @@ const About = () => {
           {t("description")}
         </p>
       </div>
-      <div className="my-10 lg:my-30 flex flex-col lg:flex-row-reverse lg:justify-center lg:gap-12">
+      <div className="my-10 lg:my-30 flex flex-col lg:flex-row lg:justify-center lg:gap-12">
         {cardData.map((card, index) => (
           <Card
             className="text-center px-8 lg:py-12 my-5 max-h-full h-60 lg:w-[434px] lg:h-[364px]"

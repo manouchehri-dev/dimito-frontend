@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
+import { Button } from "./ui/button";
 const Roadmap = () => {
   const t = useTranslations("roadmap");
   const isRtl = useLocale() === "fa";
@@ -36,12 +37,21 @@ const Roadmap = () => {
 
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center lg:text-start mb-6 lg:mb-16">
+        <div className="text-center lg:text-start mb-6 lg:mb-0">
           <div className="inline-block">
             <h2 className="text-[14px] lg:text-2xl font-bold text-primary mb-2">
               {t("title")}
             </h2>
-            <div className="w-32 h-0.5 bg-orange-500"></div>{" "}
+            <div className="w-32 h-0.5 bg-orange-500"></div>
+            <div className="hidden lg:flex mt-5">
+              <Button
+                className={
+                  "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] px-18 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-[16px]"
+                }
+              >
+                <a href="#roadmap">خرید توکن</a>
+              </Button>
+            </div>
             {/* Adjust w-32 to desired length */}
           </div>
         </div>

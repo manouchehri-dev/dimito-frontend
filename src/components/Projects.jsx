@@ -5,22 +5,22 @@ const Projects = () => {
   const isRTL = useLocale() === "fa";
   const projectData = [
     {
+      title: t("gold_mine_kerman.title"),
+      quantity: t("gold_mine_kerman.quantity"),
+      value: t("gold_mine_kerman.value"),
+      status: t("gold_mine_kerman.status"),
+    },
+    {
+      title: t("cooper.title"),
+      quantity: t("cooper.quantity"),
+      value: t("cooper.value"),
+      status: t("cooper.status"),
+    },
+    {
       title: t("lithium.title"),
       quantity: t("lithium.quantity"),
       value: t("lithium.value"),
       status: t("lithium.status"),
-    },
-    {
-      title: t("gold_mine_kerman.title"),
-      quantity: t("gold_mine_kerman.quantity"),
-      value: t("gold_mine_kerman.value"),
-      status: t("gold_mine_kerman.status"),
-    },
-    {
-      title: t("gold_mine_kerman.title"),
-      quantity: t("gold_mine_kerman.quantity"),
-      value: t("gold_mine_kerman.value"),
-      status: t("gold_mine_kerman.status"),
     },
   ];
   return (
