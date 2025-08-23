@@ -5,6 +5,7 @@ import Projects from "@/components/Projects";
 import WhyBlockchain from "@/components/WhyBlockchain";
 import FAQ from "@/components/FAQ";
 import Tokenomics from "@/components/Tokenomics";
+import MarketSection from "@/components/MarketSection";
 
 import { Separator } from "@/components/ui/separator";
 import { hasLocale } from "next-intl";
@@ -33,6 +34,7 @@ export default function Home() {
       <WhyBlockchain />
       <Roadmap />
       <Tokenomics />
+      <MarketSection />
       <FAQ />
     </div>
   );

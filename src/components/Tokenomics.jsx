@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useLocale, useTranslations } from "next-intl";
-import { title } from "process";
 import { Button } from "./ui/button";
 
 const Tokenomics = () => {
