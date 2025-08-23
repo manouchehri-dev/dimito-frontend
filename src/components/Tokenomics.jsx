@@ -44,115 +44,137 @@ const Tokenomics = () => {
   ];
 
   return (
-    <section id="tokenomics" className="py-10">
-      <div className="flex flex-col items-center justify-center lg:items-start">
-        <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
-          {t("title")}
-        </h1>
-      </div>
-      <div className="my-10 lg:my-30 flex flex-col lg:flex-wrap lg:flex-row lg:justify-center lg:gap-12">
-        {Data.map((data, index) => (
-          <Card
-            className="text-center my-5 h-fit lg:w-[453px] lg:min-h-[310px]"
-            key={index}
-          >
-            <CardHeader>
+    <section
+      id="tokenomics"
+      className="py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Title Section */}
+        <div className="flex flex-col items-center justify-center lg:items-start mb-8 lg:mb-12">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-2 sm:pb-3 lg:pb-4 text-center lg:text-start">
+            {t("title")}
+          </h1>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 xl:gap-12">
+          {/* Dynamic Cards */}
+          {Data.map((data, index) => (
+            <Card
+              className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden"
+              key={index}
+            >
+              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
+                <CardTitle>
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
+                    {data.title}
+                  </p>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 flex-grow overflow-hidden space-y-3 sm:space-y-4">
+                <div className="text-xs sm:text-sm md:text-base font-normal text-start leading-relaxed line-clamp-3 break-words">
+                  {data.description}
+                </div>
+
+                {data.footer && (
+                  <div className="text-xs sm:text-sm md:text-base font-normal text-start leading-relaxed line-clamp-2 break-words">
+                    {data.footer}
+                  </div>
+                )}
+
+                {data.features && (
+                  <div className="text-start text-xs sm:text-sm md:text-base overflow-hidden">
+                    <span className="font-semibold block mb-2 text-sm sm:text-base">
+                      {data.features.title}
+                    </span>
+                    <ul className="list-disc list-inside space-y-1 pr-2 sm:pr-4">
+                      {data.features.items
+                        .slice(0, 3)
+                        .map((item, itemIndex) => (
+                          <li
+                            key={itemIndex}
+                            className="leading-snug text-xs sm:text-sm line-clamp-1 break-words"
+                          >
+                            {item}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+
+          {/* Token Allocation Card */}
+          <Card className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
+            <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
               <CardTitle>
-                <p className="text-[14px] text-start lg:text-[24px] font-bold">
-                  {data.title}
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
+                  تخصیص توکن (Token Allocation)
                 </p>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-[12px] lg:text-[18px] font-400 text-start ">
-                {data.description}
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4 flex-grow overflow-hidden">
+              <div className="text-start space-y-1 sm:space-y-2">
+                <p className="text-sm sm:text-base md:text-lg font-bold line-clamp-1 break-words">
+                  ۹۰٪ برای توسعه پروژه
+                </p>
+                <p className="text-xs sm:text-sm font-normal leading-relaxed line-clamp-2 break-words">
+                  شامل استخراج، زیرساخت، بازاریابی و پرداخت به شرکا
+                </p>
+              </div>
+              <div className="text-start space-y-1 sm:space-y-2">
+                <p className="text-sm sm:text-base md:text-lg font-bold line-clamp-1 break-words">
+                  ۱۰٪ نقدینگی (Liquidity)
+                </p>
+                <p className="text-xs sm:text-sm font-normal leading-relaxed line-clamp-2 break-words">
+                  برای صرافی‌های داخلی و بازار ثانویه، تضمین نقدشوندگی توکن
+                </p>
               </div>
             </CardContent>
-            <CardFooter>
-              {data.footer && (
-                <div className="text-[12px] font-400 text-start lg:text-[18px]">
-                  {data.footer}
-                </div>
-              )}
-              {data.features && (
-                <div className="text-start text-[12px] lg:text-[18px]">
-                  <span>{data.features.title}</span>
-                  <ul className="list-disc my-2">
-                    {data.features.items.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </CardFooter>
           </Card>
-        ))}
 
-        <Card className="text-center my-5 h-fit lg:w-[434px] lg:h-[277px]">
-          <CardHeader className="pl-0">
-            <CardTitle>
-              <p className="text-[14px] text-start lg:text-[24px] font-bold">
-                تخصیص توکن (Token Allocation)
-              </p>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-start space-y-1">
-              <p className="text-[14px] text-start lg:text-[18px] font-bold">
-                ۹۰٪ برای توسعه پروژه
-              </p>
-              <p className="text-[12px] font-400">
-                شامل استخراج، زیرساخت، بازاریابی و پرداخت به شرکا
-              </p>
-            </div>
-            <div className="text-start space-y-1">
-              <p className="text-[14px] text-start lg:text-[18px] font-bold">
-                ۱۰٪ نقدینگی (Liquidity)
-              </p>
-              <p className="text-[12px] font-400">
-                برای صرافی‌های داخلی و بازار ثانویه، تضمین نقدشوندگی توکن
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="text-center my-5 h-fit lg:w-[434px] lg:h-[277px]">
-          <CardHeader className="pl-0">
-            <CardTitle>
-              <p className="text-[14px] text-start lg:text-[24px] font-bold">
-                شفافیت و دسترسی به قرارداد هوشمند
-              </p>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex flex-col text-start space-y-5 text-[14px]">
-              <Button
-                className={
-                  "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-8 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-[16px]"
-                }
-              >
-                <a href="#roadmap">اکسپلورر قرارداد هوشمند</a>
-              </Button>
-              <Button className="bg-transparent border border-secondary border-2 text-secondary w-full px-8 lg:text-[20px] lg:px-20 lg:py-8 cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-[16px]">
-                <a href="#roadmap">وایت پیپر</a>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="text-center lg:py-12 my-5 h-fit lg:w-[434px] lg:h-[277px]">
-          <CardHeader>
-            <CardTitle>
-              <p className="text-[14px] text-start lg:text-[24px] font-bold">
-                توضیحات تکمیلی برای کاربر
-              </p>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-[12px] lg:text-[18px] font-400 text-start">
-              هر کس می‌تواند قبل از خرید، بررسی قرارداد هوشمند و تاریخچه
-              تراکنش‌ها را انجام دهد.
-            </div>
-          </CardContent>
-        </Card>
+          {/* Smart Contract Transparency Card */}
+          <Card className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
+            <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
+              <CardTitle>
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
+                  شفافیت و دسترسی به قرارداد هوشمند
+                </p>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 flex-grow flex flex-col justify-center overflow-hidden">
+              <div className="flex flex-col text-start space-y-3 sm:space-y-4">
+                <Button className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm lg:text-base cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                  <a href="#roadmap" className="block truncate">
+                    اکسپلورر قرارداد هوشمند
+                  </a>
+                </Button>
+                <Button className="bg-transparent border-2 border-secondary text-secondary w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm lg:text-base cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                  <a href="#roadmap" className="block truncate">
+                    وایت پیپر
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
+            <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
+              <CardTitle>
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
+                  توضیحات تکمیلی برای کاربر
+                </p>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 flex-grow flex flex-col justify-center overflow-hidden">
+              <div className="text-xs sm:text-sm md:text-base font-normal text-start leading-relaxed line-clamp-4 break-words">
+                هر کس می‌تواند قبل از خرید، بررسی قرارداد هوشمند و تاریخچه
+                تراکنش‌ها را انجام دهد.
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </section>
   );
