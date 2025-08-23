@@ -65,6 +65,21 @@
       "physical": "برداشت/تبدیل فیزیکی"
     }
   },
+  "tokenomics": {
+    "title": "توکنومیک",
+    "data": {
+      "data_1": {
+        "title": "عرضه کل (Total Supply)",
+        "description": "کل تعداد توکن‌های پروژه:  ۱,۰۰۰,۰۰۰ توکن",
+        "footer": "این مقدار محدود باعث ایجاد کمبود کنترل‌شده و ارزش پایدار می‌شود."
+      },
+      "data_2": {
+        "title": "استاندارد توکن (Token Standard)",
+        "description": "پروژه از ERC-20 استفاده می‌کند (قابل اجرا روی شبکه اتریوم و اکثر شبکه‌های EVM).",
+        "footer": "<item>ERC-20 Compatible</item><item>Ethereum Network</item>"
+      }
+    }
+  },
   "whyBlockchain": {
     "title": "چرا از بلاک چین استفاده می‌کنیم؟",
     "benefits": {

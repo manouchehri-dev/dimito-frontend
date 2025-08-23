@@ -72,6 +72,21 @@
       "physical": "Physical withdrawal/conversion"
     }
   },
+  "tokenomics": {
+    "title": "Tokenomics",
+    "data": {
+      "data_1": {
+        "title": "Total Supply",
+        "description": "desc",
+        "footer": "footer"
+      },
+      "data_2": {
+        "title": "Token Standard",
+        "description": "desc",
+        "footer": "footer"
+      }
+    }
+  },
   "whyBlockchain": {
     "title": "Why do we use blockchain?",
     "benefits": {
