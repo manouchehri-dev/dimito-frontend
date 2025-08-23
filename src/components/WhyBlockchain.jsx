@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
+import Image from "next/image";
 const WhyBlockchain = () => {
   const locale = useLocale();
   const isRTL = locale === "fa";
@@ -19,8 +20,8 @@ const WhyBlockchain = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div className="lg:pl-10">
           {/* Header */}
-          <div className="flex flex-col items-center justify-center lg:items-start mb-2">
-            <h1 className="text-[14px] lg:text-[24px] font-bold text-center font-poppins">
+          <div className="mb-2 flex flex-col items-center justify-center lg:items-start">
+            <h1 className="font-poppins text-center text-[clamp(14px,2.5vw,24px)] font-bold [text-wrap:balance]">
               {t("title")}
             </h1>
           </div>
@@ -64,19 +65,26 @@ const WhyBlockchain = () => {
                       isRTL ? "mr-16" : "ml-16"
                     } bg-white w-full px-1 py-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200`}
                   >
-                    <p className="text-[14px] lg:text-[24px]">{benefit}</p>
+                    <p className="text-[clamp(14px,2.2vw,20px)] leading-relaxed">
+                      {benefit}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-        <div className="rounded-[28px] lg:rounded-[36px] overflow-hidden my-10 w-[335px] lg:w-[684px] h-[335px] lg:h-[452px]">
-          <img
-            src={"/images/blockchain.jpg"}
-            alt="blockchain"
-            className="w-full h-full object-cover"
-          />
+        <div className="mx-auto w-full max-w-[684px] overflow-hidden rounded-3xl">
+          <div className="relative aspect-[4/3] w-full">
+            <Image
+              src="/images/blockchain.jpg"
+              alt="blockchain"
+              fill
+              className="object-cover"
+              sizes="(min-width:1024px) 684px, (min-width:640px) 80vw, 90vw"
+              priority
+            />
+          </div>
         </div>
       </div>
     </section>

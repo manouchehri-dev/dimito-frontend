@@ -1,5 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations, useLocale } from "next-intl";
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "./ui/button";
 
 const About = () => {
@@ -26,58 +28,76 @@ const About = () => {
       bgColor: "bg-gradient-to-r from-[#FAD43B] to-[#FFAB36]",
     },
   ];
+
   return (
-    <section id="about">
-      <div className="flex flex-col items-center justify-center lg:items-start">
-        <div className="w-full flex justify-between">
-          <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
-            {t("title")}
-          </h1>
-          <div className="flex items-end">
+    <section id="about" dir={isRTL ? "rtl" : "ltr"}>
+      {/* Header */}
+      <div className="mx-auto">
+        <div className="flex flex-col items-center justify-center lg:items-start">
+          <div className="flex w-full items-end justify-between gap-4">
+            <h1 className="border-b-2 border-[#FF5D1B] pb-3 text-center text-[clamp(14px,2.5vw,24px)] font-bold lg:border-b-4 lg:pb-4">
+              {t("title")}
+            </h1>
+          </div>
+
+          <p
+            className={[
+              "mt-3 lg:mt-6 px-1.5 lg:px-0 text-center lg:text-start leading-[170%] text-[clamp(12px,2.2vw,20px)]",
+              isRTL ? "lg:pl-32" : "lg:pr-32",
+            ].join(" ")}
+          >
+            {t("description")}
+          </p>
+
+          {/* Mobile CTA */}
+          <div className="mt-4 flex w-full justify-center lg:hidden">
             <Button
-              className={
-                "hidden lg:flex bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-8 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-[16px]"
-              }
+              className="w-full max-w-sm rounded-2xl bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] py-3 text-base hover:scale-[1.02] hover:shadow-md hover:shadow-orange-500/25"
+              asChild
             >
-              <a href="#roadmap">مشاهده وایت پیپر</a>
+              <Link href="#roadmap">
+                {t("cta", { default: "مشاهده وایت پیپر" })}
+              </Link>
             </Button>
           </div>
         </div>
-        <p
-          className={`text-center lg:text-start px-1.5 lg:px-0 ${
-            isRTL ? "lg:pl-32" : "lg:pr-32"
-          } text-[12px] lg:text-[24px] font-normal mt-3 lg:mt-6 leading-[170%]`}
-        >
-          {t("description")}
-        </p>
-      </div>
-      <div className="my-10 lg:my-30 flex flex-col lg:flex-row lg:justify-center lg:gap-12">
-        {cardData.map((card, index) => (
-          <Card
-            className="text-center px-8 lg:py-12 my-5 max-h-full h-60 lg:w-[434px] lg:h-[364px]"
-            key={index}
-          >
-            <CardHeader>
-              <CardTitle className="flex flex-col items-center space-y-5">
-                <div
-                  className={`p-3 rounded-[8px] ${card.bgColor} flex items-center justify-center`}
-                >
-                  <img
-                    src={card.icon}
-                    alt={card.title}
-                    className="w-[30px] h-[30px] lg:w-[54px] lg:h-[54px]"
-                  />
-                </div>
-                <p className="lg:text-[24px] font-bold">{card.title}</p>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-[12px] lg:text-[24px] font-normal leading-[170%]">
-                {card.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+
+        {/* Responsive Cards */}
+        <div className="my-8 lg:my-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+          {cardData.map((card, index) => (
+            <Card
+              key={index}
+              className="h-full text-center transition-shadow hover:shadow-md"
+            >
+              <CardHeader className="pb-2">
+                <CardTitle className="flex flex-col items-center gap-4">
+                  <div
+                    className={[
+                      "flex items-center justify-center rounded-lg p-2 sm:p-3",
+                      card.bgColor,
+                    ].join(" ")}
+                  >
+                    <Image
+                      src={card.icon}
+                      alt={String(card.title)}
+                      width={56}
+                      height={56}
+                      className="h-[30px] w-[30px] sm:h-[40px] sm:w-[40px] lg:h-[56px] lg:w-[56px]"
+                    />
+                  </div>
+                  <p className="text-center text-[clamp(14px,2vw,22px)] font-bold">
+                    {card.title}
+                  </p>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-[clamp(12px,2vw,18px)] leading-[170%] text-center">
+                  {card.description}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );
