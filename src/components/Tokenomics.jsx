@@ -61,7 +61,7 @@ const Tokenomics = () => {
           {/* Dynamic Cards */}
           {Data.map((data, index) => (
             <Card
-              className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden"
+              className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden"
               key={index}
             >
               <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
@@ -106,7 +106,7 @@ const Tokenomics = () => {
           ))}
 
           {/* Token Allocation Card */}
-          <Card className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
+          <Card className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
             <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
               <CardTitle>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
@@ -135,7 +135,7 @@ const Tokenomics = () => {
           </Card>
 
           {/* Smart Contract Transparency Card */}
-          <Card className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
+          <Card className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
             <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
               <CardTitle>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
@@ -159,7 +159,7 @@ const Tokenomics = () => {
             </CardContent>
           </Card>
 
-          <Card className="h-80 sm:h-96 lg:h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
+          <Card className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
             <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
               <CardTitle>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
