@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import TokenPriceDashboard from "./module/TokenPriceDashboard";
 import CustomConnectButton from "./module/CustomConnectButton";
 import { useAccount } from "wagmi";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 const Hero = () => {
   const t = useTranslations("Hero");
