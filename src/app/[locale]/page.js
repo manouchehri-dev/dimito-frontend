@@ -8,19 +8,25 @@ import Tokenomics from "@/components/Tokenomics";
 import MarketSection from "@/components/MarketSection";
 
 import { Separator } from "@/components/ui/separator";
-import { hasLocale } from "next-intl";
-import { notFound } from "next/navigation";
-import { routing } from "@/i18n/routing";
 
+// Generate metadata for the home page
 export async function generateMetadata({ params }) {
   const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
 
   return {
-    title: "Home - MID Token",
-    description: "Home - MID Token",
+    title: "IMD Token - Real-World Mining Meets Web3",
+    description:
+      "Invest in real, verified mineral assets through blockchain. The first digital token backed by real, mined assets.",
+    alternates: {
+      canonical: `/${locale}`,
+    },
+    openGraph: {
+      title: "IMD Token - Real-World Mining Meets Web3",
+      description:
+        "Invest in real, verified mineral assets through blockchain. The first digital token backed by real, mined assets.",
+      url: `/${locale}`,
+      locale: locale,
+    },
   };
 }
 

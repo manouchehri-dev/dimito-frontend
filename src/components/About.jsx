@@ -55,9 +55,7 @@ const About = () => {
               className="w-full max-w-sm rounded-2xl bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] py-3 text-base hover:scale-[1.02] hover:shadow-md hover:shadow-orange-500/25"
               asChild
             >
-              <Link href="#roadmap">
-                {t("cta", { default: "مشاهده وایت پیپر" })}
-              </Link>
+              <Link href="#roadmap">مشاهده وایت پیپر</Link>
             </Button>
           </div>
         </div>

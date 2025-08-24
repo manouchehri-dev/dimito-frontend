@@ -1,10 +1,26 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import TokenPriceDashboard from "./module/TokenPriceDashboard";
 import CustomConnectButton from "./module/CustomConnectButton";
+import { useAccount } from "wagmi";
+import { useRouter } from "next/navigation";
 
 const Hero = () => {
   const t = useTranslations("Hero");
+  const { isConnected } = useAccount();
+  const router = useRouter();
+
+  const handleMainButtonClick = (e) => {
+    e.preventDefault();
+    if (isConnected) {
+      router.push("/dashboard");
+    } else {
+      // This will trigger the connect modal via CustomConnectButton
+      document.querySelector(".hero-connect-button")?.click();
+    }
+  };
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 pt-[100px] lg:pt-[140px]">
@@ -51,14 +67,21 @@ const Hero = () => {
           {t("description")}
         </span>
 
-        <div className="flex items-center gap-3 sm:gap-4 lg:gap-12 mt-3 sm:mt-4 lg:mt-5 w-full max-w-sm sm:max-w-md lg:max-w-none">
-          <CustomConnectButton
-            className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-1/2 px-2 sm:px-3 md:px-4 lg:px-8 py-2 sm:py-3 lg:py-8 text-xs sm:text-sm md:text-base lg:text-xl  cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis"
-            label={t("connect_wallet")}
-          />
+        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 lg:gap-6 mt-6 sm:mt-8 lg:mt-10 w-full max-w-xs sm:max-w-md lg:max-w-lg">
+          <Button
+            onClick={handleMainButtonClick}
+            className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full sm:flex-1 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-xl lg:rounded-2xl font-medium text-white"
+          >
+            {isConnected ? t("dashboard") : t("connect_wallet")}
+          </Button>
 
-          <Button className="bg-transparent border border-secondary border-2 text-secondary w-1/2 px-2 sm:px-3 md:px-4 lg:px-8 xl:px-20 py-2 sm:py-3 lg:py-8 text-xs sm:text-sm md:text-base lg:text-xl cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-            <a href="#roadmap" className="block w-full truncate">
+          {/* Hidden CustomConnectButton for wallet connection */}
+          <div className="hidden">
+            <CustomConnectButton className="hero-connect-button" />
+          </div>
+
+          <Button className="bg-transparent border border-secondary border-2 text-secondary w-full sm:flex-1 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-lg cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-xl lg:rounded-2xl font-medium">
+            <a href="#roadmap" className="block w-full">
               {t("roadmap")}
             </a>
           </Button>

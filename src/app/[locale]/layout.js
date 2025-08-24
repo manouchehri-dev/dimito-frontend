@@ -1,7 +1,6 @@
 import { Poppins } from "next/font/google";
-import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { notFound } from "next/navigation";
-import { routing } from "@/i18n/routing";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 import "../globals.css";
 import Header from "@/components/Header";
@@ -14,9 +13,7 @@ const poppins = Poppins({
   subsets: ["latin"],
 });
 
-export async function generateViewport({ params }) {
-  const { locale } = await params;
-
+export function generateViewport() {
   return {
     width: "device-width",
     initialScale: 1,
@@ -25,12 +22,12 @@ export async function generateViewport({ params }) {
   };
 }
 
+export function generateStaticParams() {
+  return [{ locale: "en" }, { locale: "fa" }];
+}
+
 export async function generateMetadata({ params }) {
   const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
-
   return {
     title: "IMD Token - Real-World Mining Meets Web3",
     description:
@@ -108,14 +105,21 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function RootLayout({ children, params }) {
-  const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
+  const { locale } = await params; // no await
+
+  // Safe message loading with fallback
+  let messages = {};
+  try {
+    messages = await getMessages();
+  } catch (error) {
+    console.warn("Failed to load messages during build:", error);
+    // Provide empty messages as fallback
+    messages = {};
   }
 
   return (
     <html
-      lang={locale}
+      lang={locale || "en"}
       dir={locale === "fa" ? "rtl" : "ltr"}
       className="scroll-smooth"
     >
@@ -148,7 +152,7 @@ export default async function RootLayout({ children, params }) {
       </head>
       <body className={`antialiased font-iransans`}>
         <ErrorBoundary>
-          <NextIntlClientProvider key={locale}>
+          <NextIntlClientProvider locale={locale || "en"} messages={messages}>
             <Provider key={`provider-${locale}`}>
               <main className="flex-1">
                 <Header />

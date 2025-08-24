@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { ChevronDown, Globe } from "lucide-react";
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ isMobile = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
   const locale = useLocale();
@@ -58,20 +58,24 @@ export default function LanguageSwitcher() {
       <button
         onClick={() => !isChanging && setIsOpen(!isOpen)}
         disabled={isChanging}
-        className={`flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#FF5D1B] focus:ring-offset-2 ${
-          isChanging ? "opacity-50 cursor-not-allowed" : ""
+        className={`flex items-center gap-1 lg:gap-1.5 xl:gap-2 px-2 lg:px-2.5 xl:px-3 py-1.5 lg:py-2 text-xs lg:text-xs xl:text-sm font-medium text-gray-700 bg-white border border-gray-200/70 rounded-full hover:bg-gray-100 hover:shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FF5D1B] focus:ring-offset-1 ${
+          isChanging ? "opacity-50 cursor-not-allowed" : "active:scale-95"
         }`}
         aria-label="Select language"
         aria-expanded={isOpen}
       >
-        <Globe className="w-4 h-4" />
-        <span className="hidden lg:inline">{languages[locale]?.name}</span>
-        <span className="lg:hidden">{languages[locale]?.code}</span>
+        <Globe className="w-3 lg:w-3.5 xl:w-4 h-3 lg:h-3.5 xl:h-4" />
+        <span className="hidden xl:inline font-medium">
+          {languages[locale]?.name}
+        </span>
+        <span className="xl:hidden font-medium text-xs lg:text-xs">
+          {languages[locale]?.code}
+        </span>
         {isChanging ? (
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+          <div className="w-3 lg:w-3.5 xl:w-4 h-3 lg:h-3.5 xl:h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
         ) : (
           <ChevronDown
-            className={`w-4 h-4 transition-transform duration-200 ${
+            className={`w-3 lg:w-3.5 xl:w-4 h-3 lg:h-3.5 xl:h-4 transition-transform duration-200 ${
               isOpen ? "rotate-180" : ""
             }`}
           />
@@ -80,29 +84,37 @@ export default function LanguageSwitcher() {
 
       {/* Dropdown Menu */}
       {isOpen && !isChanging && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
-          <div className="py-1">
+        <div
+          className={`absolute ${
+            isMobile ? "right-0 bottom-full mb-2" : "right-0 mt-2"
+          } w-44 xl:w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-[60] overflow-hidden backdrop-blur-sm`}
+        >
+          <div className="py-2">
             {routing.locales.map((lang) => (
               <button
                 key={lang}
                 onClick={() => switchLanguage(lang)}
                 disabled={lang === locale}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-150 ${
+                className={`w-full flex items-center gap-3 px-3 xl:px-4 py-2.5 xl:py-3 text-sm hover:bg-gray-50 transition-all duration-150 active:scale-98 ${
                   locale === lang
                     ? "bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 text-[#FF5D1B] font-medium cursor-default"
-                    : "text-gray-700 cursor-pointer"
+                    : "text-gray-700 cursor-pointer hover:text-[#FF5D1B]"
                 }`}
                 role="menuitem"
               >
-                <span className="text-lg">{languages[lang].flag}</span>
-                <div className="flex flex-col items-start">
-                  <span className="font-medium">{languages[lang].name}</span>
+                <span className="text-base xl:text-lg">
+                  {languages[lang].flag}
+                </span>
+                <div className="flex flex-col items-start flex-1">
+                  <span className="font-medium text-sm xl:text-base">
+                    {languages[lang].name}
+                  </span>
                   <span className="text-xs text-gray-500">
                     {languages[lang].code}
                   </span>
                 </div>
                 {locale === lang && (
-                  <div className="ml-auto w-2 h-2 bg-[#FF5D1B] rounded-full"></div>
+                  <div className="w-2 h-2 bg-[#FF5D1B] rounded-full"></div>
                 )}
               </button>
             ))}
