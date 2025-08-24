@@ -6,6 +6,7 @@ import WhyBlockchain from "@/components/WhyBlockchain";
 import FAQ from "@/components/FAQ";
 import Tokenomics from "@/components/Tokenomics";
 import MarketSection from "@/components/MarketSection";
+import { setRequestLocale } from "next-intl/server";
 
 import { Separator } from "@/components/ui/separator";
 
@@ -30,7 +31,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function Home() {
+export default async function Home({ params }) {
+  const { locale } = await params;
+
+  // Enable static rendering
+  setRequestLocale(locale);
   return (
     <div className="min-h-full text-primary px-[28px] lg:px-[72px] relative">
       <Hero />

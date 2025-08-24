@@ -1,6 +1,6 @@
 import { Poppins } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 
 import "../globals.css";
 import Header from "@/components/Header";
@@ -105,7 +105,10 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function RootLayout({ children, params }) {
-  const { locale } = await params; // no await
+  const { locale } = await params;
+
+  // Enable static rendering
+  setRequestLocale(locale);
 
   // Safe message loading with fallback
   let messages = {};
