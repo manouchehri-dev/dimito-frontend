@@ -1,6 +1,6 @@
 {
   "header": {
-    "title": "IMD Token",
+    "title": "DMT Token",
     "home": "Home",
     "tokenomics": "Tokenomics",
     "whitepaper": "White paper",
@@ -12,6 +12,7 @@
     "whitepaper": "White paper",
     "connect_wallet": "Connect wallet",
     "about": "About",
+    "dashboard": "Dashboard",
     "tokenizationRequest": "Token Listing"
   },
   "Hero": {
@@ -31,7 +32,7 @@
     "apy": "APY"
   },
   "about": {
-    "title": "What Is IMD Token?",
+    "title": "What Is DMT Token?",
     "description": "MineToken is a blockchain-based digital asset backed by real-world mineral reserves. We bridge the gap between traditional mining and decentralized finance — making resource investing easy, secure, and accessible to everyone.",
     "globalAccess": {
       "title": "Global access",
@@ -150,7 +151,7 @@
     "help": "Still having trouble? Contact our support team for assistance."
   },
   "footer": {
-    "title": "IMD Token",
+    "title": "DMT Token",
     "subtitle": "The Future of Investing in the Mining Industry with Blockchain",
     "description": "The first digital token backed by real, mined assets. A bridge between the physical and digital worlds.",
     "subscribe": "Subscribe to our newsletter",
@@ -189,13 +190,31 @@
     "projectType": "Project Type",
     "projectDescription": "Project Description",
     "estimatedValue": "Estimated Project Value (USD)",
+    "estimatedMineValue": "Estimated Mine Value (USD)",
+    "capitalNeeded": "Capital Needed (USD)",
+    "shareAmount": "Share Amount (%)",
     "location": "Project Location",
     "documents": "Required Documents (ZIP file)",
     "documentsHelp": "Please include: Business license, project documentation, financial statements, technical reports",
     "submit": "Submit Listing Request",
+    "submitting": "Submitting...",
     "successTitle": "Request Submitted Successfully!",
     "successMessage": "Your token listing request has been received. Our team will review your submission and contact you within 5-7 business days.",
     "submitAnother": "Submit Another Request",
+    "submissionError": "An error occurred while submitting your listing",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
+    "emailPlaceholder": "your.email@example.com",
+    "phonePlaceholder": "+1 (555) 123-4567",
+    "descriptionPlaceholder": "Describe your mining project in detail...",
+    "estimatedValuePlaceholder": "1000000",
+    "capitalNeededPlaceholder": "500000",
+    "shareAmountPlaceholder": "25",
+    "locationPlaceholder": "City, State, Country",
+    "uploadFile": "Upload a file",
+    "orDragDrop": "or drag and drop",
+    "fileFormats": "PDF, DOC, DOCX, ZIP up to 10MB",
+    "selectedFile": "Selected",
     "projectTypes": {
       "mining": "Mining Project",
       "real_estate": "Real Estate",
@@ -204,6 +223,76 @@
       "infrastructure": "Infrastructure",
       "other": "Other"
     }
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "connectWallet": "Connect Your Wallet",
+    "connectWalletDescription": "Please connect your wallet to view your dashboard and portfolio information.",
+    "loading": "Loading dashboard data...",
+    "refreshData": "Refresh Data",
+    "totalSpent": "Total Spent",
+    "tokensHeld": "Tokens Held",
+    "presales": "Presales",
+    "verified": "Verified",
+    "types": "Types",
+    "participated": "Participated",
+    "stats": {
+      "totalSpent": "Total Spent",
+      "tokensHeld": "Tokens Held",
+      "presalesParticipated": "Presales Participated",
+      "verificationRate": "Verification Rate"
+    },
+    "tokenHoldings": {
+      "title": "Token Holdings",
+      "tokens": "Tokens",
+      "noTokens": "No Tokens Yet",
+      "noTokensDescription": "You haven't participated in any presales yet. Start investing in mining tokens to see your portfolio here.",
+      "totalSpent": "Total Spent",
+      "avgPrice": "Avg Price",
+      "address": "Address",
+      "clickToView": "Click to view details"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "recent": "Recent",
+      "noActivity": "No Recent Activity",
+      "noActivityDescription": "Your recent transactions will appear here.",
+      "purchased": "Purchased",
+      "verified": "Verified",
+      "pending": "Pending",
+      "viewAll": "View All Transactions"
+    },
+    "error": {
+      "title": "Something Went Wrong",
+      "description": "We couldn't load your dashboard data. Please try again.",
+      "retry": "Try Again",
+      "refresh": "Refresh Page",
+      "helpText": "If the problem persists, please contact our support team."
+    },
+    "title": "Dashboard",
+    "subtitle": "Manage your tokens and track your portfolio",
+    "amount": "Amount",
+    "buy": "Buy",
+    "withdraw": "Withdraw",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "viewAllTransactions": "View All Transactions",
+    "tokenChart": "SIP Token Chart",
+    "quickActions": "Quick Actions",
+    "buyTokens": "Buy Tokens",
+    "sellTokens": "Sell Tokens",
+    "transferFunds": "Transfer Funds",
+    "overview": "Overview",
+    "portfolio": "Portfolio",
+    "wallet": "Wallet",
+    "trading": "Trading",
+    "transactions": "Transactions",
+    "cards": "Cards",
+    "settings": "Settings",
+    "logout": "Logout",
+    "searchPlaceholder": "Search transactions, tokens...",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
   },
   "validation": {
     "required": "This field is required",
@@ -226,6 +315,9 @@
     "projectTypeRequired": "Project type is required",
     "projectDescriptionRequired": "Project description is required",
     "estimatedValueRequired": "Estimated value is required",
+    "capitalNeededRequired": "Capital needed is required",
+    "shareAmountRequired": "Share amount is required",
+    "shareAmountRange": "Share amount must be between 0 and 100",
     "locationRequired": "Project location is required",
     "documentsRequired": "Documents are required",
     "selectProjectType": "Please select a project type"

@@ -1,7 +1,15 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/button";
-import { ChevronDown, User, LogOut, Copy, Check, Wallet } from "lucide-react";
+import {
+  ChevronDown,
+  User,
+  LogOut,
+  Copy,
+  Check,
+  Wallet,
+  Wallet2Icon,
+} from "lucide-react";
 import {
   useConnectModal,
   useAccountModal,
@@ -10,10 +18,13 @@ import {
 import { useAccount, useDisconnect } from "wagmi";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
+import { useWalletAuth } from "@/lib/api";
+import walletAuthManager from "@/lib/walletAuth";
 
 export default function CustomConnectButton({ className, isMobile = false }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [hasAuthenticated, setHasAuthenticated] = useState(false);
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { address, isConnected } = useAccount();
@@ -23,6 +34,9 @@ export default function CustomConnectButton({ className, isMobile = false }) {
   const t = useTranslations("wallet");
   const locale = useLocale();
   const isRTL = locale === "fa";
+
+  // Wallet authentication mutation
+  const walletAuthMutation = useWalletAuth();
 
   const handleConnectClick = () => {
     if (isConnected) {
@@ -39,6 +53,11 @@ export default function CustomConnectButton({ className, isMobile = false }) {
 
   const handleDisconnect = () => {
     setIsDropdownOpen(false);
+    setHasAuthenticated(false);
+    // Clear authentication tracking when manually disconnecting
+    if (address) {
+      walletAuthManager.removeWallet(address);
+    }
     disconnect();
   };
 
@@ -66,6 +85,47 @@ export default function CustomConnectButton({ className, isMobile = false }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Handle wallet authentication when connected
+  useEffect(() => {
+    if (
+      isConnected &&
+      address &&
+      !walletAuthMutation.isPending &&
+      walletAuthManager.canAuthenticate(address)
+    ) {
+      console.log("🔐 Authenticating wallet:", address);
+
+      // Mark as pending in global manager
+      walletAuthManager.markAsPending(address);
+
+      walletAuthMutation.mutate(
+        { wallet_address: address },
+        {
+          onSuccess: (data) => {
+            console.log("✅ Wallet authentication successful:", data);
+            walletAuthManager.markAsAuthenticated(address);
+            setHasAuthenticated(true);
+          },
+          onError: (error) => {
+            console.error("❌ Wallet authentication failed:", error);
+            walletAuthManager.markAsFailed(address);
+          },
+        }
+      );
+    }
+
+    // Update local state based on global manager
+    if (address && walletAuthManager.isAuthenticated(address)) {
+      setHasAuthenticated(true);
+    }
+
+    // Reset authentication state when wallet disconnects
+    if (!isConnected && address) {
+      setHasAuthenticated(false);
+      walletAuthManager.removeWallet(address);
+    }
+  }, [isConnected, address, walletAuthMutation]);
+
   const formatAddress = (addr, short = false) => {
     if (!addr) return "";
     if (short) return `${addr.slice(0, 4)}...`;
@@ -80,10 +140,13 @@ export default function CustomConnectButton({ className, isMobile = false }) {
   if (!isConnected) {
     return (
       <Button
-        className={`${className} ${buttonBaseClass} whitespace-nowrap`}
+        className={`${className} ${buttonBaseClass} whitespace-nowrap flex items-center gap-2`}
         onClick={handleConnectClick}
         title={t("connect")}
       >
+        {/* Universal wallet icon */}
+        <Wallet2Icon className="w-4 h-4" />
+
         <span className={`${isMobile ? "inline" : "hidden xl:inline"}`}>
           {t("connect")}
         </span>
@@ -140,6 +203,29 @@ export default function CustomConnectButton({ className, isMobile = false }) {
               <p className="text-xs text-gray-500 font-medium">
                 {isRTL ? "آدرس کیف پول" : "Wallet Address"}
               </p>
+              {/* Authentication status indicator */}
+              {(walletAuthMutation.isPending ||
+                (address && walletAuthManager.isPending(address))) && (
+                <div
+                  className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"
+                  title="Authenticating..."
+                />
+              )}
+              {(hasAuthenticated ||
+                (address && walletAuthManager.isAuthenticated(address))) && (
+                <div
+                  className="w-2 h-2 bg-green-500 rounded-full"
+                  title="Authenticated"
+                />
+              )}
+              {walletAuthMutation.isError &&
+                address &&
+                !walletAuthManager.isAuthenticated(address) && (
+                  <div
+                    className="w-2 h-2 bg-red-500 rounded-full"
+                    title="Authentication failed"
+                  />
+                )}
             </div>
             <p className="font-mono text-sm text-gray-800">
               {formatAddress(address)}

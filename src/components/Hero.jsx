@@ -54,7 +54,7 @@ const Hero = () => {
 
       <div className="flex flex-col items-center lg:items-start lg:px-20 lg:py-10 gap-3 sm:gap-4 lg:gap-8 font-poppins px-4 sm:px-6 py-6 sm:py-8">
         <img
-          src="/hero/logo.png"
+          src="/logo.png"
           alt="hero-logo"
           className="hidden lg:block w-auto h-16 sm:h-20 lg:h-24 xl:h-28 object-contain"
         />
@@ -89,7 +89,12 @@ const Hero = () => {
       </div>
 
       <div className="relative">
-        <TokenPriceDashboard />
+        {/* <TokenPriceDashboard /> */}
+        <img
+          src="/hero/blockchain_mining.png"
+          alt="blockchain_mining"
+          className="w-full h-full object-cover"
+        />
       </div>
     </section>
   );
