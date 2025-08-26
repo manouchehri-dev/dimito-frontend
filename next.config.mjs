@@ -10,6 +10,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.js");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: __dirname,
+  output: 'standalone',
 };
 
 export default withNextIntl(nextConfig);
