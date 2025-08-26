@@ -51,8 +51,22 @@ export default async function RootLayout({ children, params }) {
         {/* Favicon and Icons */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link
+          rel="icon"
+          href="/favicon-96x96.png"
+          sizes="96x96"
+          type="image/png"
+        />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
+
+        {/* PWA Meta Tags */}
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="application-name" content="DMT Token" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="DMT Token" />
+        <meta name="mobile-web-app-capable" content="yes" />
 
         {/* Microsoft Tiles */}
         <meta name="msapplication-TileColor" content="#FF5D1B" />
@@ -77,8 +91,8 @@ export default async function RootLayout({ children, params }) {
       <body className={`antialiased font-iransans`}>
         <ErrorBoundary>
           <QueryProvider>
-            <NextIntlClientProvider locale={locale || "en"} messages={messages}>
-              <Provider key={`provider-${locale}`}>
+            <NextIntlClientProvider locale={locale || "fa"} messages={messages}>
+              <Provider key={`provider-${locale || "fa"}`}>
                 <main className="flex-1">{children}</main>
               </Provider>
             </NextIntlClientProvider>
