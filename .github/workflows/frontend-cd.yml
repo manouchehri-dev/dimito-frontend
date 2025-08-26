@@ -1,0 +1,80 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  IMAGE_NAME: dimito-frontend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+            NEXT_PUBLIC_PROJECT_ID=${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo '${{ secrets.KUBECONFIG }}' > ~/.kube/config
+          chmod 600 ~/.kube/config
+          # Verify the kubeconfig was created correctly
+          kubectl config view --minify
+
+      - name: Prepare deployment files
+        run: |
+          # Replace placeholders in the deployment file
+          sed -i "s|YOUR_GITHUB_USERNAME|${{ github.repository_owner }}|g" ./k3s/deployment.yaml
+          sed -i "s|\${NEXT_PUBLIC_API_BASE_URL}|${{ secrets.NEXT_PUBLIC_API_BASE_URL }}|g" ./k3s/deployment.yaml
+          sed -i "s|\${NEXT_PUBLIC_PROJECT_ID}|${{ secrets.NEXT_PUBLIC_PROJECT_ID }}|g" ./k3s/deployment.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          # Create namespace if it doesn't exist
+          kubectl create namespace dimito --dry-run=client -o yaml | kubectl apply -f -
+          
+          # Create or update Docker registry secret
+          kubectl create secret docker-registry github-registry \
+            --namespace dimito \
+            --docker-server=ghcr.io \
+            --docker-username=${{ secrets.DOCKER_USERNAME }} \
+            --docker-password=${{ secrets.DOCKER_PASSWORD }} \
+            --docker-email=${{ github.actor }}@users.noreply.github.com \
+            --dry-run=client -o yaml | kubectl apply -f -
+            
+          kubectl apply -f ./k3s/deployment.yaml
+          kubectl apply -f ./k3s/ingress.yaml
+          kubectl rollout restart deployment/frontend -n dimito 
