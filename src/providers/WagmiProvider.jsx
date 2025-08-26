@@ -22,7 +22,7 @@ const getConfig = () => {
     try {
       isInitialized = true;
       globalConfig = getDefaultConfig({
-        appName: "IMD Token",
+        appName: "DMT Token",
         projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
         chains: [mainnet],
         ssr: true, // Enable SSR support

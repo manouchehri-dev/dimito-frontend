@@ -6,11 +6,12 @@ import { useTranslations } from "next-intl";
 import NavLink from "./module/NavLink";
 import CustomConnectButton from "./module/CustomConnectButton";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 const Header = () => {
   const t = useTranslations("Navbar");
   const pathname = usePathname();
+  const router = useRouter();
   const pathWithoutLocale = pathname.replace(/^\/(en|fa)/, "") || "/";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -50,14 +51,14 @@ const Header = () => {
       active: pathWithoutLocale === "/whitepaper",
     },
     {
-      href: "/about",
-      label: t("about"),
-      active: pathWithoutLocale === "/about",
-    },
-    {
       href: "/listing",
       label: t("tokenizationRequest"),
       active: pathWithoutLocale === "/listing",
+    },
+    {
+      href: "/about",
+      label: t("about"),
+      active: pathWithoutLocale === "/about",
     },
   ];
 
@@ -66,15 +67,17 @@ const Header = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm text-primary rounded-[8px] lg:rounded-[24px] mt-[8px] sm:mt-[13px] mx-[8px] sm:mx-[14px] lg:mx-[71px] shadow-lg border border-gray-100">
         <div className="grid grid-cols-2 lg:grid-cols-3 justify-between items-center p-4 sm:p-5 lg:p-6">
           {/* Logo Section */}
-          <div className="flex items-center gap-2 lg:gap-4">
-            <img
-              src="/logo.png"
-              alt="logo"
-              className="w-[35px] h-[18px] sm:w-[45px] sm:h-[24px] lg:w-[60px] lg:h-[32px]"
-            />
-            <h1 className="text-[12px] sm:text-[14px] lg:text-[24px] xl:text-[30px] font-bold tracking-tight">
-              IMD Token
-            </h1>
+          <div className="flex">
+            <div
+              className="flex items-center gap-2 lg:gap-4 cursor-pointer"
+              onClick={() => router.push("/")}
+            >
+              <img
+                src="/logo-header.png"
+                alt="logo"
+                className="w-[35px] sm:w-[45px]  lg:w-[160px] "
+              />
+            </div>
           </div>
 
           {/* Desktop Navigation */}
@@ -148,7 +151,7 @@ const Header = () => {
           <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex items-center gap-3">
               <img src="/logo.png" alt="logo" className="w-[40px] h-[20px]" />
-              <h2 className="text-[16px] font-bold text-primary">IMD Token</h2>
+              <h2 className="text-[16px] font-bold text-primary">DMT Token</h2>
             </div>
             <button
               onClick={toggleMobileMenu}

@@ -38,7 +38,7 @@ const Footer = () => {
           <div className="flex items-center gap-3">
             <Image
               src="/logo.png"
-              alt="IMD Token"
+              alt="DMT Token"
               width={63}
               height={63}
               className="w-[29px] lg:w-[63px] h-auto"
@@ -47,7 +47,7 @@ const Footer = () => {
               id="footer-heading"
               className="text-[clamp(14px,2.2vw,30px)] font-semibold tracking-tight"
             >
-              IMD Token
+              DMT Token
             </h1>
           </div>
 
@@ -99,7 +99,7 @@ const Footer = () => {
 
           {/* small print / rights */}
           <p className="mt-2 text-center lg:text-start text-xs text-black/60">
-            © {new Date().getFullYear()} IMD Token
+            © {new Date().getFullYear()} DMT Token
           </p>
         </form>
       </div>

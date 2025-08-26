@@ -1,11 +1,11 @@
+import "../globals.css";
+
 import { Poppins } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
-import "../globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Provider from "@/providers/WagmiProvider";
+import QueryProvider from "@/providers/QueryProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 const poppins = Poppins({
@@ -26,90 +26,11 @@ export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "fa" }];
 }
 
-export async function generateMetadata({ params }) {
-  const { locale } = await params;
-  return {
-    title: "IMD Token - Real-World Mining Meets Web3",
-    description:
-      "Invest in real, verified mineral assets through blockchain. The first digital token backed by real, mined assets.",
-    keywords:
-      "blockchain, mining, cryptocurrency, IMD token, mineral assets, web3, DeFi",
-    authors: [{ name: "IMD Token Team" }],
-    creator: "IMD Token",
-    publisher: "IMD Token",
-    formatDetection: {
-      email: false,
-      address: false,
-      telephone: false,
-    },
-    metadataBase: new URL("https://imdtoken.io"),
-    alternates: {
-      canonical: `/${locale}`,
-      languages: {
-        en: "/en",
-        fa: "/fa",
-      },
-    },
-    openGraph: {
-      title: "IMD Token - Real-World Mining Meets Web3",
-      description:
-        "Invest in real, verified mineral assets through blockchain. The first digital token backed by real, mined assets.",
-      url: `/${locale}`,
-      siteName: "IMD Token",
-      images: [
-        {
-          url: "/og-image.png",
-          width: 1200,
-          height: 630,
-        },
-      ],
-      locale: locale,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "IMD Token - Real-World Mining Meets Web3",
-      description:
-        "Invest in real, verified mineral assets through blockchain. The first digital token backed by real, mined assets.",
-      images: ["/og-image.png"],
-    },
-    icons: {
-      icon: [
-        { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      ],
-      apple: [
-        { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-      ],
-      other: [
-        {
-          rel: "mask-icon",
-          url: "/safari-pinned-tab.svg",
-          color: "#FF5D1B",
-        },
-      ],
-    },
-    manifest: "/site.webmanifest",
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    },
-  };
-}
-
 export default async function RootLayout({ children, params }) {
   const { locale } = await params;
 
   // Enable static rendering
   setRequestLocale(locale);
-
   // Safe message loading with fallback
   let messages = {};
   try {
@@ -155,15 +76,13 @@ export default async function RootLayout({ children, params }) {
       </head>
       <body className={`antialiased font-iransans`}>
         <ErrorBoundary>
-          <NextIntlClientProvider locale={locale || "en"} messages={messages}>
-            <Provider key={`provider-${locale}`}>
-              <main className="flex-1">
-                <Header />
-                {children}
-                <Footer />
-              </main>
-            </Provider>
-          </NextIntlClientProvider>
+          <QueryProvider>
+            <NextIntlClientProvider locale={locale || "en"} messages={messages}>
+              <Provider key={`provider-${locale}`}>
+                <main className="flex-1">{children}</main>
+              </Provider>
+            </NextIntlClientProvider>
+          </QueryProvider>
         </ErrorBoundary>
       </body>
     </html>

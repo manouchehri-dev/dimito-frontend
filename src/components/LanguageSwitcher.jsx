@@ -62,10 +62,7 @@ export default function LanguageSwitcher({ isMobile = false }) {
         aria-expanded={isOpen}
       >
         <Globe className="w-3 lg:w-3.5 xl:w-4 h-3 lg:h-3.5 xl:h-4" />
-        <span className="hidden xl:inline font-medium">
-          {languages[locale]?.name}
-        </span>
-        <span className="xl:hidden font-medium text-xs lg:text-xs">
+        <span className="font-medium text-xs lg:text-xs">
           {languages[locale]?.code}
         </span>
         {isChanging ? (
