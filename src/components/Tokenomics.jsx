@@ -48,7 +48,7 @@ const Tokenomics = () => {
       id="tokenomics"
       className="py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         {/* Title Section */}
         <div className="flex flex-col items-center justify-center lg:items-start mb-8 lg:mb-12">
           <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-2 sm:pb-3 lg:pb-4 text-center lg:text-start">

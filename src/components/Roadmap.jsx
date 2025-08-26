@@ -35,7 +35,7 @@ const Roadmap = () => {
       {/* Vertical Timeline Line */}
       <div className="hidden lg:block absolute left-1/2 transform -translate-x-0.5 top-0 bottom-0 w-px border-[2px] border-dashed border-[#FFC7AF]"></div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto mx-[28px] lg:mx-[72px] ">
         {/* Header */}
         <div className="text-center lg:text-start mb-6 lg:mb-0">
           <div className="inline-block">
@@ -43,7 +43,7 @@ const Roadmap = () => {
               {t("title")}
             </h2>
             <div className="w-32 h-0.5 bg-orange-500"></div>
-            <div className="hidden lg:flex mt-5">
+            {/* <div className="hidden lg:flex mt-5">
               <Button
                 className={
                   "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] px-18 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-[16px]"
@@ -51,14 +51,14 @@ const Roadmap = () => {
               >
                 <a href="#roadmap">خرید توکن</a>
               </Button>
-            </div>
+            </div> */}
             {/* Adjust w-32 to desired length */}
           </div>
         </div>
 
         {/* Desktop Timeline */}
-        <div className="hidden lg:block relative max-w-5xl mx-auto">
-          <div className="space-y-32">
+        <div className="hidden lg:block relative max-w-5xl mx-auto mt-5">
+          <div className="space-y-20">
             {roadmapItems.map((item, index) => (
               <div
                 key={item.id}
