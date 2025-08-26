@@ -54,22 +54,22 @@
     "value": "ارزش",
     "status": "وضعیت",
     "lithium": {
-      "title": "ذخایر لیتیوم",
+      "title": "معدن مس",
       "quantity": "8 تن",
       "value": "1.2 میلیون دلار",
-      "status": "true"
+      "status": "pending"
     },
     "cooper": {
-      "title": "قرارداد بهره‌برداری مس",
+      "title": "معدن طلا",
       "quantity": "8 تن",
       "value": "1.2 میلیون دلار",
-      "status": "true"
+      "status": "pending"
     },
     "gold_mine_kerman": {
-      "title": "معدن طلا در استان کرمان",
+      "title": "معدس لیتیوم",
       "quantity": "8 تن",
       "value": "1.2 میلیون دلار",
-      "status": "true"
+      "status": "pending"
     }
   },
   "roadmap": {

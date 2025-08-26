@@ -82,19 +82,27 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex justify-center">
-            <ul className="flex items-center gap-1 xl:gap-2 bg-gray-50 rounded-full p-1">
+            <ul className="flex items-center gap-2 xl:gap-4">
               {navItems.map((item) => (
                 <li key={item.href} className="flex">
                   <NavLink
                     href={item.href}
                     active={item.active}
-                    className={`px-4 xl:px-6 py-2.5 xl:py-3 rounded-full text-[14px] xl:text-[16px] font-medium transition-all duration-200 whitespace-nowrap min-h-[44px] ${
+                    className={`relative px-4 xl:px-6 py-3 xl:py-4 text-[14px] xl:text-[16px] font-medium transition-all duration-300 ease-out whitespace-nowrap group ${
                       item.active
-                        ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-md"
-                        : "text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-[#FF5D1B] hover:to-[#FF363E] hover:shadow-md"
+                        ? "text-[#FF4135] font-semibold"
+                        : "text-gray-700 hover:text-[#FF4135]"
                     }`}
                   >
                     {item.label}
+                    {/* Active underline */}
+                    <span
+                      className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] rounded-full transition-all duration-300 ease-out ${
+                        item.active && "w-full opacity-100"
+                      }`}
+                    />
+                    {/* Hover background effect */}
+                    <span className="absolute inset-0 bg-gradient-to-r from-[#FF5D1B]/5 to-[#FF363E]/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out -z-10" />
                   </NavLink>
                 </li>
               ))}
@@ -170,19 +178,25 @@ const Header = () => {
                   <NavLink
                     href={item.href}
                     active={item.active}
-                    className={`block w-full px-6 py-4 text-[16px] font-medium transition-all duration-200 rounded-xl min-h-[56px] ${
+                    className={`relative block w-full px-6 py-4 text-[16px] font-medium transition-all duration-300 ease-out rounded-xl min-h-[56px] group ${
                       item.active
-                        ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-[#FF4135] active:scale-98"
+                        ? "text-[#FF4135] bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 border-l-4 border-[#FF4135] font-semibold"
+                        : "text-gray-700 hover:text-[#FF4135] hover:bg-gray-50 hover:border-l-4 hover:border-[#FF4135]/30 active:scale-[0.98]"
                     }`}
                   >
                     <div className="flex items-center gap-3 w-full h-full">
                       <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                          item.active ? "bg-white" : "bg-gray-300"
+                        className={`w-2 h-2 rounded-full flex-shrink-0 transition-all duration-300 ${
+                          item.active
+                            ? "bg-[#FF4135] scale-125"
+                            : "bg-gray-300 group-hover:bg-[#FF4135] group-hover:scale-110"
                         }`}
                       />
                       <span className="flex-1">{item.label}</span>
+                      {/* Mobile active indicator */}
+                      {item.active && (
+                        <div className="w-1 h-6 bg-gradient-to-b from-[#FF5D1B] to-[#FF363E] rounded-full" />
+                      )}
                     </div>
                   </NavLink>
                 </li>
