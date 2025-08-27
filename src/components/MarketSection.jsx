@@ -28,7 +28,7 @@ const MarketSection = () => {
             <li>{t("features.accessExchanges")}</li>
           </ul>
         </div>
-        <div className="flex justify-end items-end">
+        {/* <div className="flex justify-end items-end">
           <Button
             className={
               "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full md:w-1/2 py-6 lg:py-8 lg:text-[20px] cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-[16px]"
@@ -36,7 +36,7 @@ const MarketSection = () => {
           >
             <a href="#roadmap">{t("enterMarket")}</a>
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

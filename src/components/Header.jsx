@@ -75,7 +75,7 @@ const Header = () => {
               <img
                 src="/logo-header.png"
                 alt="logo"
-                className="w-[35px] sm:w-[45px]  lg:w-[160px] "
+                className="w-[80px] lg:w-[160px] "
               />
             </div>
           </div>

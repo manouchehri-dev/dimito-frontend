@@ -39,7 +39,7 @@ export default async function Home({ params }) {
   return (
     <div className="min-h-full text-primary px-[28px] lg:px-[72px] relative">
       <Hero />
-      <Separator className="border-[#FFB30F] border-1 my-10 lg:my-30" />
+      <Separator className="border-[#FFB30F] border-1 my-5 lg:my-15" />
       <About />
       <Projects />
       <WhyBlockchain />
