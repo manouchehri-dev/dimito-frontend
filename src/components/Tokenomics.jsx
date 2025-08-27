@@ -51,7 +51,7 @@ const Tokenomics = () => {
       <div className="mx-auto">
         {/* Title Section */}
         <div className="flex flex-col items-center justify-center lg:items-start mb-8 lg:mb-12">
-          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-2 sm:pb-3 lg:pb-4 text-center lg:text-start">
+          <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
             {t("title")}
           </h1>
         </div>
@@ -147,7 +147,7 @@ const Tokenomics = () => {
               <div className="flex flex-col text-start space-y-3 sm:space-y-4">
                 <Button className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm lg:text-base cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">
                   <a href="#roadmap" className="block truncate">
-                    اکسپلورر قرارداد هوشمند
+                    قرارداد هوشمند
                   </a>
                 </Button>
                 <Button className="bg-transparent border-2 border-secondary text-secondary w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm lg:text-base cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">

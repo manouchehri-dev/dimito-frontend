@@ -83,7 +83,7 @@ const Footer = () => {
                 "w-full rounded-xl bg-white font-bold shadow-sm ring-1 ring-black/10 focus:outline-none focus:ring-2 focus:ring-orange-400",
                 "py-[14.5px] pr-5 pl-5 text-[clamp(14px,1.6vw,18px)]",
               ].join(" ")}
-              dir="ltr"
+              dir={isRtl ? "rtl" : "ltr"}
             />
 
             {/* Submit button overlay on md+, stacked on mobile */}
@@ -96,11 +96,6 @@ const Footer = () => {
               </button>
             </div>
           </div>
-
-          {/* small print / rights */}
-          <p className="mt-2 text-center lg:text-start text-xs text-black/60">
-            © {new Date().getFullYear()} DMT Token
-          </p>
         </form>
       </div>
     </footer>

@@ -8,8 +8,8 @@ import {
   RainbowKitProvider,
   darkTheme,
 } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { WagmiProvider, http } from "wagmi";
+import { bsc } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 // Create stable singleton instances to prevent re-initialization
@@ -23,9 +23,14 @@ const getConfig = () => {
       isInitialized = true;
       globalConfig = getDefaultConfig({
         appName: "DMT Token",
-        projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
-        chains: [mainnet],
-        ssr: true, // Enable SSR support
+        projectId: process.env.NEXT_PUBLIC_PROJECT_ID, // WalletConnect projectId
+        chains: [bsc], // ✅ BSC only
+        ssr: true, // ✅ SSR
+        // ✅ Optional: use your own RPC(s) for reliability (recommended)
+        // transports: {
+        //   [bsc.id]: http("https://bsc-dataseed.binance.org"),
+        //   // or a provider like Ankr/NodeReal/Alchemy/QuickNode
+        // },
       });
     } catch (error) {
       console.warn(
@@ -61,18 +66,12 @@ const Provider = ({ children }) => {
       initRef.current = true;
       setMounted(true);
     }
-
-    // Cleanup function to prevent memory leaks
     return () => {
-      // Clear any pending queries on unmount (but keep the client instance)
       const queryClient = getQueryClient();
-      if (queryClient) {
-        queryClient.removeQueries();
-      }
+      if (queryClient) queryClient.removeQueries();
     };
   }, []);
 
-  // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -84,7 +83,6 @@ const Provider = ({ children }) => {
   const config = getConfig();
   const queryClient = getQueryClient();
 
-  // Fallback if config failed to initialize
   if (!config) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -96,7 +94,12 @@ const Provider = ({ children }) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider modalSize="compact" showRecentTransactions={true}>
+        <RainbowKitProvider
+          theme={darkTheme()}
+          modalSize="compact"
+          showRecentTransactions
+          initialChain={bsc} // ✅ ensure BSC is the default/initial chain
+        >
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>

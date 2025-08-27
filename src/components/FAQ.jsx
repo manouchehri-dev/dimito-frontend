@@ -44,13 +44,13 @@ const FAQ = () => {
   };
 
   return (
-    <section className="py-16 lg:py-24 px-4 lg:px-20 bg-[#F5F3F0]">
+    <section className="py-8">
       {/* Header */}
-      <div className="text-start lg:text-start mb-6 lg:mb-16">
+      <div className="text-center md:text-start lg:text-start mb-6 lg:mb-16">
         <div className="inline-block">
-          <h2 className="text-[14px] lg:text-2xl font-bold text-primary mb-2">
+          <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
             {t("title")}
-          </h2>
+          </h1>
         </div>
       </div>
 
