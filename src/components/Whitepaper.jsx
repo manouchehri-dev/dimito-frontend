@@ -61,7 +61,7 @@ const Whitepaper = () => {
         {activeSection === "overview" && (
           <Card className="mb-12">
             <CardHeader>
-              <CardTitle className="text-2xl lg:text-3xl">
+              <CardTitle className="text-2xl lg:text-3xl text-center">
                 {t("sections.overview.title")}
               </CardTitle>
             </CardHeader>
@@ -93,7 +93,7 @@ const Whitepaper = () => {
         {activeSection === "technical" && (
           <Card className="mb-12">
             <CardHeader>
-              <CardTitle className="text-2xl lg:text-3xl">
+              <CardTitle className="text-2xl lg:text-3xl text-center">
                 {t("sections.technical.title")}
               </CardTitle>
             </CardHeader>
@@ -146,7 +146,7 @@ const Whitepaper = () => {
         {activeSection === "tokenomics" && (
           <Card className="mb-12">
             <CardHeader>
-              <CardTitle className="text-2xl lg:text-3xl">
+              <CardTitle className="text-2xl lg:text-3xl text-center">
                 {t("sections.tokenomics.title")}
               </CardTitle>
             </CardHeader>
@@ -197,7 +197,7 @@ const Whitepaper = () => {
         {activeSection === "legal" && (
           <Card className="mb-12">
             <CardHeader>
-              <CardTitle className="text-2xl lg:text-3xl">
+              <CardTitle className="text-2xl lg:text-3xl text-center">
                 {t("sections.legal.title")}
               </CardTitle>
             </CardHeader>
@@ -246,7 +246,7 @@ const Whitepaper = () => {
         {activeSection === "roadmap" && (
           <Card className="mb-12">
             <CardHeader>
-              <CardTitle className="text-2xl lg:text-3xl">
+              <CardTitle className="text-2xl lg:text-3xl text-center">
                 {t("sections.roadmap.title")}
               </CardTitle>
             </CardHeader>
@@ -282,7 +282,7 @@ const Whitepaper = () => {
         {activeSection === "team" && (
           <Card className="mb-12">
             <CardHeader>
-              <CardTitle className="text-2xl lg:text-3xl">
+              <CardTitle className="text-2xl lg:text-3xl text-center">
                 {t("sections.team.title")}
               </CardTitle>
             </CardHeader>
@@ -322,7 +322,7 @@ const Whitepaper = () => {
         {/* Download Call-to-Action */}
         <Card className="mb-12">
           <CardHeader>
-            <CardTitle className="text-2xl lg:text-3xl text-center">
+            <CardTitle className="text-2xl lg:text-3xl text-center text-center">
               {t("pdfSection.title")}
             </CardTitle>
           </CardHeader>
