@@ -1,6 +1,6 @@
 {
   "header": {
-    "title": "DMT Token",
+    "title": "DiMiTo",
     "home": "Home",
     "tokenomics": "Tokenomics",
     "whitepaper": "White paper",
@@ -16,8 +16,8 @@
     "tokenizationRequest": "Token Listing"
   },
   "Hero": {
-    "title": "Real-World Mining Meets Web3",
-    "description": "Invest in real, verified mineral assets through blockchain.",
+    "title": "DiMiTo - Real-World Mining Meets Web3",
+    "description": "Participate in future net profits of real mining projects without direct ownership complexities. Global access, complete transparency, high liquidity.",
     "connect_wallet": "Connect Wallet",
     "dashboard": "Dashboard",
     "roadmap": "Roadmap"
@@ -32,67 +32,129 @@
     "apy": "APY"
   },
   "about": {
-    "title": "What Is DMT Token?",
-    "description": "MineToken is a blockchain-based digital asset backed by real-world mineral reserves. We bridge the gap between traditional mining and decentralized finance — making resource investing easy, secure, and accessible to everyone.",
+    "title": "What Is DiMiTo?",
+    "description": "DiMiTo platform provides a connection between traditional mining and decentralized finance. Through tokenization of mining revenue streams, we enable fractional participation in future net profits of mining projects without the complexities of direct ownership.",
     "globalAccess": {
-      "title": "Global access",
-      "description": "Investment in the mining industry for everyone around the world without restrictions"
+      "title": "Reduced Entry Barriers",
+      "description": "Eliminating legal restrictions, high capital requirements and geographical barriers of traditional mining investments"
     },
     "fullTransparency": {
-      "title": "Full transparency",
-      "description": "All transactions and assets are traceable on the blockchain."
+      "title": "Real-time Reporting",
+      "description": "Transparent reporting system for capital allocation, construction progress, operational costs and profitability"
     },
     "realSupport": {
-      "title": "Real support",
-      "description": "Each token is backed by real mining assets."
+      "title": "Legal Guarantees",
+      "description": "Mine owners are required to provide valid licenses, feasibility studies and enforceable collateral"
     }
   },
   "projects": {
-    "title": "Assets backing the token",
-    "description": "A list of mining projects, reserves, or contracts that are presented as the real backing for the token.",
+    "title": "DiMiTo Mining Projects",
+    "description": "Each DiMiTo token represents a specific share of future net profits from one or more valid and licensed mining projects.",
     "quantity": "Quantity",
     "value": "Value",
     "status": "Status",
     "lithium": {
-      "title": "Lithium reserves",
-      "quantity": "8",
-      "value": "$1.2M",
-      "status": "true"
+      "title": "Digital Mine Token #1 (DMT1)",
+      "quantity": "Exploration Phase",
+      "value": "Under Review",
+      "status": "pending"
     },
     "gold_mine_kerman": {
-      "title": "Gold mine in Kerman province",
-      "quantity": "10",
-      "value": "$1.2M",
-      "status": "true"
+      "title": "Digital Mine Token #2 (DMT2)",
+      "quantity": "Development Phase",
+      "value": "Under Review",
+      "status": "pending"
     },
     "cooper": {
-      "title": "قرارداد بهره‌برداری مس",
-      "quantity": "8 تن",
-      "value": "1.2 میلیون دلار",
-      "status": "true"
+      "title": "Digital Mine Token #3 (DMT3)",
+      "quantity": "Feasibility Phase",
+      "value": "Under Review",
+      "status": "pending"
     }
   },
   "roadmap": {
-    "title": "road map",
+    "title": "DiMiTo Roadmap",
     "items": {
-      "ico": "Initial Coin Offering (ICO/IDO)",
-      "contracts": "Development of contracts",
-      "market": "Connecting to the secondary market",
-      "physical": "Physical withdrawal/conversion"
+      "ico": "Structured presales of DMT tokens",
+      "contracts": "Development of refining and extraction infrastructure",
+      "market": "Activation of secondary market and profit distribution",
+      "physical": "Real-time reporting and complete transparency"
     }
   },
   "tokenomics": {
     "title": "Tokenomics",
-    "data": {
-      "data_1": {
-        "title": "Total Supply",
-        "description": "desc",
-        "footer": "footer"
+    "cards": {
+      "network": {
+        "title": "Network & Standard",
+        "description": "Binance Smart Chain (BSC) – ERC-20",
+        "features": {
+          "title": "Benefits",
+          "items": [
+            "Low fees and high speed",
+            "Support for wallets and DEXs",
+            "Standard and transparent smart contracts"
+          ]
+        }
       },
-      "data_2": {
-        "title": "Token Standard",
-        "description": "desc",
-        "footer": "footer"
+      "supply": {
+        "title": "Total Supply & Token Structure",
+        "description": "1,000,000,000 tokens – 18 decimals",
+        "features": {
+          "title": "Features",
+          "items": [
+            "Fixed and limited supply",
+            "Creates scarcity and stable value",
+            "Each token represents a share of mine profits"
+          ]
+        }
+      },
+      "allocation": {
+        "title": "Capital Allocation",
+        "description": "Transparent distribution of presale funds",
+        "features": {
+          "title": "Allocation",
+          "items": [
+            "90% infrastructure and facility development",
+            "10% initial liquidity in DEX",
+            "No internal distribution (complete transparency)"
+          ]
+        }
+      },
+      "profitability": {
+        "title": "Profitability & Value Creation",
+        "description": "Mine profits are injected directly into the market instead of cash dividends:",
+        "features": {
+          "title": "Mechanisms",
+          "items": [
+            "Buyback",
+            "Liquidity Injection",
+            "Market making in secondary market"
+          ]
+        }
+      },
+      "markets": {
+        "title": "Primary & Secondary Markets",
+        "description": "Two complementary markets for optimal access and liquidity",
+        "features": {
+          "title": "Features",
+          "items": [
+            "Transparent presale recorded in smart contract",
+            "Fast buy/sell capability in DEX with initial liquidity",
+            "Secondary market for custom price trading"
+          ]
+        }
+      },
+      "transparency": {
+        "title": "Transparency System & Commitments",
+        "description": "Complete oversight and investor protection",
+        "features": {
+          "title": "Guarantees",
+          "items": [
+            "Real-time reporting dashboard",
+            "Display of costs, project progress and profitability",
+            "Legal commitments and collateral for mine owners"
+          ]
+        }
       }
     }
   },
@@ -151,9 +213,9 @@
     "help": "Still having trouble? Contact our support team for assistance."
   },
   "footer": {
-    "title": "DMT Token",
-    "subtitle": "The Future of Investing in the Mining Industry with Blockchain",
-    "description": "The first digital token backed by real, mined assets. A bridge between the physical and digital worlds.",
+    "title": "DiMiTo",
+    "subtitle": "Innovative Ecosystem Connecting Mining and DeFi",
+    "description": "Tokenization of mining revenue streams with complete transparency and strong legal guarantees. The future of democratic investing.",
     "subscribe": "Subscribe to our newsletter",
     "email": "Email or phone number",
     "button": "Register in the newsletter"
@@ -407,13 +469,13 @@
   },
   "market": {
     "title": "Secondary Market and Liquidity",
-    "subtitle": "Trade tokens in the secondary market and P2P",
-    "description": "The project token can be traded in the secondary market and P2P (peer-to-peer). Liquidity is always available through market makers to ensure easy buying and selling.",
+    "subtitle": "Two complementary markets for diverse trading",
+    "description": "Dedicated secondary market as on-chain order book for custom pricing and initial liquidity pool for instant trading. All transactions are non-custodial and executed directly through smart contracts.",
     "features": {
-      "title": "Features",
-      "fastSecureTrading": "Fast and secure trading",
-      "stableLiquidity": "Stable liquidity to reduce price volatility",
-      "accessExchanges": "Access to domestic and DEX exchanges"
+      "title": "Dual Market Benefits",
+      "fastSecureTrading": "Liquidity Pool: Instant trading at market price",
+      "stableLiquidity": "Order Book: Custom pricing and full control",
+      "accessExchanges": "Non-custodial: User maintains control of assets"
     },
     "enterMarket": "Enter Market",
     "trading": {
@@ -439,6 +501,186 @@
       "directTrades": "Direct trades between users",
       "escrow": "Escrow protection",
       "rating": "User ratings and reviews"
+    }
+  },
+  "detailedTokenomics": {
+    "hero": {
+      "title": "DiMiTo Tokenomics",
+      "subtitle": "Complete Economic Model of DiMiTo: Connecting Traditional Mining with Decentralized Finance"
+    },
+    "overview": {
+      "title": "Overview",
+      "description": "DiMiTo issues digital tokens representing a specific share of future net profits from mining projects. Token holders participate in profitability through on-chain mechanisms.",
+      "stats": {
+        "totalTokens": "Total Tokens",
+        "blockchainNetwork": "Blockchain Network",
+        "throughPresales": "Through Presales"
+      }
+    },
+    "legal": {
+      "title": "Legal Framework & Commitments",
+      "buyersRights": {
+        "title": "Token Buyers' Rights",
+        "items": {
+          "0": "No operational commitments",
+          "1": "Participation in future net profits",
+          "2": "Risk limited to invested capital"
+        }
+      },
+      "mineOwnersObligations": {
+        "title": "Mine Owners' Obligations",
+        "items": {
+          "0": "Valid licenses and feasibility studies",
+          "1": "2.5x financing collateral",
+          "2": "Document storage in bank safe custody"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Connect your wallet to join the DiMiTo ecosystem and participate in the future of mining.",
+      "connectWallet": "Connect Wallet",
+      "readWhitepaper": "Read Whitepaper"
+    }
+  },
+  "whitepaper": {
+    "hero": {
+      "title": "DiMiTo Whitepaper",
+      "subtitle": "Complete technical documentation and economic model of the blockchain-based mining investment platform",
+      "downloadPDF": "Download PDF",
+      "viewOnline": "View Online"
+    },
+    "navigation": {
+      "overview": "Overview",
+      "technical": "Technical",
+      "tokenomics": "Tokenomics",
+      "legal": "Legal",
+      "roadmap": "Roadmap",
+      "team": "Team"
+    },
+    "sections": {
+      "overview": {
+        "title": "Project Overview",
+        "description": "DiMiTo is an innovative platform that bridges the traditional mining world with blockchain technology. Using smart contracts and complete transparency, we provide mining investment opportunities for everyone.",
+        "highlights": {
+          "0": {
+            "title": "Complete Transparency",
+            "description": "All transactions and reports are recorded in real-time on the blockchain"
+          },
+          "1": {
+            "title": "Legal & Compliant",
+            "description": "All projects have valid licenses and legal guarantees"
+          },
+          "2": {
+            "title": "Easy Access",
+            "description": "Participate in mining projects without traditional barriers"
+          }
+        }
+      },
+      "technical": {
+        "title": "Technical Specifications",
+        "description": "DiMiTo is built on the Binance Smart Chain (BSC) blockchain and follows ERC-20 standards to ensure high security and efficiency.",
+        "blockchain": {
+          "title": "Blockchain & Security",
+          "features": {
+            "0": "Built on Binance Smart Chain (BSC)",
+            "1": "ERC-20 standard for compatibility",
+            "2": "Multi-signature confirmation for high security"
+          }
+        },
+        "smart_contracts": {
+          "title": "Smart Contracts",
+          "features": {
+            "0": "Automatic profit distribution",
+            "1": "Real-time reporting",
+            "2": "Automated collateral management"
+          }
+        }
+      },
+      "tokenomics": {
+        "title": "Economic Model",
+        "description": "DiMiTo's economic structure is designed to ensure the interests of all stakeholders and guarantee the long-term sustainability of the project.",
+        "supply": {
+          "total": "Total Tokens",
+          "network": "Network",
+          "presale": "Presale",
+          "collateral": "Collateral"
+        }
+      },
+      "legal": {
+        "title": "Legal Framework",
+        "description": "DiMiTo complies with all relevant laws and regulations and has established a comprehensive legal framework to protect investor rights.",
+        "compliance": {
+          "title": "Regulatory Compliance",
+          "items": {
+            "0": "Valid licenses for all projects",
+            "1": "Compliance with international laws",
+            "2": "Continuous oversight by relevant authorities"
+          }
+        },
+        "transparency": {
+          "title": "Transparency & Reporting",
+          "items": {
+            "0": "Regular financial reports",
+            "1": "Independent auditing",
+            "2": "Public access to information"
+          }
+        }
+      },
+      "roadmap": {
+        "title": "Roadmap",
+        "description": "Phased planning for the implementation and development of the DiMiTo platform in four main phases",
+        "phases": {
+          "0": {
+            "title": "Phase 1: Structured Presale",
+            "description": "Launch DMT token presale with transparent and trackable structure"
+          },
+          "1": {
+            "title": "Phase 2: Infrastructure Development",
+            "description": "Creation and development of mining refining and extraction infrastructure"
+          },
+          "2": {
+            "title": "Phase 3: Secondary Market",
+            "description": "Activation of secondary market and start of profit distribution"
+          },
+          "3": {
+            "title": "Phase 4: Complete Transparency",
+            "description": "Implementation of real-time reporting and complete transparency"
+          }
+        }
+      },
+      "team": {
+        "title": "DiMiTo Team",
+        "description": "The DiMiTo expert team consists of experienced professionals in mining, blockchain, and finance.",
+        "members": {
+          "0": {
+            "initials": "AM",
+            "name": "Ali Mohammadi",
+            "role": "CEO",
+            "bio": "Mining specialist with over 15 years of industry experience"
+          },
+          "1": {
+            "initials": "SR",
+            "name": "Sara Rezaei",
+            "role": "CTO",
+            "bio": "Blockchain expert and software developer"
+          },
+          "2": {
+            "initials": "MK",
+            "name": "Mohammad Karimi",
+            "role": "CFO",
+            "bio": "Finance and investment specialist"
+          }
+        }
+      }
+    },
+    "pdfSection": {
+      "title": "View Complete Document",
+      "description": "For more details, download or view the complete whitepaper.",
+      "downloadButton": "Download Whitepaper",
+      "viewerTitle": "View Whitepaper",
+      "viewerDescription": "To view the whitepaper, download it or open it in a new tab. This file contains all the technical and economic details of the DiMiTo project.",
+      "openInNewTab": "Open in New Tab"
     }
   }
 }

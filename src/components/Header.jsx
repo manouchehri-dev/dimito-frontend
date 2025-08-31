@@ -55,11 +55,11 @@ const Header = () => {
       label: t("tokenizationRequest"),
       active: pathWithoutLocale === "/listing",
     },
-    {
-      href: "/about",
-      label: t("about"),
-      active: pathWithoutLocale === "/about",
-    },
+    // {
+    //   href: "/about",
+    //   label: t("about"),
+    //   active: pathWithoutLocale === "/about",
+    // },
   ];
 
   return (
