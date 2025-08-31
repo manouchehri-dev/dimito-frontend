@@ -77,7 +77,7 @@ const WhyBlockchain = () => {
         <div className="mx-auto w-full max-w-[684px] overflow-hidden rounded-3xl">
           <div className="relative aspect-[4/3] w-full">
             <Image
-              src="/images/blockchain.jpg"
+              src="/images/blockchain.webp"
               alt="blockchain"
               fill
               className="object-cover"

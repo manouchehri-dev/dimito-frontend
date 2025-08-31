@@ -1,13 +1,7 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocale, useTranslations } from "next-intl";
-import { Button } from "./ui/button";
 import { Link } from "@/i18n/navigation";
+import { Button } from "./ui/button";
 
 const Tokenomics = () => {
   const t = useTranslations("tokenomics");
@@ -150,31 +144,17 @@ const Tokenomics = () => {
           ))}
         </div>
 
-        {/* Learn More Section */}
-        <div className="text-center mt-12">
-          <Link
-            href="/tokenomics"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white font-semibold rounded-2xl hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300"
+        <div className="mt-4 flex w-full justify-center">
+          <Button
+            className="w-full max-w-sm rounded-2xl bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] py-3 text-base hover:scale-[1.02] hover:shadow-md hover:shadow-orange-500/25"
+            asChild
           >
-            <span className="text-lg">
+            <Link href="#roadmap">
               {useLocale() === "fa"
                 ? "مطالعه کامل توکنومیکس"
                 : "Complete Tokenomics Details"}
-            </span>
-            <svg
-              className="w-5 h-5 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     </section>
