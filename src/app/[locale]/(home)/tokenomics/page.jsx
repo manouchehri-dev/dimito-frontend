@@ -29,7 +29,7 @@ export default async function TokenomicsPage({ params }) {
   setRequestLocale(locale);
 
   return (
-    <div className="min-h-full text-primary px-[28px] lg:px-[72px] pt-[140px] lg:pt-[180px] relative">
+    <div className="min-h-full text-primary px-[28px] lg:px-[72px] pt-[100px] lg:pt-[140px] relative">
       <DetailedTokenomics />
     </div>
   );
