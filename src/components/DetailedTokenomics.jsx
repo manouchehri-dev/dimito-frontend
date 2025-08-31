@@ -1,16 +1,32 @@
 "use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { useRouter } from "@/i18n/navigation";
+import { Download, FileText, Share2 } from "lucide-react";
+import CustomConnectButton from "./module/CustomConnectButton";
 
 const DetailedTokenomics = () => {
   const t = useTranslations("tokenomics");
   const dt = useTranslations("detailedTokenomics");
   const isRTL = useLocale() === "fa";
   const router = useRouter();
+
+  // Download functionality
+  const handleDownloadPDF = () => {
+    const link = document.createElement("a");
+    link.href = "/docs/Tokenomics-fa.pdf";
+    link.download = "DiMiTo-Tokenomics-fa.pdf";
+    link.click();
+  };
+
+  const handleDownloadEn = () => {
+    const link = document.createElement("a");
+    link.href = "/docs/Tokenomics-en.pdf";
+    link.download = "DiMiTo-Tokenomics-en.pdf";
+    link.click();
+  };
 
   const tokenomicsData = [
     {
@@ -89,22 +105,43 @@ const DetailedTokenomics = () => {
 
   return (
     <section className="py-12 lg:py-20" dir={isRTL ? "rtl" : "ltr"}>
-      {/* Hero Section */}
+      {/* Hero Section with Primary Download Button */}
       <div className="text-center mb-16">
         <h1 className="text-4xl lg:text-6xl font-bold mb-6">
           {dt("hero.title")}
         </h1>
-        <p className="text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+        <p className="text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
           {dt("hero.subtitle")}
         </p>
+
+        {/* Primary Download CTA */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
+          <Button
+            onClick={handleDownloadPDF}
+            size="lg"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            توکنومیکس (فارسی)
+          </Button>
+
+          <Button
+            onClick={handleDownloadEn}
+            size="lg"
+            className="bg-gradient-to-l from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
+          >
+            <FileText className="w-5 h-5 mr-2" />
+            توکنومیکس (انگلیسی)
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
-        {/* Overview Section */}
+        {/* Overview Section with Quick Download */}
         <Card className="mb-12 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
-          <CardHeader>
-            <CardTitle className="text-2xl lg:text-3xl text-center">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl lg:text-3xl text-center flex-1">
               {dt("overview.title")}
             </CardTitle>
           </CardHeader>
@@ -140,9 +177,9 @@ const DetailedTokenomics = () => {
           {tokenomicsData.map((data, index) => (
             <Card
               key={index}
-              className="h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+              className="h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02] group"
             >
-              <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+              <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white relative overflow-hidden">
                 <CardTitle className="text-xl lg:text-2xl">
                   {data.title}
                 </CardTitle>
@@ -151,7 +188,6 @@ const DetailedTokenomics = () => {
                 <p className="text-lg mb-6 leading-relaxed">
                   {data.description}
                 </p>
-
                 {data.features && (
                   <div>
                     <h4 className="font-semibold text-lg mb-4 text-orange-600">
@@ -217,7 +253,7 @@ const DetailedTokenomics = () => {
           </CardContent>
         </Card>
 
-        {/* Call to Action */}
+        {/* Call to Action with Download Options */}
         <div className="text-center">
           <Card className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
             <CardContent className="p-8">
@@ -225,16 +261,17 @@ const DetailedTokenomics = () => {
                 {dt("cta.title")}
               </h2>
               <p className="text-lg mb-6">{dt("cta.description")}</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <CustomConnectButton
                   size="lg"
                   className="bg-white text-orange-600 hover:bg-gray-100 text-lg px-8 py-3 cursor-pointer"
                 >
                   {dt("cta.connectWallet")}
-                </Button>
+                </CustomConnectButton>
                 <Button
                   size="lg"
-                  className="bg-white text-orange-600 hover:bg-gray-100 text-lg px-8 py-3 cursor-pointer"
+                  className="bg-white text-orange-600 hover:bg-gray-100 px-6 py-3 cursor-pointer"
                   onClick={() => router.push("/whitepaper")}
                 >
                   {dt("cta.readWhitepaper")}
