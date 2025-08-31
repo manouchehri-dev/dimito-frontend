@@ -7,37 +7,81 @@ import {
 } from "@/components/ui/card";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "./ui/button";
+import { Link } from "@/i18n/navigation";
 
 const Tokenomics = () => {
   const t = useTranslations("tokenomics");
 
   const Data = [
     {
-      title: t("data.data_1.title"),
-      description: t("data.data_1.description"),
-      footer: t("data.data_1.footer"),
-    },
-    {
-      title: t("data.data_2.title"),
-      description: t("data.data_2.description"),
+      title: t("cards.network.title"),
+      description: t("cards.network.description"),
       features: {
-        title: "مزایا",
+        title: t("cards.network.features.title"),
         items: [
-          "قابلیت معامله در اکثر کیف‌پول‌ها و صرافی‌ها",
-          "امنیت و ثبات بالا",
-          "پشتیبانی از قرارداد هوشمند",
+          t("cards.network.features.items.0"),
+          t("cards.network.features.items.1"),
+          t("cards.network.features.items.2"),
         ],
       },
     },
     {
-      title: "شبکه (Blockchain Network)",
-      description: "شبکه انتخابی: BSC – Binance Smart Chain",
+      title: t("cards.supply.title"),
+      description: t("cards.supply.description"),
       features: {
-        title: "مزایا",
+        title: t("cards.supply.features.title"),
         items: [
-          "کارمزد پایین",
-          "سرعت تراکنش بالا",
-          "پشتیبانی گسترده کیف‌پول‌ها",
+          t("cards.supply.features.items.0"),
+          t("cards.supply.features.items.1"),
+          t("cards.supply.features.items.2"),
+        ],
+      },
+    },
+    {
+      title: t("cards.allocation.title"),
+      description: t("cards.allocation.description"),
+      features: {
+        title: t("cards.allocation.features.title"),
+        items: [
+          t("cards.allocation.features.items.0"),
+          t("cards.allocation.features.items.1"),
+          t("cards.allocation.features.items.2"),
+        ],
+      },
+    },
+    {
+      title: t("cards.profitability.title"),
+      description: t("cards.profitability.description"),
+      features: {
+        title: t("cards.profitability.features.title"),
+        items: [
+          t("cards.profitability.features.items.0"),
+          t("cards.profitability.features.items.1"),
+          t("cards.profitability.features.items.2"),
+        ],
+      },
+    },
+    {
+      title: t("cards.markets.title"),
+      description: t("cards.markets.description"),
+      features: {
+        title: t("cards.markets.features.title"),
+        items: [
+          t("cards.markets.features.items.0"),
+          t("cards.markets.features.items.1"),
+          t("cards.markets.features.items.2"),
+        ],
+      },
+    },
+    {
+      title: t("cards.transparency.title"),
+      description: t("cards.transparency.description"),
+      features: {
+        title: t("cards.transparency.features.title"),
+        items: [
+          t("cards.transparency.features.items.0"),
+          t("cards.transparency.features.items.1"),
+          t("cards.transparency.features.items.2"),
         ],
       },
     },
@@ -104,76 +148,33 @@ const Tokenomics = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
 
-          {/* Token Allocation Card */}
-          <Card className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
-            <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
-              <CardTitle>
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
-                  تخصیص توکن (Token Allocation)
-                </p>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4 flex-grow overflow-hidden">
-              <div className="text-start space-y-1 sm:space-y-2">
-                <p className="text-sm sm:text-base md:text-lg font-bold line-clamp-1 break-words">
-                  ۹۰٪ برای توسعه پروژه
-                </p>
-                <p className="text-xs sm:text-sm font-normal leading-relaxed line-clamp-2 break-words">
-                  شامل استخراج، زیرساخت، بازاریابی و پرداخت به شرکا
-                </p>
-              </div>
-              <div className="text-start space-y-1 sm:space-y-2">
-                <p className="text-sm sm:text-base md:text-lg font-bold line-clamp-1 break-words">
-                  ۱۰٪ نقدینگی (Liquidity)
-                </p>
-                <p className="text-xs sm:text-sm font-normal leading-relaxed line-clamp-2 break-words">
-                  برای صرافی‌های داخلی و بازار ثانویه، تضمین نقدشوندگی توکن
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Smart Contract Transparency Card */}
-          <Card className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
-            <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
-              <CardTitle>
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
-                  شفافیت و دسترسی به قرارداد هوشمند
-                </p>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 flex-grow flex flex-col justify-center overflow-hidden">
-              <div className="flex flex-col text-start space-y-3 sm:space-y-4">
-                <Button className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm lg:text-base cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-200 ease-in-out rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                  <a href="#roadmap" className="block truncate">
-                    قرارداد هوشمند
-                  </a>
-                </Button>
-                <Button className="bg-transparent border-2 border-secondary text-secondary w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm lg:text-base cursor-pointer hover:bg-secondary hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 rounded-2xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                  <a href="#roadmap" className="block truncate">
-                    وایت پیپر
-                  </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden">
-            <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
-              <CardTitle>
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
-                  توضیحات تکمیلی برای کاربر
-                </p>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 flex-grow flex flex-col justify-center overflow-hidden">
-              <div className="text-xs sm:text-sm md:text-base font-normal text-start leading-relaxed line-clamp-4 break-words">
-                هر کس می‌تواند قبل از خرید، بررسی قرارداد هوشمند و تاریخچه
-                تراکنش‌ها را انجام دهد.
-              </div>
-            </CardContent>
-          </Card>
+        {/* Learn More Section */}
+        <div className="text-center mt-12">
+          <Link
+            href="/tokenomics"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white font-semibold rounded-2xl hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300"
+          >
+            <span className="text-lg">
+              {useLocale() === "fa"
+                ? "مطالعه کامل توکنومیکس"
+                : "Complete Tokenomics Details"}
+            </span>
+            <svg
+              className="w-5 h-5 ml-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>
