@@ -22,6 +22,7 @@ import {
 export default function TokenListingForm() {
   const t = useTranslations("tokenizationRequest");
   const tv = useTranslations("validation");
+  const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
   const createListingMutation = useApiMutationFormData(
     "post",
     "/presale/listings/create/",
@@ -128,9 +129,22 @@ export default function TokenListingForm() {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        setErrors((prev) => ({
+          ...prev,
+          attachment: `File too large. Maximum allowed size is 50 MB.`,
+        }));
+        // Reset selected file if it exceeds the limit
+        setFormData((prev) => ({ ...prev, attachment: null }));
+        e.target.value = "";
+        return;
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-      attachment: file,
+      attachment: file || null,
     }));
 
     // Clear file error
@@ -145,9 +159,16 @@ export default function TokenListingForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("here");
-
+    // Validate form and file size one more time
     if (!validateForm()) {
+      return;
+    }
+
+    if (formData.attachment && formData.attachment.size > MAX_FILE_SIZE_BYTES) {
+      setErrors((prev) => ({
+        ...prev,
+        attachment: `File too large. Maximum allowed size is 50 MB.`,
+      }));
       return;
     }
 
@@ -181,7 +202,7 @@ export default function TokenListingForm() {
 
   if (isSubmitted && !createListingMutation.isError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 flex items-center justify-center">
         <div className="max-w-md mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -470,6 +491,11 @@ export default function TokenListingForm() {
                       <p className="pl-1">{t("orDragDrop")}</p>
                     </div>
                     <p className="text-xs text-gray-500">{t("fileFormats")}</p>
+                    {errors.attachment && (
+                      <p className="text-xs text-red-600 mt-1">
+                        {errors.attachment}
+                      </p>
+                    )}
                     {formData.attachment && (
                       <p className="text-sm text-green-600 mt-2">
                         {t("selectedFile")}: {formData.attachment.name}

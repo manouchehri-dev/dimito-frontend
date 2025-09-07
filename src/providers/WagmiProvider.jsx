@@ -4,13 +4,76 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { useEffect, useState, useRef } from "react";
 
 import {
-  getDefaultConfig,
+  connectorsForWallets,
   RainbowKitProvider,
-  darkTheme,
 } from "@rainbow-me/rainbowkit";
-import { WagmiProvider, http } from "wagmi";
+import { WagmiProvider, http, createConfig } from "wagmi";
 import { bsc } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import {
+  trustWallet,
+  walletConnectWallet,
+  injectedWallet,
+  metaMaskWallet,
+  coinbaseWallet,
+  binanceWallet,
+  okxWallet,
+  rabbyWallet,
+  ledgerWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+
+// Brand-aligned RainbowKit theme (light)
+const brandTheme = {
+  blurs: { modalOverlay: "blur(6px)" },
+  colors: {
+    accentColor: "#FF4135",
+    accentColorForeground: "#ffffff",
+    actionButtonBorder: "rgba(0,0,0,0.06)",
+    actionButtonBorderMobile: "rgba(0,0,0,0.06)",
+    actionButtonSecondaryBackground: "rgba(255,65,53,0.08)",
+    closeButton: "#6B7280",
+    closeButtonBackground: "rgba(0,0,0,0.04)",
+    connectButtonBackground: "linear-gradient(90deg,#FF5D1B 0%,#FF363E 100%)",
+    connectButtonBackgroundError: "#FEE2E2",
+    connectButtonInnerBackground: "#ffffff",
+    connectButtonText: "#ffffff",
+    connectButtonTextError: "#EF4444",
+    connectionIndicator: "#22C55E",
+    downloadBottomCardBackground: "rgba(0,0,0,0.02)",
+    downloadTopCardBackground: "rgba(255,65,53,0.08)",
+    error: "#EF4444",
+    generalBorder: "rgba(0,0,0,0.08)",
+    generalBorderDim: "rgba(0,0,0,0.04)",
+    menuItemBackground: "rgba(255,65,53,0.06)",
+    modalBackdrop: "rgba(0,0,0,0.40)",
+    modalBackground: "#ffffff",
+    modalBorder: "rgba(0,0,0,0.06)",
+    modalText: "#2D2D2D",
+    modalTextDim: "#6B7280",
+    modalTextSecondary: "#111827",
+    profileAction: "rgba(255,65,53,0.08)",
+    profileActionHover: "rgba(255,65,53,0.12)",
+    profileForeground: "#F9FAFB",
+    selectedOptionBorder: "rgba(255,65,53,0.45)",
+    standby: "#FBBF24",
+  },
+  fonts: { body: '"IRANSansX", Poppins, Arial, sans-serif' },
+  radii: {
+    actionButton: "12px",
+    connectButton: "14px",
+    menuButton: "12px",
+    modal: "20px",
+    modalMobile: "16px",
+  },
+  shadows: {
+    connectButton: "0 8px 20px rgba(255,65,53,0.20)",
+    dialog: "0 10px 30px rgba(0,0,0,0.12)",
+    profileDetailsAction: "0 8px 20px rgba(0,0,0,0.06)",
+    selectedOption: "0 0 0 2px rgba(255,65,53,0.30)",
+    selectedWallet: "0 8px 20px rgba(255,65,53,0.18)",
+    walletLogo: "0 4px 12px rgba(0,0,0,0.08)",
+  },
+};
 
 // Create stable singleton instances to prevent re-initialization
 let globalConfig = null;
@@ -21,16 +84,36 @@ const getConfig = () => {
   if (!globalConfig && !isInitialized) {
     try {
       isInitialized = true;
-      globalConfig = getDefaultConfig({
-        appName: "DMT Token",
-        projectId: process.env.NEXT_PUBLIC_PROJECT_ID, // WalletConnect projectId
-        chains: [bsc], // ✅ BSC only
-        ssr: true, // ✅ SSR
-        // ✅ Optional: use your own RPC(s) for reliability (recommended)
-        // transports: {
-        //   [bsc.id]: http("https://bsc-dataseed.binance.org"),
-        //   // or a provider like Ankr/NodeReal/Alchemy/QuickNode
-        // },
+      const connectors = connectorsForWallets(
+        [
+          {
+            groupName: "Recommended",
+            wallets: [
+              trustWallet,
+              metaMaskWallet,
+              binanceWallet,
+              injectedWallet,
+              walletConnectWallet,
+            ],
+          },
+          {
+            groupName: "Others",
+            wallets: [coinbaseWallet, okxWallet, rabbyWallet, ledgerWallet],
+          },
+        ],
+        {
+          appName: "DMT Token",
+          projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+        }
+      );
+
+      globalConfig = createConfig({
+        chains: [bsc],
+        transports: {
+          [bsc.id]: http("https://bsc-dataseed.binance.org"),
+        },
+        connectors,
+        ssr: true,
       });
     } catch (error) {
       console.warn(
@@ -95,8 +178,7 @@ const Provider = ({ children }) => {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          theme={darkTheme()}
-          modalSize="compact"
+          theme={brandTheme}
           showRecentTransactions
           initialChain={bsc} // ✅ ensure BSC is the default/initial chain
         >

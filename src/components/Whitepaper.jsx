@@ -20,11 +20,17 @@ const Whitepaper = () => {
     { id: "roadmap", key: "roadmap" },
   ];
 
+  // Download functionality
   const handleDownloadPDF = () => {
     const link = document.createElement("a");
-    link.href = "/docs/WhitePaper.pdf";
+    link.href =
+      "https://storage.dimito.ir/dimito/dimito/dimito_public/whitepaper.pdf";
     link.download = "DiMiTo-Whitepaper.pdf";
+    link.target = "_blank"; // This opens in new tab
+    link.rel = "noopener noreferrer"; // Security best practice
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   return (

@@ -16,16 +16,26 @@ const DetailedTokenomics = () => {
   // Download functionality
   const handleDownloadPDF = () => {
     const link = document.createElement("a");
-    link.href = "/docs/Tokenomics-fa.pdf";
+    link.href =
+      "https://storage.dimito.ir/dimito/dimito/dimito_public/tokenomics_in_persian.pdf";
     link.download = "DiMiTo-Tokenomics-fa.pdf";
+    link.target = "_blank"; // This opens in new tab
+    link.rel = "noopener noreferrer"; // Security best practice
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   const handleDownloadEn = () => {
     const link = document.createElement("a");
-    link.href = "/docs/Tokenomics-en.pdf";
+    link.href =
+      "https://storage.dimito.ir/dimito/dimito/dimito_public/tokenomics_in_english.pdf";
     link.download = "DiMiTo-Tokenomics-en.pdf";
+    link.target = "_blank"; // This opens in new tab
+    link.rel = "noopener noreferrer"; // Security best practice
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   const tokenomicsData = [
@@ -151,7 +161,9 @@ const DetailedTokenomics = () => {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-orange-600">1B</div>
+                <div className="text-3xl font-bold text-orange-600">
+                  1,000,000,000
+                </div>
                 <div className="text-sm text-gray-600">
                   {dt("overview.stats.totalTokens")}
                 </div>
