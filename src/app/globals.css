@@ -162,6 +162,13 @@ body {
   html[dir="ltr"] {
     direction: ltr;
   }
+  
+  /* Force only RainbowKit modals to render left-to-right on RTL pages */
+  html[dir="rtl"] [data-rk][role="dialog"],
+  html[dir="rtl"] [data-rk][role="document"] {
+    direction: ltr !important;
+    text-align: left;
+  }
 }
 
 @layer utilities {

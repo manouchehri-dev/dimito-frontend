@@ -275,7 +275,7 @@
     "locationPlaceholder": "City, State, Country",
     "uploadFile": "Upload a file",
     "orDragDrop": "or drag and drop",
-    "fileFormats": "PDF, DOC, DOCX, ZIP up to 10MB",
+    "fileFormats": "PDF, DOC, DOCX, ZIP up to 50MB",
     "selectedFile": "Selected",
     "projectTypes": {
       "mining": "Mining Project",

@@ -249,7 +249,7 @@
     "locationPlaceholder": "شهر، استان، کشور",
     "uploadFile": "آپلود فایل",
     "orDragDrop": "یا کشیده و رها کنید",
-    "fileFormats": "PDF، DOC، DOCX، ZIP تا ۱۰ مگابایت",
+    "fileFormats": "PDF، DOC، DOCX، ZIP تا ۵۰ مگابایت",
     "selectedFile": "انتخاب شده",
     "projectTypes": {
       "mining": "پروژه معدنی",
