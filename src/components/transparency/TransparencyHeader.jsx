@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import NavLink from "./module/NavLink";
-import CustomConnectButton from "./module/CustomConnectButton";
-import LanguageSwitcher from "./LanguageSwitcher";
+import NavLink from "../module/NavLink";
+import CustomConnectButton from "../module/CustomConnectButton";
+import LanguageSwitcher from "../LanguageSwitcher";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
 const Header = () => {
