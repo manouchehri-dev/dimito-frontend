@@ -1,16 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus, FileText, BarChart3, Download, Settings } from "lucide-react";
+import { Plus, FileText, BarChart3, Download, Settings, Eye, Globe, Lock, Loader2 } from "lucide-react";
 import CreateReportForm from "./CreateReportForm";
 import { useUserReports } from "@/lib/transparency/transparencyQueries";
+import { useTogglePublishReport } from "@/lib/transparency/transparencyQueries";
 
 export default function TransparencyDashboard() {
   const t = useTranslations("dashboard");
+  const locale = useLocale();
+  const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const { data: reportsResponse, isLoading: loadingReports } = useUserReports();
+  const togglePublishMutation = useTogglePublishReport();
 
   // Extract reports array from paginated response
   const reports = reportsResponse?.results || [];
@@ -20,6 +25,23 @@ export default function TransparencyDashboard() {
     setShowCreateForm(false);
     // Could show a success toast here
     console.log("Report created successfully:", report);
+  };
+
+
+  const handleTogglePublish = (report) => {
+    const newStatus = !report.is_published;
+    const confirmMessage = newStatus ? t('confirmPublish') : t('confirmUnpublish');
+
+    if (window.confirm(confirmMessage)) {
+      togglePublishMutation.mutate({
+        reportId: report.id,
+        isPublished: newStatus,
+      });
+    }
+  };
+
+  const handleViewReport = (reportId) => {
+    router.push(`/${locale}/transparency/reports/${reportId}`);
   };
 
   if (showCreateForm) {
@@ -150,9 +172,9 @@ export default function TransparencyDashboard() {
                     {loadingReports
                       ? "..."
                       : reports.reduce(
-                          (acc, r) => acc + (r.attachments?.length || 0),
-                          0
-                        ) || 0}
+                        (acc, r) => acc + (r.attachments?.length || 0),
+                        0
+                      ) || 0}
                   </p>
                   <p className="text-sm text-gray-600 font-iransans">
                     {t("attachments")}
@@ -239,21 +261,19 @@ export default function TransparencyDashboard() {
                     >
                       <div className="flex items-center gap-4">
                         <div
-                          className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                            report.is_published
+                          className={`h-10 w-10 rounded-lg flex items-center justify-center ${report.is_published
                               ? "bg-green-100"
                               : "bg-yellow-100"
-                          }`}
+                            }`}
                         >
                           <FileText
-                            className={`h-5 w-5 ${
-                              report.is_published
+                            className={`h-5 w-5 ${report.is_published
                                 ? "text-green-600"
                                 : "text-yellow-600"
-                            }`}
+                              }`}
                           />
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <h3 className="font-medium text-[#2D2D2D] font-iransans">
                             {report.title}
                           </h3>
@@ -261,15 +281,55 @@ export default function TransparencyDashboard() {
                             {report.is_published ? t("published") : t("draft")}{" "}
                             • {report.attachments?.length || 0} {t("files")}
                           </p>
+                          <p className="text-xs text-gray-500 font-iransans mt-1">
+                            {new Date(report.created_date).toLocaleDateString(
+                              locale === "fa" ? "fa-IR" : "en-US",
+                              {
+                                timeZone: "Asia/Tehran",
+                              }
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-500 font-iransans">
-                        {new Date(report.created_date).toLocaleDateString(
-                          "fa-IR",
-                          {
-                            timeZone: "Asia/Tehran",
-                          }
-                        )}
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-2">
+                        {/* View Details Button */}
+                        <Button
+                          onClick={() => handleViewReport(report.id)}
+                          variant="outline"
+                          size="sm"
+                          className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          {t("viewDetails")}
+                        </Button>
+
+                        {/* Publish/Unpublish Button */}
+                        <Button
+                          onClick={() => handleTogglePublish(report)}
+                          disabled={togglePublishMutation.isPending}
+                          size="sm"
+                          className={`transition-all duration-200 ${report.is_published
+                              ? "bg-red-500 hover:bg-red-600 text-white"
+                              : "bg-green-500 hover:bg-green-600 text-white"
+                            }`}
+                        >
+                          {togglePublishMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                          ) : report.is_published ? (
+                            <Lock className="w-4 h-4 mr-1" />
+                          ) : (
+                            <Globe className="w-4 h-4 mr-1" />
+                          )}
+                          {togglePublishMutation.isPending
+                            ? report.is_published
+                              ? t("unpublishing")
+                              : t("publishing")
+                            : report.is_published
+                              ? t("unpublish")
+                              : t("publish")}
+                        </Button>
                       </div>
                     </div>
                   ))}

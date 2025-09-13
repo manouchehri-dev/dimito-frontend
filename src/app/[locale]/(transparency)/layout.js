@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
     },
     description:
       locale === "fa"
-        ? "پلتفرم شفافیت DiMiTo - مشاهده گزارش‌های مالی و عملیاتی معادن"
+        ? "سامانه شفافیت DiMiTo - مشاهده گزارش‌های مالی و عملیاتی معادن"
         : "DiMiTo Transparency Platform - View financial and operational mining reports",
     keywords:
       locale === "fa"
