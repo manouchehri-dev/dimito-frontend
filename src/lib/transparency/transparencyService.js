@@ -21,7 +21,7 @@ export const transparencyService = {
       }
 
       const response = await httpClient.get("/presale/tokens/");
-      
+
       // Return the results array from the paginated response
       return response.data.results || response.data;
     } catch (error) {

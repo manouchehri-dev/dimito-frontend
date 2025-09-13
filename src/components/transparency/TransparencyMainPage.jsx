@@ -37,7 +37,7 @@ export default function TransparencyMainPage() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [queryParams, setQueryParams] = useState({
     ordering: "-created_date", // Newest first by default
-    page_size: 9,
+    page_size: 20,
   });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -71,7 +71,7 @@ export default function TransparencyMainPage() {
       ...urlParams,
       page: page ? parseInt(page) : 1,
       ordering: ordering || "-created_date",
-      page_size: pageSize ? parseInt(pageSize) : 9,
+      page_size: pageSize ? parseInt(pageSize) : 20,
     }));
   }, [searchParams]);
 
@@ -91,32 +91,6 @@ export default function TransparencyMainPage() {
     updateURL(newParams);
   };
 
-  const handleFilter = (filter) => {
-    setSelectedFilter(filter);
-    let newParams = { ...queryParams, page: 1 }; // Reset to first page
-
-    switch (filter) {
-      case "all":
-        // Remove specific filters, keep only published
-        delete newParams.ordering;
-        newParams.ordering = "-created_date";
-        break;
-      case "recent":
-        newParams.ordering = "-created_date";
-        break;
-      default:
-        break;
-    }
-
-    setQueryParams(newParams);
-  };
-
-  const handleViewReport = (report) => {
-    // Navigation is handled by the Link component in ReportsList
-    // This function is kept for compatibility but not used
-    console.log("View report:", report);
-  };
-
   /**
    * Handle filter changes from AdvancedFilters component
    */
@@ -124,7 +98,7 @@ export default function TransparencyMainPage() {
     // Start with base params (ordering, page_size)
     const baseParams = {
       ordering: queryParams.ordering || "-created_date",
-      page_size: queryParams.page_size || 9,
+      page_size: queryParams.page_size || 20,
       page: 1, // Reset to first page when filters change
     };
 
@@ -393,13 +367,20 @@ export default function TransparencyMainPage() {
           <ReportsList
             reports={reports}
             isLoading={loadingReports}
-            onViewReport={handleViewReport}
-            onFiltersChange={handleFiltersChange}
-            filters={queryParams}
-            showAdvancedFilters={false}
-            onEditReport={null} // Hide edit for public view
-            onDeleteReport={null} // Hide delete for public view
-            isPublicView={true}
+            pagination={{
+              count: totalReports,
+              next: reportsResponse?.next,
+              previous: reportsResponse?.previous,
+              current_page: queryParams.page || 1,
+              total_pages: Math.ceil(
+                totalReports / (queryParams.page_size || 20)
+              ),
+            }}
+            onPageChange={(page) => {
+              const newParams = { ...queryParams, page };
+              setQueryParams(newParams);
+              updateURL(newParams);
+            }}
           />
         </div>
       </div>

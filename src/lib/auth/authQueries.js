@@ -19,7 +19,7 @@ export const authKeys = {
  */
 export function useLogin() {
   const queryClient = useQueryClient();
-  const { login } = useAuthActions();
+  const login = useAuthStore((state) => state.login);
 
   return useMutation({
     mutationFn: (credentials) => login(credentials),
@@ -42,7 +42,7 @@ export function useLogin() {
  */
 export function useLogout() {
   const queryClient = useQueryClient();
-  const { logout } = useAuthActions();
+  const logout = useAuthStore((state) => state.logout);
 
   return useMutation({
     mutationFn: () => {
@@ -63,7 +63,7 @@ export function useLogout() {
  */
 export function useRefreshToken() {
   const queryClient = useQueryClient();
-  const { refreshToken } = useAuthActions();
+  const refreshToken = useAuthStore((state) => state.refreshToken);
 
   return useMutation({
     mutationFn: () => refreshToken(),
@@ -106,8 +106,8 @@ export function useCurrentUser() {
  * @returns {Object} Query object with verification status
  */
 export function useVerifyToken() {
-  const { verifyAuth } = useAuthActions();
-  const { isAuthenticated } = useAuthStatus();
+  const verifyAuth = useAuthStore((state) => state.verifyAuth);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return useQuery({
     queryKey: authKeys.verify(),

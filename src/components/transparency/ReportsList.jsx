@@ -1,77 +1,187 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
+  FileText,
+  Calendar,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Download,
+  Grid3X3,
+  List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPersianDate } from "@/lib/date";
 import { Link } from "@/i18n/navigation";
-import AdvancedFilters from "./AdvancedFilters";
 
 /**
- * Reports List Component
- * Displays reports in a beautiful grid layout
+ * Minimal Reports List Component
+ * Optimized for thousands of reports with pagination
  */
-
 export default function ReportsList({
   reports = [],
   isLoading = false,
-  onViewReport,
-  onFiltersChange,
-  filters = {},
-  showAdvancedFilters = true,
+  pagination = null,
+  onPageChange = null,
 }) {
   const t = useTranslations("reports");
   const locale = useLocale();
   const isRTL = locale === "fa";
+  const [viewMode, setViewMode] = useState("compact"); // compact, list
 
-  const [viewMode, setViewMode] = useState("grid"); // grid or list
-  const [localFilters, setLocalFilters] = useState(filters);
-
-  // Update local filters when props change
-  useEffect(() => {
-    setLocalFilters(filters);
-  }, [filters]);
-
-  /**
-   * Handle filter changes from AdvancedFilters component
-   */
-  const handleFiltersChange = (newFilters) => {
-    setLocalFilters(newFilters);
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return isRTL ? "0 بایت" : "0 Bytes";
+    const k = 1024;
+    const sizes = isRTL
+      ? ["بایت", "کیلوبایت", "مگابایت", "گیگابایت"]
+      : ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  /**
-   * Apply filters and notify parent component
-   */
-  const handleApplyFilters = (appliedFilters) => {
-    onFiltersChange?.(appliedFilters);
+  const truncateText = (text, maxLength = 60) => {
+    if (!text) return isRTL ? "بدون توضیحات" : "No description";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
   };
 
-  /**
-   * Clear all filters
-   */
-  const handleClearFilters = () => {
-    const clearedFilters = {};
-    setLocalFilters(clearedFilters);
-    onFiltersChange?.(clearedFilters);
+  // Pagination component
+  const Pagination = () => {
+    if (!pagination || !onPageChange) return null;
+
+    const { count, next, previous } = pagination;
+    const currentPage = pagination.current_page || 1;
+    const totalPages = pagination.total_pages || Math.ceil(count / 20);
+    const hasNext = !!next;
+    const hasPrevious = !!previous;
+
+    const getPageNumbers = () => {
+      const pages = [];
+      const maxVisible = 5;
+
+      if (totalPages <= maxVisible) {
+        for (let i = 1; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (currentPage <= 3) {
+          pages.push(1, 2, 3, 4, "...", totalPages);
+        } else if (currentPage >= totalPages - 2) {
+          pages.push(
+            1,
+            "...",
+            totalPages - 3,
+            totalPages - 2,
+            totalPages - 1,
+            totalPages
+          );
+        } else {
+          pages.push(
+            1,
+            "...",
+            currentPage - 1,
+            currentPage,
+            currentPage + 1,
+            "...",
+            totalPages
+          );
+        }
+      }
+
+      return pages;
+    };
+
+    return (
+      <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
+        <div
+          className={cn(
+            "text-sm text-gray-600",
+            isRTL ? "font-iransans" : "font-poppins"
+          )}
+        >
+          {isRTL
+            ? `نمایش ${Math.min(count, currentPage * 20)} از ${count} گزارش`
+            : `Showing ${Math.min(
+                count,
+                currentPage * 20
+              )} of ${count} reports`}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={!hasPrevious}
+            className={cn(
+              "flex items-center gap-1",
+              isRTL ? "font-iransans" : "font-poppins"
+            )}
+          >
+            <ChevronLeft className={cn("h-4 w-4", isRTL && "rotate-180")} />
+            {isRTL ? "قبلی" : "Previous"}
+          </Button>
+
+          <div className="flex items-center gap-1">
+            {getPageNumbers().map((page, index) => (
+              <Button
+                key={index}
+                variant={page === currentPage ? "default" : "ghost"}
+                size="sm"
+                onClick={() => typeof page === "number" && onPageChange(page)}
+                disabled={page === "..."}
+                className={cn(
+                  "min-w-[40px]",
+                  page === currentPage &&
+                    "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white",
+                  isRTL ? "font-iransans" : "font-poppins"
+                )}
+              >
+                {page}
+              </Button>
+            ))}
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={!hasNext}
+            className={cn(
+              "flex items-center gap-1",
+              isRTL ? "font-iransans" : "font-poppins"
+            )}
+          >
+            {isRTL ? "بعدی" : "Next"}
+            <ChevronRight className={cn("h-4 w-4", isRTL && "rotate-180")} />
+          </Button>
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF4135] mx-auto mb-4"></div>
-          <p
-            className={cn(
-              "text-gray-600",
-              isRTL ? "font-iransans" : "font-poppins"
-            )}
+      <div className="space-y-4">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
           >
-            {t("loading")}
-          </p>
-        </div>
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
+              <div className="h-8 w-20 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -79,173 +189,219 @@ export default function ReportsList({
   if (!reports || reports.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="max-w-md mx-auto">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg
-              className="w-12 h-12 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          </div>
-          <h3
-            className={cn(
-              "text-xl font-semibold text-[#2D2D2D] mb-2",
-              isRTL ? "font-iransans" : "font-poppins"
-            )}
-          >
-            {t("noReportsFound")}
-          </h3>
-          <p
-            className={cn(
-              "text-gray-600",
-              isRTL ? "font-iransans" : "font-poppins"
-            )}
-          >
-            {t("noReportsDescription")}
-          </p>
-        </div>
+        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3
+          className={cn(
+            "text-lg font-semibold text-gray-900 mb-2",
+            isRTL ? "font-iransans" : "font-poppins"
+          )}
+        >
+          {t("noReportsFound")}
+        </h3>
+        <p
+          className={cn(
+            "text-gray-600",
+            isRTL ? "font-iransans" : "font-poppins"
+          )}
+        >
+          {t("noReportsDescription")}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Advanced Filters */}
-      {showAdvancedFilters && (
-        <AdvancedFilters
-          filters={localFilters}
-          onFiltersChange={handleFiltersChange}
-          onApplyFilters={handleApplyFilters}
-          onClearFilters={handleClearFilters}
-        />
-      )}
-
+    <div className="space-y-4">
       {/* View Mode Toggle */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          {/* Only show count when filters are applied */}
-          {Object.entries(localFilters).some(([key, value]) => {
-            const filterFields = ['date_from', 'date_to', 'token', 'author', 'search'];
-            return filterFields.includes(key) && value !== null && value !== undefined && value !== "";
-          }) && (
-              <h2
-                className={cn(
-                  "text-xl font-semibold text-[#2D2D2D]",
-                  isRTL ? "font-iransans" : "font-poppins"
-                )}
-              >
-                {reports.length} {t("reportsFound")}
-              </h2>
-            )}
+        <div
+          className={cn(
+            "text-sm text-gray-600",
+            isRTL ? "font-iransans" : "font-poppins"
+          )}
+        >
+          {pagination?.count
+            ? isRTL
+              ? `${pagination.count} گزارش یافت شد`
+              : `${pagination.count} reports found`
+            : isRTL
+            ? `${reports.length} گزارش`
+            : `${reports.length} reports`}
         </div>
 
-        <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-xl p-1 border border-gray-200">
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
           <button
-            onClick={() => setViewMode("grid")}
+            onClick={() => setViewMode("compact")}
             className={cn(
-              "p-2 rounded-lg transition-all duration-200",
-              viewMode === "grid"
-                ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white"
+              "p-2 rounded-md transition-all duration-200",
+              viewMode === "compact"
+                ? "bg-white text-[#FF4135] shadow-sm"
                 : "text-gray-600 hover:text-[#FF4135]"
             )}
+            title={isRTL ? "نمای فشرده" : "Compact view"}
           >
-            <div className="w-4 h-4 grid grid-cols-2 gap-0.5">
-              <div className="bg-current rounded-sm"></div>
-              <div className="bg-current rounded-sm"></div>
-              <div className="bg-current rounded-sm"></div>
-              <div className="bg-current rounded-sm"></div>
-            </div>
+            <Grid3X3 className="h-4 w-4" />
           </button>
           <button
             onClick={() => setViewMode("list")}
             className={cn(
-              "p-2 rounded-lg transition-all duration-200",
+              "p-2 rounded-md transition-all duration-200",
               viewMode === "list"
-                ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white"
+                ? "bg-white text-[#FF4135] shadow-sm"
                 : "text-gray-600 hover:text-[#FF4135]"
             )}
+            title={isRTL ? "نمای فهرستی" : "List view"}
           >
-            <div className="w-4 h-4 flex flex-col gap-0.5">
-              <div className="bg-current h-0.5 rounded"></div>
-              <div className="bg-current h-0.5 rounded"></div>
-              <div className="bg-current h-0.5 rounded"></div>
-              <div className="bg-current h-0.5 rounded"></div>
-            </div>
+            <List className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      {/* Reports Grid */}
+      {/* Reports List */}
       <div
         className={cn(
-          "grid gap-6",
-          viewMode === "grid"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            : "grid-cols-1"
+          "space-y-3",
+          viewMode === "compact" &&
+            "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 space-y-0"
         )}
       >
         {reports.map((report) => (
-          <article
+          <Link
             key={report.id}
-            className="group relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl motion-reduce:transition-none"
-            dir={isRTL ? "rtl" : "ltr"}
+            href={`/transparency/reports/${report.id}`}
+            className={cn(
+              "group block bg-white rounded-lg border border-gray-200 hover:border-[#FF4135] hover:shadow-md transition-all duration-200",
+              viewMode === "compact" ? "p-4" : "p-4"
+            )}
           >
-            {/* Make the whole card interactive */}
-            <Link
-              href={`/transparency/reports/${report.id}`}
-              aria-label={report.title}
-              className="block p-6 pb-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4135] rounded-2xl"
-            >
-              <header className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center overflow-hidden">
-                    {report.token_image ? (
-                      <img
-                        src={report.token_image}
-                        alt={report.token_symbol || ""}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-sm font-medium">{report.token_symbol}</span>
-                    )}
-                  </div>
-                  <time className={cn("text-xs text-gray-500")}>
-                    {formatPersianDate(report.created_date)}
-                  </time>
-                </div>
-              </header>
-
-              <h3 className={cn(
-                "text-lg font-semibold text-[#2D2D2D] mb-2 line-clamp-2 transition-colors duration-200 group-hover:text-[#FF4135] motion-reduce:transition-none"
-              )}>
-                {report.title}
-              </h3>
-
-              <p className="text-gray-600 text-sm line-clamp-3">
-                {report.description ? report.description.length > 75 ? report.description.slice(0, 75) + "..." : report.description : "(بدون توضحیات)"}
-              </p>
-            </Link>
-
-            {/* Corner arrow affordance */}
-            <ArrowLeft
-              aria-hidden="true"
+            <div
               className={cn(
-                "absolute bottom-3",
-                isRTL ? "left-3" : "right-3",
-                "text-gray-500 w-5 h-5 transition-all duration-200 group-hover:text-[#FF4135] group-hover:w-6 group-hover:h-6 motion-reduce:transition-none"
+                "flex items-center gap-4",
+                viewMode === "compact" && "flex-col items-start gap-3"
               )}
-            />
-          </article>
+            >
+              {/* Token Icon */}
+              <div
+                className={cn(
+                  "flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium text-sm",
+                  viewMode === "compact" && "self-start"
+                )}
+              >
+                {report.token_image ? (
+                  <img
+                    src={report.token_image}
+                    alt={report.token_symbol}
+                    className="h-full w-full object-cover rounded-lg"
+                  />
+                ) : (
+                  report.token_symbol || "T"
+                )}
+              </div>
+
+              {/* Content */}
+              <div
+                className={cn(
+                  "flex-1 min-w-0",
+                  viewMode === "compact" && "w-full"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex items-start justify-between gap-2 mb-1",
+                    viewMode === "compact" && "flex-col items-start gap-1"
+                  )}
+                >
+                  <h3
+                    className={cn(
+                      "font-semibold text-gray-900 group-hover:text-[#FF4135] transition-colors line-clamp-1",
+                      isRTL ? "font-iransans" : "font-poppins",
+                      viewMode === "compact" && "line-clamp-2 text-sm"
+                    )}
+                  >
+                    {report.title}
+                  </h3>
+
+                  {viewMode === "list" && (
+                    <div className="flex items-center gap-2 text-xs text-gray-500 flex-shrink-0">
+                      <Calendar className="h-3 w-3" />
+                      <span
+                        className={isRTL ? "font-iransans" : "font-poppins"}
+                      >
+                        {formatPersianDate(report.created_date)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  className={cn(
+                    "flex items-center gap-4 text-sm text-gray-600",
+                    viewMode === "compact" && "flex-col items-start gap-2"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-3 w-3 text-gray-400" />
+                    <span
+                      className={cn(
+                        "truncate",
+                        isRTL ? "font-iransans" : "font-poppins"
+                      )}
+                    >
+                      {report.token_name}
+                    </span>
+                  </div>
+
+                  {report.attachments_count > 0 && (
+                    <div className="flex items-center gap-1 text-xs">
+                      <FileText className="h-3 w-3 text-gray-400" />
+                      <span
+                        className={isRTL ? "font-iransans" : "font-poppins"}
+                      >
+                        {report.attachments_count} {isRTL ? "فایل" : "files"}
+                      </span>
+                    </div>
+                  )}
+
+                  {viewMode === "compact" && (
+                    <div className="text-xs text-gray-500">
+                      <Calendar className="h-3 w-3 inline mr-1" />
+                      <span
+                        className={isRTL ? "font-iransans" : "font-poppins"}
+                      >
+                        {formatPersianDate(report.created_date)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {viewMode === "list" && report.description && (
+                  <p
+                    className={cn(
+                      "text-sm text-gray-600 mt-2 line-clamp-1",
+                      isRTL ? "font-iransans" : "font-poppins"
+                    )}
+                  >
+                    {truncateText(report.description, 80)}
+                  </p>
+                )}
+              </div>
+
+              {/* Action Indicator */}
+              <div
+                className={cn(
+                  "flex-shrink-0 text-gray-400 group-hover:text-[#FF4135] transition-colors",
+                  viewMode === "compact" && "self-end"
+                )}
+              >
+                <Eye className="h-4 w-4" />
+              </div>
+            </div>
+          </Link>
         ))}
       </div>
-    </div >
+
+      {/* Pagination */}
+      <Pagination />
+    </div>
   );
 }

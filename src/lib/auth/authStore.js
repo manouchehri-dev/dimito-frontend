@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { shallow } from "zustand/shallow";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { authService } from "./authService";
 
@@ -197,26 +198,35 @@ export const useAuthStore = create(
  */
 export const useAuthUser = () => useAuthStore((state) => state.user);
 export const useAuthTokens = () =>
-  useAuthStore((state) => ({
-    accessToken: state.accessToken,
-    refreshToken: state.refreshToken,
-  }));
+  useAuthStore(
+    (state) => ({
+      accessToken: state.accessToken,
+      refreshToken: state.refreshToken,
+    }),
+    shallow
+  );
 export const useAuthStatus = () =>
-  useAuthStore((state) => ({
-    isAuthenticated: state.isAuthenticated,
-    isLoading: state.isLoading,
-    error: state.error,
-  }));
+  useAuthStore(
+    (state) => ({
+      isAuthenticated: state.isAuthenticated,
+      isLoading: state.isLoading,
+      error: state.error,
+    }),
+    shallow
+  );
 
 /**
  * Action hooks for auth operations
  */
 export const useAuthActions = () =>
-  useAuthStore((state) => ({
-    login: state.login,
-    logout: state.logout,
-    refreshToken: state.refreshToken,
-    verifyAuth: state.verifyAuth,
-    setError: state.setError,
-    clearError: state.clearError,
-  }));
+  useAuthStore(
+    (state) => ({
+      login: state.login,
+      logout: state.logout,
+      refreshToken: state.refreshToken,
+      verifyAuth: state.verifyAuth,
+      setError: state.setError,
+      clearError: state.clearError,
+    }),
+    shallow
+  );

@@ -280,12 +280,14 @@
     "successMessage": "پیام شما دریافت شد. به زودی با شما تماس خواهیم گرفت."
   },
   "footer": {
-    "title": "توکن IMD",
-    "subtitle": "آینده سرمایه‌گذاری در صنعت معدن با بلاکچین",
-    "description": "اولین توکن دیجیتال پشتیبانی‌شده با دارایی‌های واقعی معدنی. پلی بین دنیای فیزیکی و دیجیتال.",
-    "subscribe": "عضویت در خبرنامه ما",
-    "email": "ایمیل",
-    "button": "ثبت در خبرنامه",
+    "title": "DiMiTo",
+    "subtitle": "اکوسیستم نوآورانه اتصال معدن و دیفای",
+    "description": "توکن‌سازی جریان درآمد معدن با شفافیت کامل و تضمین‌های قانونی قوی. آینده سرمایه‌گذاری دموکراتیک.",
+    "subscribe": "در خبرنامه ما عضو شوید",
+    "email": "ایمیل یا شماره تلفن",
+    "button": "ثبت نام در خبرنامه",
+    "emailRequired": "ایمیل الزامی است",
+    "emailInvalid": "لطفاً یک ایمیل معتبر وارد کنید",
     "navigation": {
       "home": "خانه",
       "tokenomics": "توکنومیکس",
@@ -309,6 +311,7 @@
     "copyright": "© ۲۰۲۴ DiMiTo. تمامی حقوق محفوظ است."
   },
   "dashboard": {
+        "logoutConfirm": "آیا از خروج اطمینان دارید؟",
     "confirmPublish": "آیا از انتشار این گزارش اطمینان دارید؟",
     "confirmUnpublish": "آیا از لغو انتشار این گزارش اطمینان دارید؟",
     "unpublish": "لغو انتشار",
@@ -402,7 +405,23 @@
     "recentReports": "گزارش‌های اخیر",
     "draft": "پیش‌نویس",
     "files": "فایل",
-    "loadingDashboard": "در حال بارگذاری اطلاعات داشبورد..."
+    "loadingDashboard": "در حال بارگذاری اطلاعات داشبورد...",
+    "viewAllReports": "مشاهده همه گزارش‌ها",
+    "showingResults": "نمایش {start} تا {end} از {total} نتیجه",
+    "previous": "قبلی",
+    "next": "بعدی",
+    "backToDashboard": "بازگشت به داشبورد",
+    "allReports": "همه گزارش‌ها",
+    "manageAllReports": "مدیریت تمام گزارش‌های شفافیت شما",
+    "searchReports": "جستجو در گزارش‌ها...",
+    "allStatus": "همه وضعیت‌ها",
+    "loadingReports": "در حال بارگذاری گزارش‌ها...",
+    "noReportsFound": "گزارشی یافت نشد",
+    "noSearchResults": "نتیجه‌ای برای جستجوی شما یافت نشد",
+    "createFirstReport": "اولین گزارش خود را ایجاد کنید",
+    "logout": "خروج",
+    "loggingOut": "در حال خروج...",
+    "reporter": "گزارش‌دهنده"
   },
   "validation": {
     "required": "این فیلد الزامی است",
@@ -579,7 +598,12 @@
     "authorSearch": "جستجوی نویسنده",
     "authorSearchPlaceholder": "نام نویسنده را برای جستجو وارد کنید...",
     "clearFilters": "پاک کردن فیلترها",
-    "applyFilters": "اعمال فیلترها"
+    "applyFilters": "اعمال فیلترها",
+    "initializing": "در حال راه‌اندازی...",
+    "loadingDashboard": "در حال بارگذاری داشبورد...",
+    "redirectingToLogin": "در حال هدایت به صفحه ورود...",
+    "logoutConfirm": "آیا از خروج اطمینان دارید؟",
+    "loggingOut": "در حال خروج..."
   },
   "common": {
     "share": "اشتراک‌گذاری",

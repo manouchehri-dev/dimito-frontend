@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
  * Debug component to test authentication and API calls
  */
 export default function AuthDebugger() {
-  const { isAuthenticated, accessToken, user } = useAuthStore();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const accessToken = useAuthStore((s) => s.accessToken);
+  const user = useAuthStore((s) => s.user);
+
   const { data: tokenOptions, isLoading: loadingTokens, error: tokenError, refetch: refetchTokens } = useTokenOptions();
   const { data: reportsResponse, isLoading: loadingReports, error: reportsError, refetch: refetchReports } = useReports();
 

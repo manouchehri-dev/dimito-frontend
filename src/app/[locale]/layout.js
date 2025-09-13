@@ -6,7 +6,6 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 
 import Provider from "@/providers/WagmiProvider";
 import QueryProvider from "@/providers/QueryProvider";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -89,15 +88,13 @@ export default async function RootLayout({ children, params }) {
         />
       </head>
       <body className={`antialiased font-iransans`}>
-        <ErrorBoundary>
-          <QueryProvider>
-            <NextIntlClientProvider locale={locale || "fa"} messages={messages}>
-              <Provider key={`provider-${locale || "fa"}`}>
-                <main className="flex-1">{children}</main>
-              </Provider>
-            </NextIntlClientProvider>
-          </QueryProvider>
-        </ErrorBoundary>
+        <QueryProvider>
+          <NextIntlClientProvider locale={locale || "fa"} messages={messages}>
+            <Provider key={`provider-${locale || "fa"}`}>
+              <main className="flex-1">{children}</main>
+            </Provider>
+          </NextIntlClientProvider>
+        </QueryProvider>
       </body>
     </html>
   );
