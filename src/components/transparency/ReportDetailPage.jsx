@@ -23,6 +23,7 @@ import {
   Mountain,
   BadgeDollarSign,
   HandCoins,
+  MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPersianDate } from "@/lib/date";
@@ -232,7 +233,7 @@ export default function ReportDetailPage({ reportId }) {
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <div className="flex flex-wrap items-center gap-3">
                 {/* Token Symbol - Prominent */}
-                <Link href={`/transparency/?token_symbol=${report.token_symbol}`} target="_blank" className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#FF5D1B]/15 text-[#FF5D1B]">
+                <Link href={`/transparency/?token=${report.token}`} target="_blank" className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#FF5D1B]/15 text-[#FF5D1B]">
                   <HandCoins className="h-4 w-4" />
                   <span className={cn("font-semibold", isRTL ? "font-iransans" : "font-poppins")}>
                     {report.token_symbol}
@@ -306,16 +307,12 @@ export default function ReportDetailPage({ reportId }) {
 
               <div className="flex items-center gap-2">
                 <span className={cn("text-gray-500", isRTL ? "font-iransans" : "font-poppins")}>
-                  {t("mines") || "Mines"}:
+                  {report.selected_mines.length > 1 ? t("mines") || "Mines" : t("mine") || "Mine"}:
                 </span>
-                {/* Mock multiple mines for demo */}
                 {(() => {
-                  const mockMines = ["Dimito Mining Co.", "Kerman Gold Mine", "Copper Valley Mine"];
-                  const mines = Array.isArray(report.mines)
-                    ? report.mines
-                    : (report.mine_name ? [report.mine_name] : mockMines);
+                  const selectedMines = report.selected_mines || [];
 
-                  if (mines.length > 1) {
+                  if (selectedMines.length > 1) {
                     return (
                       <button
                         onClick={handleOpenMinesModal}
@@ -324,13 +321,30 @@ export default function ReportDetailPage({ reportId }) {
                           isRTL ? "font-iransans" : "font-poppins"
                         )}
                       >
-                        {mines.length} {t("mine") || "mines"}
+                        {selectedMines.length} {t("mines") || "mines"}
                       </button>
+                    );
+                  } else if (selectedMines.length === 1) {
+                    const mine = selectedMines[0];
+                    return (
+                      <div className="flex items-center gap-2">
+                        <span className={cn("text-gray-700 font-medium", isRTL ? "font-iransans" : "font-poppins")}>
+                          {mine.name}
+                        </span>
+                        {mine.location && (
+                          <span className={cn("text-gray-500 text-sm", isRTL ? "font-iransans" : "font-poppins")}>
+                            • {mine.location}
+                          </span>
+                        )}
+                        <span className={cn("text-[#FF5D1B] font-semibold ml-2", isRTL ? "font-iransans" : "font-poppins")}>
+                          ({mine.allocation_percentage ? mine.allocation_percentage : 0}%)
+                        </span>
+                      </div>
                     );
                   } else {
                     return (
                       <span className={cn("text-gray-600", isRTL ? "font-iransans" : "font-poppins")}>
-                        {mines[0]}
+                        {t("noMinesAssigned") || "No mines assigned"}
                       </span>
                     );
                   }
@@ -398,43 +412,6 @@ export default function ReportDetailPage({ reportId }) {
               </div>
             </div>
           )}
-
-          {/* Draft Notice - Only show for drafts */}
-          {!report.is_published && (
-            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl border border-orange-200 p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Clock className="h-6 w-6 text-orange-600" />
-                <h3
-                  className={cn(
-                    "text-lg font-bold text-orange-900",
-                    isRTL ? "font-iransans" : "font-poppins"
-                  )}
-                >
-                  {t("draftReport") || "Draft Report"}
-                </h3>
-              </div>
-              <div className="space-y-2 text-sm text-orange-800">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-orange-600" />
-                  <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                    {t("awaitingPublication") || "Awaiting publication"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Lock className="h-4 w-4 text-orange-600" />
-                  <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                    {t("restrictedAccess") || "Restricted access"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-orange-600" />
-                  <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                    {t("previewMode") || "Preview mode"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Mines Modal */}
@@ -465,27 +442,57 @@ export default function ReportDetailPage({ reportId }) {
               {/* Modal Content */}
               <div className="p-6 max-h-[40vh] overflow-y-auto">
                 {(() => {
-                  const mockMines = ["Dimito Mining Co.", "Kerman Gold Mine", "Copper Valley Mine"];
-                  const mines = Array.isArray(report.mines)
-                    ? report.mines
-                    : (report.mine_name ? [report.mine_name] : mockMines);
+                  const selectedMines = report.selected_mines || [];
 
                   return (
                     <div className="space-y-3">
-                      {mines.map((mine, index) => (
+                      {selectedMines.map((mine, index) => (
                         <div
-                          key={index}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                          key={mine.id || index}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                         >
-                          <Mountain className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                          <span
-                            className={cn(
-                              "text-gray-700 font-medium",
-                              isRTL ? "font-iransans" : "font-poppins"
-                            )}
-                          >
-                            {mine}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <Mountain className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                            <div>
+                              <span
+                                className={cn(
+                                  "text-gray-700 font-medium block",
+                                  isRTL ? "font-iransans" : "font-poppins"
+                                )}
+                              >
+                                {mine.name}
+                              </span>
+                              {mine.location && (
+                                <span
+                                  className={cn(
+                                    "text-gray-500 text-sm",
+                                    isRTL ? "font-iransans" : "font-poppins"
+                                  )}
+                                >
+                                  {mine.location}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span
+                              className={cn(
+                                "text-[#FF5D1B] font-semibold text-lg",
+                                isRTL ? "font-iransans" : "font-poppins"
+                              )}
+                            >
+
+                              {mine.allocation_percentage ? mine.allocation_percentage : 0}%
+                            </span>
+                            <div
+                              className={cn(
+                                "text-gray-500 text-xs",
+                                isRTL ? "font-iransans" : "font-poppins"
+                              )}
+                            >
+                              {t("allocation") || "Allocation"}
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>

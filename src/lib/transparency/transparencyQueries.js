@@ -14,6 +14,7 @@ export const transparencyKeys = {
   tokenOptions: () => [...transparencyKeys.all, "token-options"],
   reportTypes: () => [...transparencyKeys.all, "report-types"],
   authors: () => [...transparencyKeys.all, "authors"],
+  mineOptions: (tokenId) => [...transparencyKeys.all, "mine-options", tokenId],
 };
 
 /**
@@ -49,6 +50,19 @@ export function useAuthors() {
     queryFn: transparencyService.getAuthors,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 15 * 60 * 1000, // 15 minutes
+  });
+}
+
+/**
+ * Hook to fetch mine options for a specific token
+ */
+export function useMineOptions(tokenId) {
+  return useQuery({
+    queryKey: transparencyKeys.mineOptions(tokenId),
+    queryFn: () => transparencyService.getMineOptions(tokenId),
+    enabled: !!tokenId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
   });
 }
 

@@ -21,6 +21,7 @@ import {
   useCreateReport,
   useUploadAttachments,
   useTogglePublishReport,
+  useMineOptions,
 } from "@/lib/transparency/transparencyQueries";
 
 /**
@@ -38,6 +39,7 @@ export default function CreateReportForm({ onSuccess, onCancel }) {
     title: "",
     token: "",
     description: "",
+    mines: [],
   });
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -46,6 +48,7 @@ export default function CreateReportForm({ onSuccess, onCancel }) {
 
   // React Query hooks
   const { data: tokenOptions, isLoading: loadingTokens } = useTokenOptions();
+  const { data: mineOptions, isLoading: loadingMines } = useMineOptions(formData.token);
   const createReportMutation = useCreateReport();
   const uploadAttachmentsMutation = useUploadAttachments();
   const togglePublishMutation = useTogglePublishReport();
@@ -59,11 +62,43 @@ export default function CreateReportForm({ onSuccess, onCancel }) {
       [field]: value,
     }));
 
+    // Clear mines when token changes
+    if (field === "token") {
+      setFormData((prev) => ({
+        ...prev,
+        mines: [],
+      }));
+    }
+
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
       setFieldErrors((prev) => ({
         ...prev,
         [field]: null,
+      }));
+    }
+  };
+
+  /**
+   * Handle mine selection
+   */
+  const handleMineToggle = (mineId) => {
+    setFormData((prev) => ({
+      ...prev,
+      mines: prev.mines.includes(mineId)
+        ? prev.mines.filter(id => id !== mineId)
+        : [...prev.mines, mineId],
+    }));
+  };
+
+  /**
+   * Select all mines
+   */
+  const handleSelectAllMines = () => {
+    if (mineOptions) {
+      setFormData((prev) => ({
+        ...prev,
+        mines: prev.mines.length === mineOptions.length ? [] : mineOptions.map(mine => mine.id),
       }));
     }
   };
@@ -95,6 +130,10 @@ export default function CreateReportForm({ onSuccess, onCancel }) {
 
     if (!formData.token) {
       errors.token = t("selectTokenRequired");
+    }
+
+    if (formData.mines.length === 0) {
+      errors.mines = t("selectMineRequired") || "Please select at least one mine";
     }
 
     // Description is optional, so no validation needed
@@ -182,8 +221,8 @@ export default function CreateReportForm({ onSuccess, onCancel }) {
           step < currentStep
             ? "bg-green-500 text-white"
             : step === currentStep
-            ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white"
-            : "bg-gray-200 text-gray-500"
+              ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white"
+              : "bg-gray-200 text-gray-500"
         )}
       >
         {step < currentStep ? <CheckCircle className="w-4 h-4" /> : step}
@@ -300,6 +339,80 @@ export default function CreateReportForm({ onSuccess, onCancel }) {
                   </p>
                 )}
               </div>
+
+              {/* Mine Selection */}
+              {formData.token && (
+                <div className="space-y-2">
+                  <Label
+                    className="text-[#2D2D2D] font-medium font-iransans"
+                  >
+                    {t("selectMines") || "Select Mines"} *
+                  </Label>
+                  {loadingMines ? (
+                    <div className="flex items-center gap-2 p-4 border-2 rounded-xl">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="font-iransans">{t("loadingMines") || "Loading mines..."}</span>
+                    </div>
+                  ) : mineOptions && mineOptions.length > 0 ? (
+                    <div className="border-2 rounded-xl p-4 space-y-3">
+                      {/* Select All Button */}
+                      <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+                        <span className="text-sm font-medium text-gray-700 font-iransans">
+                          {t("selectedCount", { count: formData.mines.length, total: mineOptions.length }) || `${formData.mines.length} of ${mineOptions.length} selected`}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleSelectAllMines}
+                          className="h-8 text-xs font-iransans"
+                        >
+                          {formData.mines.length === mineOptions.length ? (t("deselectAll") || "Deselect All") : (t("selectAll") || "Select All")}
+                        </Button>
+                      </div>
+
+                      {/* Mine Options */}
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {mineOptions.map((mine) => (
+                          <div
+                            key={mine.id}
+                            className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                            onClick={(e) => {
+                              // Only handle click if it's not on the checkbox itself
+                              if (e.target.type !== 'checkbox') {
+                                handleMineToggle(mine.id);
+                              }
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={formData.mines.includes(mine.id)}
+                              onChange={() => handleMineToggle(mine.id)}
+                              className="w-4 h-4 text-[#FF5D1B] border-gray-300 rounded focus:ring-[#FF5D1B]"
+                            />
+
+                            <span className="font-iransans text-gray-700">
+                              {mine.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 border-2 border-dashed border-gray-300 rounded-xl text-center">
+
+                      <p className="text-gray-500 font-iransans">
+                        {t("noMinesAvailable") || "No mines available for this token"}
+                      </p>
+                    </div>
+                  )}
+                  {fieldErrors.mines && (
+                    <p className="text-sm text-[#FF4135] font-iransans">
+                      {fieldErrors.mines}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Description Field */}
               <div className="space-y-2">
@@ -499,6 +612,17 @@ export default function CreateReportForm({ onSuccess, onCancel }) {
                         tokenOptions?.find(
                           (token) => token.id.toString() === formData.token
                         )?.token_name
+                      }
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600 font-iransans">
+                      {t("mines") || "Mines"}:
+                    </span>
+                    <p className="font-medium text-[#2D2D2D] font-iransans">
+                      {formData.mines.length > 0
+                        ? mineOptions?.filter(mine => formData.mines.includes(mine.id)).map(mine => mine.name).join(", ")
+                        : "None selected"
                       }
                     </p>
                   </div>
