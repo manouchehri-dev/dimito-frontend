@@ -19,7 +19,6 @@ import {
   AlertCircle,
   Download,
   X,
-  Coins,
   Mountain,
   BadgeDollarSign,
   HandCoins,
@@ -233,7 +232,7 @@ export default function ReportDetailPage({ reportId }) {
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <div className="flex flex-wrap items-center gap-3">
                 {/* Token Symbol - Prominent */}
-                <Link href={`/transparency/?token=${report.token}`} target="_blank" className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#FF5D1B]/15 text-[#FF5D1B]">
+                <Link href={`/transparency/?token=${report.token}`} target="_blank" className="flex items-start gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#FF5D1B]/15 text-[#FF5D1B]">
                   <HandCoins className="h-4 w-4" />
                   <span className={cn("font-semibold", isRTL ? "font-iransans" : "font-poppins")}>
                     {report.token_symbol}
@@ -328,13 +327,24 @@ export default function ReportDetailPage({ reportId }) {
                     const mine = selectedMines[0];
                     return (
                       <div className="flex items-center gap-2">
-                        <span className={cn("text-gray-700 font-medium", isRTL ? "font-iransans" : "font-poppins")}>
+                        <Link 
+                          href={`/transparency/?mine_name=${encodeURIComponent(mine.name)}`} 
+                          target="_blank" 
+                          className={cn("text-gray-700 font-medium hover:text-[#FF5D1B] transition-colors underline", isRTL ? "font-iransans" : "font-poppins")}
+                        >
                           {mine.name}
-                        </span>
+                        </Link>
                         {mine.location && (
-                          <span className={cn("text-gray-500 text-sm", isRTL ? "font-iransans" : "font-poppins")}>
-                            • {mine.location}
-                          </span>
+                          <>
+                            <span className="text-gray-400">•</span>
+                            <Link 
+                              href={`/transparency/?mine_location=${encodeURIComponent(mine.location)}`} 
+                              target="_blank" 
+                              className={cn("text-gray-500 text-sm hover:text-[#FF5D1B] transition-colors underline", isRTL ? "font-iransans" : "font-poppins")}
+                            >
+                              {mine.location}
+                            </Link>
+                          </>
                         )}
                         <span className={cn("text-[#FF5D1B] font-semibold ml-2", isRTL ? "font-iransans" : "font-poppins")}>
                           ({mine.allocation_percentage ? mine.allocation_percentage : 0}%)
@@ -454,23 +464,27 @@ export default function ReportDetailPage({ reportId }) {
                           <div className="flex items-center gap-3">
                             <Mountain className="h-5 w-5 text-gray-400 flex-shrink-0" />
                             <div>
-                              <span
+                              <Link
+                                href={`/transparency/?mine_name=${encodeURIComponent(mine.name)}`}
+                                target="_blank"
                                 className={cn(
-                                  "text-gray-700 font-medium block",
+                                  "text-gray-700 font-medium block hover:text-[#FF5D1B] transition-colors underline",
                                   isRTL ? "font-iransans" : "font-poppins"
                                 )}
                               >
                                 {mine.name}
-                              </span>
+                              </Link>
                               {mine.location && (
-                                <span
+                                <Link
+                                  href={`/transparency/?mine_location=${encodeURIComponent(mine.location)}`}
+                                  target="_blank"
                                   className={cn(
-                                    "text-gray-500 text-sm",
+                                    "text-gray-500 text-sm hover:text-[#FF5D1B] transition-colors underline",
                                     isRTL ? "font-iransans" : "font-poppins"
                                   )}
                                 >
                                   {mine.location}
-                                </span>
+                                </Link>
                               )}
                             </div>
                           </div>

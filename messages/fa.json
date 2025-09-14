@@ -616,8 +616,13 @@
     "initializing": "در حال راه‌اندازی...",
     "loadingDashboard": "در حال بارگذاری داشبورد...",
     "redirectingToLogin": "در حال هدایت به صفحه ورود...",
-    "logoutConfirm": "آیا از خروج اطمینان دارید؟",
-    "loggingOut": "در حال خروج..."
+    "logoutConfirm": "آیا مطمئن هستید که می‌خواهید خارج شوید؟",
+    "loggingOut": "در حال خروج...",
+    "mineNameFilter": "نام معدن",
+    "enterMineName": "نام معدن را وارد کنید",
+    "locationFilter": "موقعیت مکانی",
+    "enterOrSelectLocation": "موقعیت را وارد یا انتخاب کنید",
+    "allLocations": "همه موقعیت‌ها"
   },
   "common": {
     "share": "اشتراک‌گذاری",

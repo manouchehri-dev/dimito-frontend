@@ -809,7 +809,12 @@
     "loadingDashboard": "Loading dashboard...",
     "redirectingToLogin": "Redirecting to login...",
     "logoutConfirm": "Are you sure you want to logout?",
-    "loggingOut": "Logging out..."
+    "loggingOut": "Logging out...",
+    "mineNameFilter": "Mine Name",
+    "enterMineName": "Enter mine name",
+    "locationFilter": "Location",
+    "enterOrSelectLocation": "Enter or select location",
+    "allLocations": "All Locations"
   },
   "validation": {
     "required": "This field is required",

@@ -53,6 +53,8 @@ export default function TransparencyMainPage() {
       "token",
       "author",
       "search",
+      "mine_name",
+      "mine_location",
     ];
     filterFields.forEach((field) => {
       const value = searchParams.get(field);

@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  Download,
   Grid3X3,
   List,
 } from "lucide-react";
@@ -106,9 +105,9 @@ export default function ReportsList({
           {isRTL
             ? `نمایش ${Math.min(count, currentPage * 20)} از ${count} گزارش`
             : `Showing ${Math.min(
-                count,
-                currentPage * 20
-              )} of ${count} reports`}
+              count,
+              currentPage * 20
+            )} of ${count} reports`}
         </div>
 
         <div className="flex items-center gap-2">
@@ -137,7 +136,7 @@ export default function ReportsList({
                 className={cn(
                   "min-w-[40px]",
                   page === currentPage &&
-                    "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white",
+                  "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white",
                   isRTL ? "font-iransans" : "font-poppins"
                 )}
               >
@@ -225,8 +224,8 @@ export default function ReportsList({
               ? `${pagination.count} گزارش یافت شد`
               : `${pagination.count} reports found`
             : isRTL
-            ? `${reports.length} گزارش`
-            : `${reports.length} reports`}
+              ? `${reports.length} گزارش`
+              : `${reports.length} reports`}
         </div>
 
         <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
@@ -262,7 +261,7 @@ export default function ReportsList({
         className={cn(
           "space-y-3",
           viewMode === "compact" &&
-            "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 space-y-0"
+          "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 space-y-0"
         )}
       >
         {reports.map((report) => (
@@ -351,20 +350,19 @@ export default function ReportsList({
                     </span>
                   </div>
 
-                  {report.attachments_count > 0 && (
-                    <div className="flex items-center gap-1 text-xs">
-                      <FileText className="h-3 w-3 text-gray-400" />
-                      <span
-                        className={isRTL ? "font-iransans" : "font-poppins"}
-                      >
-                        {report.attachments_count} {isRTL ? "فایل" : "files"}
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-start gap-1 text-xs">
+                    <FileText className="h-3 w-3 text-gray-400" />
+                    <span
+                      className={isRTL ? "font-iransans" : "font-poppins"}
+                    >
+                      {report.attachments_count ? report.attachments_count : "بدون"} {isRTL ? "پیوست" : "files"}
+                    </span>
+                  </div>
+
 
                   {viewMode === "compact" && (
-                    <div className="text-xs text-gray-500">
-                      <Calendar className="h-3 w-3 inline mr-1" />
+                    <div className="flex text-xs text-gray-500">
+                      <Calendar className="h-3 w-3 inline ml-1" />
                       <span
                         className={isRTL ? "font-iransans" : "font-poppins"}
                       >
@@ -384,16 +382,6 @@ export default function ReportsList({
                     {truncateText(report.description, 80)}
                   </p>
                 )}
-              </div>
-
-              {/* Action Indicator */}
-              <div
-                className={cn(
-                  "flex-shrink-0 text-gray-400 group-hover:text-[#FF4135] transition-colors",
-                  viewMode === "compact" && "self-end"
-                )}
-              >
-                <Eye className="h-4 w-4" />
               </div>
             </div>
           </Link>
