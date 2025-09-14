@@ -347,7 +347,6 @@
     "notifications": "Notifications",
     "security": "Security",
     "help": "Help",
-    "logout": "Logout",
     "darkMode": "Dark Mode",
     "language": "Language",
     "currency": "Currency",
@@ -624,8 +623,6 @@
     "files": "Files",
     "viewAllReports": "View All Reports",
     "showingResults": "Showing {start} to {end} of {total} results",
-    "previous": "Previous",
-    "next": "Next",
     "backToDashboard": "Back to Dashboard",
     "allReports": "All Reports",
     "manageAllReports": "Manage all your transparency reports",
@@ -652,6 +649,11 @@
     "unpublishing": "Unpublishing..."
   },
   "reports": {
+    "updated":"Updated",
+    "address":"Address",
+    "mine": "Mine",
+    "mines": "Mines",
+    "viewAttachments": "View Attachments",
     "redirecting": "Redirecting...",
     "loading": "Loading...",
     "logout": "Logout",

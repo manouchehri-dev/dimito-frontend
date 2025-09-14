@@ -6,29 +6,28 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
-  Download,
   FileText,
   Calendar,
   User,
   Building2,
   Eye,
-  Share2,
-  ExternalLink,
   Clock,
   CheckCircle,
   Globe,
   Shield,
-  Copy,
-  Check,
-  Twitter,
-  Linkedin,
-  Facebook,
   Lock,
   AlertCircle,
+  Download,
+  X,
+  Coins,
+  Mountain,
+  BadgeDollarSign,
+  HandCoins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPersianDate } from "@/lib/date";
 import { useReport } from "@/lib/transparency/transparencyQueries";
+import { Link } from "@/i18n/navigation";
 
 /**
  * Report Detail Page Component
@@ -40,33 +39,41 @@ export default function ReportDetailPage({ reportId }) {
   const locale = useLocale();
   const router = useRouter();
   const isRTL = locale === "fa";
-  const [downloadingFile, setDownloadingFile] = useState(null);
-  const [showShareMenu, setShowShareMenu] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const shareMenuRef = useRef(null);
+  const [showAttachmentModal, setShowAttachmentModal] = useState(false);
+  const [showMinesModal, setShowMinesModal] = useState(false);
 
   const { data: report, isLoading, error } = useReport(reportId);
 
-  // Close share menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        shareMenuRef.current &&
-        !shareMenuRef.current.contains(event.target)
-      ) {
-        setShowShareMenu(false);
-      }
-    };
 
-    if (showShareMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+  const handleOpenAttachmentModal = () => {
+    setShowAttachmentModal(true);
+  };
+
+  const handleCloseAttachmentModal = () => {
+    setShowAttachmentModal(false);
+  };
+
+  const handleOpenMinesModal = () => {
+    setShowMinesModal(true);
+  };
+
+  const handleCloseMinesModal = () => {
+    setShowMinesModal(false);
+  };
+
+  const handleMinesModalBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleCloseMinesModal();
     }
-  }, [showShareMenu]);
+  };
 
-  const handleDownload = async (attachment) => {
-    setDownloadingFile(attachment.id);
+  const handleModalBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      setShowAttachmentModal(false);
+    }
+  };
+
+  const handleDownloadAttachment = async (attachment) => {
     try {
       // Create a temporary link to download the file
       const link = document.createElement("a");
@@ -78,74 +85,7 @@ export default function ReportDetailPage({ reportId }) {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Download failed:", error);
-    } finally {
-      setDownloadingFile(null);
     }
-  };
-
-  const handleShare = () => {
-    setShowShareMenu(!showShareMenu);
-  };
-
-  const handleCopyLink = async () => {
-    try {
-      const currentUrl = window.location.href;
-      await navigator.clipboard.writeText(currentUrl);
-      setCopySuccess(true);
-      setTimeout(() => {
-        setCopySuccess(false);
-        setShowShareMenu(false);
-      }, 2000);
-    } catch (error) {
-      console.error("Failed to copy link:", error);
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea");
-      textArea.value = window.location.href;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      setCopySuccess(true);
-      setTimeout(() => {
-        setCopySuccess(false);
-        setShowShareMenu(false);
-      }, 2000);
-    }
-  };
-
-  const handleSocialShare = (platform) => {
-    const currentUrl = encodeURIComponent(window.location.href);
-    const title = encodeURIComponent(
-      `${report.title} - ${report.token_name} Transparency Report`
-    );
-    const description = encodeURIComponent(
-      report.description ||
-      `View transparency report for ${report.token_name} (${report.token_symbol})`
-    );
-
-    let shareUrl = "";
-
-    switch (platform) {
-      case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}&text=${title}`;
-        break;
-      case "linkedin":
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`;
-        break;
-      case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
-        break;
-      default:
-        return;
-    }
-
-    window.open(shareUrl, "_blank", "width=600,height=400");
-    setShowShareMenu(false);
-  };
-
-  const handleViewFullscreen = () => {
-    // Open current page in new tab for full-screen viewing
-    window.open(window.location.href, "_blank");
   };
 
   const formatFileSize = (bytes) => {
@@ -166,6 +106,11 @@ export default function ReportDetailPage({ reportId }) {
     if (contentType?.includes("word") || contentType?.includes("document"))
       return "📝";
     return "📎";
+  };
+
+  const shortenAddress = (address) => {
+    if (!address) return "";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   // Enhanced status badge component
@@ -279,12 +224,33 @@ export default function ReportDetailPage({ reportId }) {
           </Button>
         </div>
 
-        {/* Report Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-6 sm:mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-            <div className="flex-1">
-              {/* Enhanced Status Badges */}
-              <div className="flex flex-wrap items-center gap-3 mb-6">
+        {/* Header Cards Row */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-6 sm:mb-8">
+          {/* Report Header Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 flex-1">
+            {/* Status Badges and Token Symbol */}
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Token Symbol - Prominent */}
+                <Link href={`/transparency/?token_symbol=${report.token_symbol}`} target="_blank" className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-[#FF5D1B]/15 text-[#FF5D1B]">
+                  <HandCoins className="h-4 w-4" />
+                  <span className={cn("font-semibold", isRTL ? "font-iransans" : "font-poppins")}>
+                    {report.token_symbol}
+                  </span>
+
+                </Link>
+
+                {/* Draft Warning - Only show for drafts */}
+                {!report.is_published && (
+                  <div className="flex items-center gap-2 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium border border-orange-200">
+                    <AlertCircle className="h-3 w-3" />
+                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
+                      {t("previewMode") || "Preview Mode"}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-row gap-3">
                 {/* Status Badge */}
                 <div
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${statusConfig.bgColor} ${statusConfig.textColor}`}
@@ -304,569 +270,338 @@ export default function ReportDetailPage({ reportId }) {
                     {visibilityConfig.label}
                   </span>
                 </div>
-
-                {/* Draft Warning - Only show for drafts */}
-                {!report.is_published && (
-                  <div className="flex items-center gap-2 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium border border-orange-200">
-                    <AlertCircle className="h-3 w-3" />
-                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                      {t("previewMode") || "Preview Mode"}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Title */}
-              <h1
-                className={cn(
-                  "text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight",
-                  isRTL ? "font-iransans" : "font-poppins"
-                )}
-              >
-                {report.title}
-              </h1>
-
-              {/* Meta Information */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <p
-                      className={cn(
-                        "text-gray-500",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {t("token")}
-                    </p>
-                    <p
-                      className={cn(
-                        "font-medium text-gray-900",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {report.token_name} ({report.token_symbol})
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <p
-                      className={cn(
-                        "text-gray-500",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {t("author")}
-                    </p>
-                    <p
-                      className={cn(
-                        "font-medium text-gray-900",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {report.author_full_name || report.author_name}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <p
-                      className={cn(
-                        "text-gray-500",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {report.is_published ? t("published") : t("created")}
-                    </p>
-                    <p
-                      className={cn(
-                        "font-medium text-gray-900",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {formatPersianDate(report.created_date)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-gray-400" />
-                  <div>
-                    <p
-                      className={cn(
-                        "text-gray-500",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {t("attachments")}
-                    </p>
-                    <p
-                      className={cn(
-                        "font-medium text-gray-900",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {report.attachments_count} {t("files")}
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 relative">
-              <div className="relative" ref={shareMenuRef}>
-                <Button
-                  variant="outline"
-                  onClick={handleShare}
-                  className={cn(
-                    "flex items-center gap-2 w-full",
-                    isRTL ? "font-iransans" : "font-poppins"
-                  )}
-                  disabled={!report.is_published} // Disable share for drafts
-                >
-                  <Share2 className="h-4 w-4" />
-                  {tCommon("share")}
-                </Button>
+            {/* Meta Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+              {report.token_detail?.token_address && (
+                <div className="flex items-center gap-2">
+                  <span className={cn("text-gray-500", isRTL ? "font-iransans" : "font-poppins")}>
+                    {t("address")}:
+                  </span>
+                  <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono">
+                    {shortenAddress(report.token_detail.token_address)}
+                  </code>
+                </div>
+              )}
 
-                {/* Share Menu */}
-                {showShareMenu && (
-                  <div
-                    className={cn(
-                      "absolute top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 min-w-[200px] z-50",
-                      isRTL ? "left-0" : "right-0"
-                    )}
-                  >
-                    <div className="space-y-1">
-                      <button
-                        onClick={handleCopyLink}
-                        className={cn(
-                          "flex items-center gap-3 w-full px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors",
-                          isRTL ? "font-iransans" : "font-poppins"
-                        )}
-                      >
-                        {copySuccess ? (
-                          <>
-                            <Check className="h-4 w-4 text-green-600" />
-                            <span className="text-green-600">
-                              {t("linkCopied") || "Link copied!"}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="h-4 w-4" />
-                            <span>{t("copyLink") || "Copy link"}</span>
-                          </>
-                        )}
-                      </button>
-
-                      <div className="border-t border-gray-100 my-1"></div>
-
-                      <button
-                        onClick={() => handleSocialShare("twitter")}
-                        className={cn(
-                          "flex items-center gap-3 w-full px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors",
-                          isRTL ? "font-iransans" : "font-poppins"
-                        )}
-                      >
-                        <Twitter className="h-4 w-4 text-blue-400" />
-                        <span>{t("shareOnTwitter") || "Share on Twitter"}</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare("linkedin")}
-                        className={cn(
-                          "flex items-center gap-3 w-full px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors",
-                          isRTL ? "font-iransans" : "font-poppins"
-                        )}
-                      >
-                        <Linkedin className="h-4 w-4 text-blue-600" />
-                        <span>
-                          {t("shareOnLinkedIn") || "Share on LinkedIn"}
-                        </span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare("facebook")}
-                        className={cn(
-                          "flex items-center gap-3 w-full px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors",
-                          isRTL ? "font-iransans" : "font-poppins"
-                        )}
-                      >
-                        <Facebook className="h-4 w-4 text-blue-700" />
-                        <span>
-                          {t("shareOnFacebook") || "Share on Facebook"}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                )}
+              <div className="flex items-center gap-2">
+                <span className={cn("text-gray-500", isRTL ? "font-iransans" : "font-poppins")}>
+                  {t("created") || "Created"}:
+                </span>
+                <span className={cn("text-gray-600", isRTL ? "font-iransans" : "font-poppins")}>
+                  {formatPersianDate(report.created_date)}
+                </span>
               </div>
 
-              <Button
-                variant="outline"
-                onClick={handleViewFullscreen}
-                className={cn(
-                  "flex items-center gap-2",
-                  isRTL ? "font-iransans" : "font-poppins"
-                )}
-              >
-                <ExternalLink className="h-4 w-4" />
-                {t("openInNewTab") || "Open in new tab"}
-              </Button>
+              <div className="flex items-center gap-2">
+                <span className={cn("text-gray-500", isRTL ? "font-iransans" : "font-poppins")}>
+                  {t("updated") || "Updated"}:
+                </span>
+                <span className={cn("text-gray-600", isRTL ? "font-iransans" : "font-poppins")}>
+                  {formatPersianDate(report.updated_date)}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className={cn("text-gray-500", isRTL ? "font-iransans" : "font-poppins")}>
+                  {t("mines") || "Mines"}:
+                </span>
+                {/* Mock multiple mines for demo */}
+                {(() => {
+                  const mockMines = ["Dimito Mining Co.", "Kerman Gold Mine", "Copper Valley Mine"];
+                  const mines = Array.isArray(report.mines)
+                    ? report.mines
+                    : (report.mine_name ? [report.mine_name] : mockMines);
+
+                  if (mines.length > 1) {
+                    return (
+                      <button
+                        onClick={handleOpenMinesModal}
+                        className={cn(
+                          "text-[#FF5D1B] hover:text-[#FF363E] underline transition-colors cursor-pointer",
+                          isRTL ? "font-iransans" : "font-poppins"
+                        )}
+                      >
+                        {mines.length} {t("mine") || "mines"}
+                      </button>
+                    );
+                  } else {
+                    return (
+                      <span className={cn("text-gray-600", isRTL ? "font-iransans" : "font-poppins")}>
+                        {mines[0]}
+                      </span>
+                    );
+                  }
+                })()}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            {/* Token Information */}
-            {report.token_detail && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
-                <h2
-                  className={cn(
-                    "text-xl font-bold text-gray-900 mb-6",
-                    isRTL ? "font-iransans" : "font-poppins"
-                  )}
-                >
-                  {t("tokenInformation")}
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <h3
-                      className={cn(
-                        "font-medium text-gray-900 mb-2",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {report.token_detail.token_name}
-                    </h3>
-                    <p
-                      className={cn(
-                        "text-sm text-gray-600 mb-4",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {report.token_detail.token_description}
-                    </p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span
-                          className={cn(
-                            "text-gray-500",
-                            isRTL ? "font-iransans" : "font-poppins"
-                          )}
-                        >
-                          {t("symbol")}:
-                        </span>
-                        <span
-                          className={cn(
-                            "font-medium",
-                            isRTL ? "font-iransans" : "font-poppins"
-                          )}
-                        >
-                          {report.token_detail.token_symbol}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span
-                          className={cn(
-                            "text-gray-500",
-                            isRTL ? "font-iransans" : "font-poppins"
-                          )}
-                        >
-                          {t("decimals")}:
-                        </span>
-                        <span
-                          className={cn(
-                            "font-medium",
-                            isRTL ? "font-iransans" : "font-poppins"
-                          )}
-                        >
-                          {report.token_detail.token_decimals}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4
-                      className={cn(
-                        "font-medium text-gray-900 mb-2",
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {t("contractAddress")}
-                    </h4>
-                    <div className="bg-gray-50 rounded-lg p-3 font-mono text-sm break-all">
-                      {report.token_detail.token_address}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Description */}
-            {report.description && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
-                <h2
-                  className={cn(
-                    "text-xl font-bold text-gray-900 mb-4",
-                    isRTL ? "font-iransans" : "font-poppins"
-                  )}
-                >
-                  {t("description")}
-                </h2>
-                <div
-                  className={cn(
-                    "prose max-w-none text-gray-700 leading-relaxed",
-                    isRTL ? "font-iransans" : "font-poppins"
-                  )}
-                >
-                  {report.description.split("\n").map((paragraph, index) => (
-                    <p key={index} className="mb-4 last:mb-0">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Attachments */}
-            {report.attachments && report.attachments.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                <h3
-                  className={cn(
-                    "text-lg font-bold text-gray-900 mb-4",
-                    isRTL ? "font-iransans" : "font-poppins"
-                  )}
-                >
-                  {t("attachments")} ({report.attachments.length})
-                </h3>
-                <div className="space-y-3">
-                  {report.attachments.map((attachment) => (
-                    <div
-                      key={attachment.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <span className="text-2xl flex-shrink-0">
-                          {getFileIcon(attachment.content_type)}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className={cn(
-                              "font-medium text-gray-900 truncate",
-                              isRTL ? "font-iransans" : "font-poppins"
-                            )}
-                          >
-                            {attachment.filename}
-                          </p>
-                          <p
-                            className={cn(
-                              "text-sm text-gray-500",
-                              isRTL ? "font-iransans" : "font-poppins"
-                            )}
-                          >
-                            {formatFileSize(attachment.file_size)}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => handleDownload(attachment)}
-                        disabled={downloadingFile === attachment.id}
-                        className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white hover:scale-105 transition-all duration-200"
-                      >
-                        {downloadingFile === attachment.id ? (
-                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                        ) : (
-                          <Download className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Report Info */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          {/* Attachment Card */}
+          {report.attachments && report.attachments.length > 0 && (
+            <div className="xl:w-1/4 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 flex-shrink-0">
               <h3
                 className={cn(
                   "text-lg font-bold text-gray-900 mb-4",
                   isRTL ? "font-iransans" : "font-poppins"
                 )}
               >
-                {t("reportInformation")}
+                {t("attachments")} ({report.attachments.length})
               </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between items-center">
-                  <span
-                    className={cn(
-                      "text-gray-500",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {t("reportId")}:
-                  </span>
-                  <span
-                    className={cn(
-                      "font-medium",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    #{report.id}
+              <Button
+                onClick={handleOpenAttachmentModal}
+                className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white hover:scale-105 transition-all duration-200 cursor-pointer"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                {t("viewAttachments") || "View Attachments"}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Main Content - Full Width */}
+        <div className="space-y-6 sm:space-y-8">
+          {/* Description */}
+          {report.description && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+              {/* Title */}
+              <h1
+                className={cn(
+                  "text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight",
+                  isRTL ? "font-iransans" : "font-poppins"
+                )}
+              >
+                {report.title}
+              </h1>
+
+              <h2
+                className={cn(
+                  "text-xl font-bold text-gray-900 mb-4",
+                  isRTL ? "font-iransans" : "font-poppins"
+                )}
+              >
+                {t("description")}
+              </h2>
+              <div
+                className={cn(
+                  "prose max-w-none text-gray-700 leading-relaxed",
+                  isRTL ? "font-iransans" : "font-poppins"
+                )}
+              >
+                {report.description.split("\n").map((paragraph, index) => (
+                  <p key={index} className="mb-4 last:mb-0">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Draft Notice - Only show for drafts */}
+          {!report.is_published && (
+            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl border border-orange-200 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Clock className="h-6 w-6 text-orange-600" />
+                <h3
+                  className={cn(
+                    "text-lg font-bold text-orange-900",
+                    isRTL ? "font-iransans" : "font-poppins"
+                  )}
+                >
+                  {t("draftReport") || "Draft Report"}
+                </h3>
+              </div>
+              <div className="space-y-2 text-sm text-orange-800">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-orange-600" />
+                  <span className={isRTL ? "font-iransans" : "font-poppins"}>
+                    {t("awaitingPublication") || "Awaiting publication"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span
-                    className={cn(
-                      "text-gray-500",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {t("created")}:
-                  </span>
-                  <span
-                    className={cn(
-                      "font-medium",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {formatPersianDate(report.created_date)}
+                <div className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-orange-600" />
+                  <span className={isRTL ? "font-iransans" : "font-poppins"}>
+                    {t("restrictedAccess") || "Restricted access"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span
-                    className={cn(
-                      "text-gray-500",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {t("lastUpdated")}:
-                  </span>
-                  <span
-                    className={cn(
-                      "font-medium",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {formatPersianDate(report.updated_date)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span
-                    className={cn(
-                      "text-gray-500",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {t("status")}:
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <StatusIcon
-                      className={`h-3 w-3 ${statusConfig.textColor.replace(
-                        "text-",
-                        "text-"
-                      )}`}
-                    />
-                    <span
-                      className={cn(
-                        `font-medium ${statusConfig.textColor}`,
-                        isRTL ? "font-iransans" : "font-poppins"
-                      )}
-                    >
-                      {statusConfig.label}
-                    </span>
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-orange-600" />
+                  <span className={isRTL ? "font-iransans" : "font-poppins"}>
+                    {t("previewMode") || "Preview mode"}
                   </span>
                 </div>
               </div>
             </div>
-
-            {/* Trust Indicators - Only show for published reports */}
-            {report.is_published && (
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Shield className="h-6 w-6 text-blue-600" />
-                  <h3
-                    className={cn(
-                      "text-lg font-bold text-blue-900",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {t("verifiedReport")}
-                  </h3>
-                </div>
-                <div className="space-y-2 text-sm text-blue-800">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                      {t("officiallyVerified")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                      {t("blockchainBacked")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                      {t("publiclyAuditable")}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Draft Notice - Only show for drafts */}
-            {!report.is_published && (
-              <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl border border-orange-200 p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Clock className="h-6 w-6 text-orange-600" />
-                  <h3
-                    className={cn(
-                      "text-lg font-bold text-orange-900",
-                      isRTL ? "font-iransans" : "font-poppins"
-                    )}
-                  >
-                    {t("draftReport") || "Draft Report"}
-                  </h3>
-                </div>
-                <div className="space-y-2 text-sm text-orange-800">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 text-orange-600" />
-                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                      {t("awaitingPublication") || "Awaiting publication"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-orange-600" />
-                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                      {t("restrictedAccess") || "Restricted access"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-4 w-4 text-orange-600" />
-                    <span className={isRTL ? "font-iransans" : "font-poppins"}>
-                      {t("previewMode") || "Preview mode"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
+
+        {/* Mines Modal */}
+        {showMinesModal && (
+          <div
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={handleMinesModalBackdropClick}
+          >
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 max-w-md w-full max-h-[60vh] overflow-hidden">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2
+                  className={cn(
+                    "text-xl font-bold text-gray-900",
+                    isRTL ? "font-iransans" : "font-poppins"
+                  )}
+                >
+                  {t("mines") || "Mines"}
+                </h2>
+                <button
+                  onClick={handleCloseMinesModal}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6 max-h-[40vh] overflow-y-auto">
+                {(() => {
+                  const mockMines = ["Dimito Mining Co.", "Kerman Gold Mine", "Copper Valley Mine"];
+                  const mines = Array.isArray(report.mines)
+                    ? report.mines
+                    : (report.mine_name ? [report.mine_name] : mockMines);
+
+                  return (
+                    <div className="space-y-3">
+                      {mines.map((mine, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        >
+                          <Mountain className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                          <span
+                            className={cn(
+                              "text-gray-700 font-medium",
+                              isRTL ? "font-iransans" : "font-poppins"
+                            )}
+                          >
+                            {mine}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex justify-end p-6 border-t border-gray-200">
+                <Button
+                  variant="outline"
+                  onClick={handleCloseMinesModal}
+                  className={isRTL ? "font-iransans" : "font-poppins"}
+                >
+                  {tCommon("close") || "Close"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Attachment Modal */}
+        {showAttachmentModal && (
+          <div
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={handleModalBackdropClick}
+          >
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 max-w-2xl w-full max-h-[80vh] overflow-hidden">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2
+                  className={cn(
+                    "text-xl font-bold text-gray-900",
+                    isRTL ? "font-iransans" : "font-poppins"
+                  )}
+                >
+                  {t("attachments")} ({report.attachments?.length || 0})
+                </h2>
+                <button
+                  onClick={handleCloseAttachmentModal}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6 max-h-[60vh] overflow-y-auto">
+                {report.attachments && report.attachments.length > 0 ? (
+                  <div className="space-y-3">
+                    {report.attachments.map((attachment) => (
+                      <div
+                        key={attachment.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <span className="text-2xl flex-shrink-0">
+                            {getFileIcon(attachment.content_type)}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className={cn(
+                                "font-medium text-gray-900 truncate",
+                                isRTL ? "font-iransans" : "font-poppins"
+                              )}
+                            >
+                              {attachment.filename}
+                            </p>
+                            <p
+                              className={cn(
+                                "text-sm text-gray-500",
+                                isRTL ? "font-iransans" : "font-poppins"
+                              )}
+                            >
+                              {formatFileSize(attachment.file_size)}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => handleDownloadAttachment(attachment)}
+                          className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white hover:scale-105 transition-all duration-200"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p
+                      className={cn(
+                        "text-gray-500",
+                        isRTL ? "font-iransans" : "font-poppins"
+                      )}
+                    >
+                      {t("noAttachments") || "No attachments available"}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex justify-end p-6 border-t border-gray-200">
+                <Button
+                  variant="outline"
+                  onClick={handleCloseAttachmentModal}
+                  className={isRTL ? "font-iransans" : "font-poppins"}
+                >
+                  {tCommon("close") || "Close"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -311,7 +311,7 @@
     "copyright": "© ۲۰۲۴ DiMiTo. تمامی حقوق محفوظ است."
   },
   "dashboard": {
-        "logoutConfirm": "آیا از خروج اطمینان دارید؟",
+    "logoutConfirm": "آیا از خروج اطمینان دارید؟",
     "confirmPublish": "آیا از انتشار این گزارش اطمینان دارید؟",
     "confirmUnpublish": "آیا از لغو انتشار این گزارش اطمینان دارید؟",
     "unpublish": "لغو انتشار",
@@ -419,7 +419,6 @@
     "noReportsFound": "گزارشی یافت نشد",
     "noSearchResults": "نتیجه‌ای برای جستجوی شما یافت نشد",
     "createFirstReport": "اولین گزارش خود را ایجاد کنید",
-    "logout": "خروج",
     "loggingOut": "در حال خروج...",
     "reporter": "گزارش‌دهنده"
   },
@@ -452,6 +451,11 @@
     "selectProjectType": "لطفاً نوع پروژه را انتخاب کنید"
   },
   "reports": {
+    "updated":"تاریخ انتشار",
+    "address":"آدرس",
+    "mine": "معدن",
+    "mines": "معادن",
+    "viewAttachments": "مشاهده پیوست",
     "redirecting": "در حال هدایت...",
     "loading": "در حال بارگذاری...",
     "logout": "خروج",
