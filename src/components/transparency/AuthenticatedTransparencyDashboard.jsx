@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/auth/authStore";
 import { Loader2 } from "lucide-react";
 import TransparencyDashboard from "./TransparencyDashboard";
@@ -14,7 +14,14 @@ import TransparencyDashboard from "./TransparencyDashboard";
 export default function AuthenticatedTransparencyDashboard() {
   const router = useRouter();
   const locale = useLocale();
-  const { isAuthenticated, isLoading, user, accessToken } = useAuthStore();
+  const t = useTranslations("reports");
+
+  // Select each field separately to avoid returning a new object every render
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const user = useAuthStore((s) => s.user);
+  const accessToken = useAuthStore((s) => s.accessToken);
+
   const [isChecking, setIsChecking] = useState(true);
   const [hasHydrated, setHasHydrated] = useState(false);
 
@@ -37,14 +44,17 @@ export default function AuthenticatedTransparencyDashboard() {
     };
   }, []);
 
-  // Check authentication after hydration
+  // Memoized redirect path so dependency is stable
+  const redirectPath = useMemo(() => `/${locale}/transparency/login`, [locale]);
+
+  // Check authentication after hydration and when auth state changes
   useEffect(() => {
     if (!hasHydrated) return;
 
     const timer = setTimeout(() => {
       setIsChecking(false);
 
-      console.log("Auth check after hydration:", {
+      console.log("Auth check:", {
         isAuthenticated,
         hasAccessToken: !!accessToken,
         hasUser: !!user,
@@ -53,12 +63,12 @@ export default function AuthenticatedTransparencyDashboard() {
       // If not authenticated after checking, redirect to login
       if (!isAuthenticated || !accessToken) {
         console.log("Auth check failed - redirecting to login");
-        router.push(`/${locale}/transparency/login`);
+        router.push(redirectPath);
       }
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [hasHydrated, isAuthenticated, accessToken, user, router, locale]);
+  }, [hasHydrated, isAuthenticated, accessToken, router, redirectPath]);
 
   // Show loading while checking authentication or hydrating
   if (!hasHydrated || isChecking || isLoading) {
@@ -67,7 +77,7 @@ export default function AuthenticatedTransparencyDashboard() {
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-[#FF4135]" />
           <p className="text-gray-600 font-iransans">
-            {!hasHydrated ? "Initializing..." : "Loading dashboard..."}
+            {!hasHydrated ? t("initializing") : t("loadingDashboard")}
           </p>
         </div>
       </div>
@@ -84,7 +94,7 @@ export default function AuthenticatedTransparencyDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-[100px] flex items-center justify-center">
       <div className="text-center">
-        <p className="text-gray-600 font-iransans">Redirecting to login...</p>
+        <p className="text-gray-600 font-iransans">{t("redirectingToLogin")}</p>
       </div>
     </div>
   );

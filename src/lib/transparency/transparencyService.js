@@ -21,7 +21,7 @@ export const transparencyService = {
       }
 
       const response = await httpClient.get("/presale/tokens/");
-      
+
       // Return the results array from the paginated response
       return response.data.results || response.data;
     } catch (error) {
@@ -286,6 +286,23 @@ export const transparencyService = {
       return response.data;
     } catch (error) {
       console.error("Failed to fetch authors:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get mine options for a specific token
+   * @param {number} tokenId - Token ID
+   * @returns {Promise<Array>} Array of mine options
+   */
+  async getMineOptions(tokenId) {
+    try {
+      const response = await httpClient.get(
+        `${TRANSPARENCY_BASE_URL}/reports/mine-options/?token=${tokenId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch mine options:", error);
       throw error;
     }
   },

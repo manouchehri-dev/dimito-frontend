@@ -1,6 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
 import TransparencyHeader from "@/components/transparency/TransparencyHeader";
 import TransparencyFooter from "@/components/transparency/TransparencyFooter";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -13,7 +15,7 @@ export async function generateMetadata({ params }) {
     },
     description:
       locale === "fa"
-        ? "پلتفرم شفافیت DiMiTo - مشاهده گزارش‌های مالی و عملیاتی معادن"
+        ? "سامانه شفافیت DiMiTo - مشاهده گزارش‌های مالی و عملیاتی معادن"
         : "DiMiTo Transparency Platform - View financial and operational mining reports",
     keywords:
       locale === "fa"
@@ -30,9 +32,9 @@ export default async function TransparencyLayout({ children, params }) {
 
   return (
     <>
-      <TransparencyHeader />
+      <Header />
       <main className="min-h-screen">{children}</main>
-      <TransparencyFooter />
+      <Footer />
     </>
   );
 }

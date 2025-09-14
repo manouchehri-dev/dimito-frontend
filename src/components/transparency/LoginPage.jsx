@@ -11,7 +11,7 @@ export default function LoginPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("login");
-  const { isAuthenticated } = useAuthStore();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   // Redirect authenticated users to dashboard
   useEffect(() => {

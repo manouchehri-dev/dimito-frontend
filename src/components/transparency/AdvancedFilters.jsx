@@ -21,16 +21,13 @@ import {
     Calendar,
     Filter,
     X,
-    ChevronDown,
-    ChevronUp,
-    Search,
     Tag,
+    Mountain,
+    MapPin,
 } from "lucide-react";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import gregorian from "react-date-object/calendars/gregorian";
-import gregorian_en from "react-date-object/locales/gregorian_en";
 import { cn } from "@/lib/utils";
 import { useTokenOptions } from "@/lib/transparency/transparencyQueries";
 
@@ -61,7 +58,7 @@ export default function AdvancedFilters({
 
     // Auto-open filters if any are set
     useEffect(() => {
-        const filterFields = ['title', 'date_from', 'date_to', 'token', 'author', 'search'];
+        const filterFields = ['title', 'date_from', 'date_to', 'token', 'author', 'search', 'mine_name', 'mine_location'];
         const hasFilters = Object.entries(filters || {}).some(([key, value]) =>
             filterFields.includes(key) && value !== null && value !== undefined && value !== ""
         );
@@ -172,7 +169,7 @@ export default function AdvancedFilters({
     const getActiveFiltersCount = () => {
         // Only count actual filter fields, not query parameters like ordering, page_size, page
         // Exclude 'title' and 'search' since they're now handled in the main search bar
-        const filterFields = ['date_from', 'date_to', 'token', 'author'];
+        const filterFields = ['date_from', 'date_to', 'token', 'author', 'mine_name', 'mine_location'];
         return Object.entries(localFilters).filter(([key, value]) =>
             filterFields.includes(key) && value !== null && value !== undefined && value !== ""
         ).length;
@@ -294,7 +291,7 @@ export default function AdvancedFilters({
                     {/* Token Filter */}
                     <div className="space-y-2">
                         <Label className="text-[#2D2D2D] font-medium flex items-center gap-2">
-                            <Tag className="w-4 h-4" />
+                            <Tag className="w-4 h-4  text-[#FF4135]" />
                             {t("tokenFilter")}
                         </Label>
                         <div className="relative">
@@ -319,6 +316,121 @@ export default function AdvancedFilters({
                                     <X className="w-4 h-4" />
                                 </button>
                             )}
+                        </div>
+                    </div>
+
+                    {/* Mine Filters */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Mine Name Filter */}
+                        <div className="space-y-2">
+                            <Label className={cn(
+                                "text-[#2D2D2D] font-medium flex items-center gap-2",
+                                isRTL ? "font-iransans" : "font-poppins"
+                            )}>
+                                <Mountain className="w-4 h-4 text-[#FF4135]" />
+                                {t("mineNameFilter") || "Mine Name"}
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    type="text"
+                                    value={localFilters.mine_name || ""}
+                                    onChange={(e) => handleFilterChange("mine_name", e.target.value)}
+                                    placeholder={t("enterMineName") || "Enter mine name"}
+                                    className={cn(
+                                        "h-12 rounded-xl border-2 border-gray-200 hover:border-[#FF4135] focus:border-[#FF4135] focus:ring-2 focus:ring-[#FF4135]/20 bg-white transition-all duration-200 text-[#2D2D2D]",
+                                        isRTL ? "font-iransans pr-12 pl-4 text-right" : "font-poppins pl-12 pr-4"
+                                    )}
+                                />
+                                <Mountain className={cn(
+                                    "absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none",
+                                    isRTL ? "right-3" : "left-3"
+                                )} />
+                                {localFilters.mine_name && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleClearIndividualFilter("mine_name")}
+                                        className={cn(
+                                            "absolute top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#FF4135] transition-colors duration-200 z-10",
+                                            isRTL ? "left-3" : "right-3"
+                                        )}
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Location Filter */}
+                        <div className="space-y-2">
+                            <Label className={cn(
+                                "text-[#2D2D2D] font-medium flex items-center gap-2",
+                                isRTL ? "font-iransans" : "font-poppins"
+                            )}>
+                                <MapPin className="w-4 h-4 text-[#FF4135]" />
+                                {t("locationFilter") || "Location"}
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    type="text"
+                                    list="iran-cities"
+                                    value={localFilters.mine_location || ""}
+                                    onChange={(e) => handleFilterChange("mine_location", e.target.value)}
+                                    placeholder={t("enterOrSelectLocation") || "Enter or select location"}
+                                    className={cn(
+                                        "h-12 rounded-xl border-2 border-gray-200 hover:border-[#FF4135] focus:border-[#FF4135] focus:ring-2 focus:ring-[#FF4135]/20 bg-white transition-all duration-200 text-[#2D2D2D]",
+                                        isRTL ? "font-iransans pr-12 pl-4 text-right" : "font-poppins pl-12 pr-4"
+                                    )}
+                                />
+                                <datalist id="iran-cities">
+                                    <option value="تهران" />
+                                    <option value="اصفهان" />
+                                    <option value="مشهد" />
+                                    <option value="شیراز" />
+                                    <option value="تبریز" />
+                                    <option value="کرج" />
+                                    <option value="اهواز" />
+                                    <option value="قم" />
+                                    <option value="کرمانشاه" />
+                                    <option value="ارومیه" />
+                                    <option value="رشت" />
+                                    <option value="زاهدان" />
+                                    <option value="کرمان" />
+                                    <option value="همدان" />
+                                    <option value="یزد" />
+                                    <option value="اردبیل" />
+                                    <option value="بندرعباس" />
+                                    <option value="اراک" />
+                                    <option value="قزوین" />
+                                    <option value="خرم‌آباد" />
+                                    <option value="سنندج" />
+                                    <option value="بوشهر" />
+                                    <option value="سمنان" />
+                                    <option value="بیرجند" />
+                                    <option value="گرگان" />
+                                    <option value="ساری" />
+                                    <option value="بابل" />
+                                    <option value="آمل" />
+                                    <option value="بجنورد" />
+                                    <option value="یاسوج" />
+                                    <option value="شهرکرد" />
+                                </datalist>
+                                <MapPin className={cn(
+                                    "absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none",
+                                    isRTL ? "right-3" : "left-3"
+                                )} />
+                                {localFilters.mine_location && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleClearIndividualFilter("mine_location")}
+                                        className={cn(
+                                            "absolute top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#FF4135] transition-colors duration-200 z-10",
+                                            isRTL ? "left-3" : "right-3"
+                                        )}
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 

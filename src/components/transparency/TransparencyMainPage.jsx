@@ -5,7 +5,20 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Search, Filter, Calendar, FileText, Eye, Building2, Download, Clock, Shield, X, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Calendar,
+  FileText,
+  Eye,
+  Building2,
+  Download,
+  Clock,
+  Shield,
+  X,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReportsList from "./ReportsList";
 import AdvancedFilters from "./AdvancedFilters";
@@ -24,7 +37,7 @@ export default function TransparencyMainPage() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [queryParams, setQueryParams] = useState({
     ordering: "-created_date", // Newest first by default
-    page_size: 9,
+    page_size: 20,
   });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -33,8 +46,17 @@ export default function TransparencyMainPage() {
     const urlParams = {};
 
     // Extract filter parameters from URL
-    const filterFields = ['title', 'date_from', 'date_to', 'token', 'author', 'search'];
-    filterFields.forEach(field => {
+    const filterFields = [
+      "title",
+      "date_from",
+      "date_to",
+      "token",
+      "author",
+      "search",
+      "mine_name",
+      "mine_location",
+    ];
+    filterFields.forEach((field) => {
       const value = searchParams.get(field);
       if (value) {
         urlParams[field] = value;
@@ -42,16 +64,16 @@ export default function TransparencyMainPage() {
     });
 
     // Extract pagination and ordering
-    const page = searchParams.get('page');
-    const ordering = searchParams.get('ordering');
-    const pageSize = searchParams.get('page_size');
+    const page = searchParams.get("page");
+    const ordering = searchParams.get("ordering");
+    const pageSize = searchParams.get("page_size");
 
-    setQueryParams(prev => ({
+    setQueryParams((prev) => ({
       ...prev,
       ...urlParams,
       page: page ? parseInt(page) : 1,
       ordering: ordering || "-created_date",
-      page_size: pageSize ? parseInt(pageSize) : 9,
+      page_size: pageSize ? parseInt(pageSize) : 20,
     }));
   }, [searchParams]);
 
@@ -71,31 +93,6 @@ export default function TransparencyMainPage() {
     updateURL(newParams);
   };
 
-  const handleFilter = (filter) => {
-    setSelectedFilter(filter);
-    let newParams = { ...queryParams, page: 1 }; // Reset to first page
-
-    switch (filter) {
-      case "all":
-        // Remove specific filters, keep only published
-        delete newParams.ordering;
-        newParams.ordering = "-created_date";
-        break;
-      case "recent":
-        newParams.ordering = "-created_date";
-        break;
-      default:
-        break;
-    }
-
-    setQueryParams(newParams);
-  };
-
-  const handleViewReport = (report) => {
-    // TODO: Navigate to report detail page or open modal
-    console.log("View report:", report);
-  };
-
   /**
    * Handle filter changes from AdvancedFilters component
    */
@@ -103,7 +100,7 @@ export default function TransparencyMainPage() {
     // Start with base params (ordering, page_size)
     const baseParams = {
       ordering: queryParams.ordering || "-created_date",
-      page_size: queryParams.page_size || 9,
+      page_size: queryParams.page_size || 20,
       page: 1, // Reset to first page when filters change
     };
 
@@ -131,20 +128,35 @@ export default function TransparencyMainPage() {
     const url = new URL(window.location);
 
     // Clear existing filter parameters
-    const filterFields = ['title', 'date_from', 'date_to', 'token', 'author', 'search', 'page', 'ordering', 'page_size'];
-    filterFields.forEach(field => {
+    const filterFields = [
+      "title",
+      "date_from",
+      "date_to",
+      "token",
+      "author",
+      "search",
+      "page",
+      "ordering",
+      "page_size",
+    ];
+    filterFields.forEach((field) => {
       url.searchParams.delete(field);
     });
 
     // Add current parameters
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== "" &&
-        !['page_size'].includes(key)) { // Don't include page_size in URL unless changed
-        if (key === 'page' && value === 1) {
+      if (
+        value !== null &&
+        value !== undefined &&
+        value !== "" &&
+        !["page_size"].includes(key)
+      ) {
+        // Don't include page_size in URL unless changed
+        if (key === "page" && value === 1) {
           // Don't include page=1 in URL
           return;
         }
-        if (key === 'ordering' && value === '-created_date') {
+        if (key === "ordering" && value === "-created_date") {
           // Don't include default ordering in URL
           return;
         }
@@ -206,8 +218,6 @@ export default function TransparencyMainPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-[140px] lg:pt-[180px] mb-10">
-
-
       {/* Corporate Commitment Banner */}
       <div className="max-w-7xl mx-auto  bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 rounded-xl sm:rounded-2xl border border-blue-200 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6">
@@ -359,13 +369,20 @@ export default function TransparencyMainPage() {
           <ReportsList
             reports={reports}
             isLoading={loadingReports}
-            onViewReport={handleViewReport}
-            onFiltersChange={handleFiltersChange}
-            filters={queryParams}
-            showAdvancedFilters={false}
-            onEditReport={null} // Hide edit for public view
-            onDeleteReport={null} // Hide delete for public view
-            isPublicView={true}
+            pagination={{
+              count: totalReports,
+              next: reportsResponse?.next,
+              previous: reportsResponse?.previous,
+              current_page: queryParams.page || 1,
+              total_pages: Math.ceil(
+                totalReports / (queryParams.page_size || 20)
+              ),
+            }}
+            onPageChange={(page) => {
+              const newParams = { ...queryParams, page };
+              setQueryParams(newParams);
+              updateURL(newParams);
+            }}
           />
         </div>
       </div>

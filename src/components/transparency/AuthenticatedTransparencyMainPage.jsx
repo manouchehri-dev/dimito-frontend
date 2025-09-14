@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useAuthStore } from "@/lib/auth/authStore";
@@ -14,22 +14,33 @@ import TransparencyMainPage from "./TransparencyMainPage";
 export default function AuthenticatedTransparencyMainPage() {
   const router = useRouter();
   const locale = useLocale();
-  const { isAuthenticated, isLoading, user, accessToken } = useAuthStore();
+
+  // Stable selectors
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const accessToken = useAuthStore((s) => s.accessToken);
+
   const [isChecking, setIsChecking] = useState(true);
 
+  const redirectPath = useMemo(() => `/${locale}/transparency/login`, [locale]);
+
+  const didCheckRef = useRef(false);
   useEffect(() => {
-    // Give a moment for the auth store to rehydrate from localStorage
+    if (didCheckRef.current) return;
+    didCheckRef.current = true;
+
     const timer = setTimeout(() => {
       setIsChecking(false);
 
-      // If not authenticated after checking, redirect to login
-      if (!isAuthenticated || !accessToken) {
-        router.push(`/${locale}/transparency/login`);
+      const { isAuthenticated: authed, accessToken: token } =
+        useAuthStore.getState();
+      if (!authed || !token) {
+        router.push(redirectPath);
       }
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [isAuthenticated, accessToken, router, locale]);
+  }, [router, redirectPath]);
 
   // Show loading while checking authentication
   if (isChecking || isLoading) {
