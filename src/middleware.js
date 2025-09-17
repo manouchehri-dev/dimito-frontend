@@ -1,27 +1,28 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-// Custom middleware with domain-based locale detection
 export default function middleware(request) {
   const { pathname, hostname } = request.nextUrl;
   
-  // Domain-based locale detection
-  let locale = "fa"; // default
-  if (hostname === "dimito.io") {
-    locale = "en";
-  } else if (hostname === "dimito.ir") {
-    locale = "fa";
-  }
-  
-  // If accessing root path, redirect to locale-specific path
+  // Only handle root path redirects, let next-intl handle everything else
   if (pathname === "/") {
+    let locale = "fa"; // default
+    
+    // Domain-based locale detection
+    if (hostname === "dimito.io") {
+      locale = "en";
+    } else if (hostname === "dimito.ir") {
+      locale = "fa";
+    }
+    
+    // Redirect to locale-specific path
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}`;
     return NextResponse.redirect(url);
   }
   
-  // Handle other paths with next-intl middleware
+  // Let next-intl handle all other routing
   const handleI18nRouting = createMiddleware(routing);
   return handleI18nRouting(request);
 }
