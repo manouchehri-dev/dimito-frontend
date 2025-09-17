@@ -170,7 +170,7 @@ export const useAuthStore = create(
       },
     }),
     {
-      name: "transparency-auth-storage",
+      name: "dimito-auth-storage",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
