@@ -6,12 +6,16 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/server-snippet: |
-      if ($host = dimito.ir) {
-        if ($uri = /) { return 301 https://$host/fa; }
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($host = "dimito.ir") {
+        if ($uri = "/") { 
+          return 301 https://$host/fa; 
+        }
       }
-      if ($host = dimito.io) {
-        if ($uri = /) { return 301 https://$host/en; }
+      if ($host = "dimito.io") {
+        if ($uri = "/") { 
+          return 301 https://$host/en; 
+        }
       }
 spec:
   tls:
@@ -29,7 +33,7 @@ spec:
           service:
             name: frontend
             port:
-              number: 3000 
+              number: 3000
   - host: dimito.io
     http:
       paths:
