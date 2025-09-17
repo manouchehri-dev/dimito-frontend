@@ -131,8 +131,8 @@ const DetailedTokenomics = () => {
             size="lg"
             className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
           >
-            <Download className="w-5 h-5 mr-2" />
-            توکنومیکس (فارسی)
+            <Download className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+            {dt("downloads.persian")}
           </Button>
 
           <Button
@@ -140,8 +140,8 @@ const DetailedTokenomics = () => {
             size="lg"
             className="bg-gradient-to-l from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
           >
-            <FileText className="w-5 h-5 mr-2" />
-            توکنومیکس (انگلیسی)
+            <FileText className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+            {dt("downloads.english")}
           </Button>
         </div>
       </div>

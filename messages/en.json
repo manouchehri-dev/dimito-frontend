@@ -748,6 +748,8 @@
     "confirmUnpublish": "Are you sure you want to unpublish this report?",
     "publishing": "Publishing...",
     "unpublishing": "Unpublishing...",
+    "published": "Published",
+    "publicAccess": "Public Access",
     "files": "Files",
     "filesAttached": "files attached",
     "saveAsDraft": "Save as Draft",
@@ -1029,6 +1031,10 @@
       "description": "Connect your wallet to join the DiMiTo ecosystem and participate in the future of mining.",
       "connectWallet": "Connect Wallet",
       "readWhitepaper": "Read Whitepaper"
+    },
+    "downloads": {
+      "persian": "Tokenomics (Persian)",
+      "english": "Tokenomics (English)"
     }
   },
   "login": {
