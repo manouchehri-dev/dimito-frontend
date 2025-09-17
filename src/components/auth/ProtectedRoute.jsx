@@ -1,122 +1,60 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from './AuthContext';
-import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
+"use client";
+
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useAuthStore } from "@/lib/auth/authStore";
+import { getLoginUrl } from "@/lib/auth/loginUtils";
 
 /**
  * Protected Route Component
- * Protects routes that require authentication
- * Redirects unauthenticated users to login page
+ * Redirects unauthenticated users to login with current path as redirect
  */
-export function ProtectedRoute({ 
+export default function ProtectedRoute({ 
   children, 
-  requireAdmin = false,
-  fallback = <LoadingSpinner />,
-  redirectTo = '/fa/transparency/login'
+  redirectTo = null, // Custom redirect destination
+  fallback = null // Custom loading/redirect component
 }) {
   const router = useRouter();
-  const { isAuthenticated, isLoading, isAdmin, user } = useAuth();
+  const pathname = usePathname();
+  const locale = useLocale();
+  const t = useTranslations("common");
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isLoading = useAuthStore((s) => s.isLoading);
 
   useEffect(() => {
-    // Don't redirect while loading
-    if (isLoading) return;
-
-    // Redirect if not authenticated
-    if (!isAuthenticated) {
-      router.push(redirectTo);
-      return;
+    if (!isLoading && !isAuthenticated) {
+      // Use custom redirect or current path
+      const redirect = redirectTo || pathname;
+      const loginUrl = getLoginUrl(redirect, locale);
+      router.push(loginUrl);
     }
+  }, [isAuthenticated, isLoading, router, pathname, locale, redirectTo]);
 
-    // Redirect if admin access required but user is not admin
-    if (requireAdmin && !isAdmin) {
-      router.push('/fa/transparency/dashboard'); // Redirect to regular dashboard
-      return;
-    }
-  }, [isAuthenticated, isLoading, isAdmin, requireAdmin, router, redirectTo]);
-
-  // Show loading while checking authentication
+  // Show loading state while checking authentication
   if (isLoading) {
-    return fallback;
-  }
-
-  // Don't render if not authenticated
-  if (!isAuthenticated) {
-    return fallback;
-  }
-
-  // Don't render if admin required but user is not admin
-  if (requireAdmin && !isAdmin) {
-    return fallback;
-  }
-
-  // Render children if authenticated and authorized
-  return children;
-}
-
-/**
- * Higher-order component to protect routes
- * @param {React.Component} Component - Component to protect
- * @param {Object} options - Protection options
- * @returns {React.Component} Protected component
- */
-export function withProtectedRoute(Component, options = {}) {
-  return function ProtectedComponent(props) {
-    return (
-      <ProtectedRoute {...options}>
-        <Component {...props} />
-      </ProtectedRoute>
-    );
-  };
-}
-
-/**
- * Component to show when user lacks required permissions
- */
-export function UnauthorizedAccess({ 
-  message = "You don't have permission to access this page.",
-  showBackButton = true 
-}) {
-  const router = useRouter();
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          Access Denied
-        </h1>
-        <p className="text-gray-600 mb-6">
-          {message}
-        </p>
-        {showBackButton && (
-          <button
-            onClick={() => router.back()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Go Back
-          </button>
-        )}
+    return fallback || (
+      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF4135] mx-auto mb-4"></div>
+          <p className="text-gray-600 font-iransans">{t("loading")}</p>
+        </div>
       </div>
-    </div>
-  );
-}
-
-/**
- * Role-based access control component
- * Shows different content based on user role
- */
-export function RoleBasedAccess({ 
-  children, 
-  allowedRoles = [], 
-  fallback = <UnauthorizedAccess /> 
-}) {
-  const { user, userRole } = useAuth();
-
-  // Check if user has required role
-  const hasAccess = allowedRoles.length === 0 || allowedRoles.includes(userRole);
-
-  if (!hasAccess) {
-    return fallback;
+    );
   }
 
+  // Show loading state while redirecting
+  if (!isAuthenticated) {
+    return fallback || (
+      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF4135] mx-auto mb-4"></div>
+          <p className="text-gray-600 font-iransans">{t("loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render protected content
   return children;
 }

@@ -182,7 +182,7 @@ const Footer = () => {
                 {t("navigation.transparency")}
               </Link>
               <Link
-                href={`/transparency/login`}
+                href={`/login?redirect=transparency`}
                 className={`text-[clamp(12px,1.4vw,14px)] text-orange-600 hover:text-orange-700 font-medium transition-all duration-200 transform ${
                   isRtl
                     ? "hover:-translate-x-1 font-iransans"
@@ -192,7 +192,7 @@ const Footer = () => {
                 {t("navigation.transparencyLogin")}
               </Link>
               <Link
-                href={`/dashboard`}
+                href={`/login?redirect=dashboard`}
                 className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
                   isRtl
                     ? "hover:-translate-x-1 font-iransans"

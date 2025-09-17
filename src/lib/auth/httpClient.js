@@ -116,6 +116,17 @@ export const authEndpoints = {
 };
 
 /**
+ * API endpoints for presale operations
+ */
+export const presaleEndpoints = {
+  createFromToken: "/presale/create-from-token/",
+  list: "/presale/",
+  detail: (id) => `/presale/${id}/`,
+  update: (id) => `/presale/${id}/`,
+  delete: (id) => `/presale/${id}/`,
+};
+
+/**
  * Generic API request function with error handling
  * @param {string} method - HTTP method
  * @param {string} url - API endpoint
