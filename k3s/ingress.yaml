@@ -10,54 +10,15 @@ spec:
   tls:
   - hosts:
     - dimito.ir
-    - dimito.io
     secretName: frontend-tls
   rules:
   - host: dimito.ir
     http:
       paths:
-      - path: /fa
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 3000
-      - path: /en
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 3000
       - path: /
-        pathType: Exact
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 3000
-  - host: dimito.io
-    http:
-      paths:
-      - path: /fa
         pathType: Prefix
         backend:
           service:
             name: frontend
             port:
-              number: 3000
-      - path: /en
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 3000
-      - path: /
-        pathType: Exact
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 3000
+          number: 3000
