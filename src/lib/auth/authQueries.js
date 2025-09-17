@@ -11,6 +11,7 @@ export const authKeys = {
   all: ["auth"],
   user: () => [...authKeys.all, "user"],
   verify: () => [...authKeys.all, "verify"],
+  dmtAccess: () => [...authKeys.all, "dmt-access"],
 };
 
 /**
@@ -135,4 +136,33 @@ export function useAuth() {
     error: error || verifyQuery.error,
     isVerifying: verifyQuery.isFetching,
   };
+}
+
+/**
+ * Hook to check if user has DMT creation access
+ * @returns {Object} Query object with access status
+ */
+export function useDMTAccess() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  return useQuery({
+    queryKey: authKeys.dmtAccess(),
+    queryFn: async () => {
+      const { apiRequest } = await import("./httpClient");
+      return apiRequest("GET", "/auth/has_add_dmt_access/");
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on 403 (access denied) or 401 (unauthorized)
+      if (error?.status === 403 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    select: (data) => {
+      // Return boolean based on API response
+      return data?.allowed === true;
+    },
+  });
 }
