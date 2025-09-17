@@ -7,7 +7,12 @@ export default function middleware(req) {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
 
-  // Only redirect if no locale prefix is present
+  // --- Skip health probes (kubelet requests via pod IP, not domain) ---
+  if (!hostname.includes("dimito.ir") && !hostname.includes("dimito.io")) {
+    return new Response("ok", { status: 200 });
+  }
+
+  // --- Domain-based locale redirect, only if no locale prefix ---
   if (!url.pathname.startsWith("/fa") && !url.pathname.startsWith("/en")) {
     if (hostname.endsWith("dimito.ir")) {
       url.pathname = `/fa${url.pathname}`;
@@ -17,7 +22,7 @@ export default function middleware(req) {
     return Response.redirect(url);
   }
 
-  // Let next-intl handle requests with a locale
+  // --- Fallback to intl middleware ---
   return intlMiddleware(req);
 }
 
