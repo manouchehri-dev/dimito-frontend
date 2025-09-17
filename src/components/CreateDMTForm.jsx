@@ -146,10 +146,10 @@ const CreateDMTForm = () => {
     },
     onSuccess: (data) => {
       console.log('✅ Presale created successfully:', data);
-      
+
       // Step 6: Completed
       updateLoadingStep(loadingSteps.COMPLETED);
-      
+
       toast.success(
         `${t("presaleCreatedSuccess") || "Presale created successfully!"}\n${data.tokenInfo.name} (${data.tokenInfo.symbol})`,
         {
@@ -169,13 +169,13 @@ const CreateDMTForm = () => {
     },
     onError: (error) => {
       console.error('❌ Presale creation failed:', error);
-      
+
       // Reset loading state on error
       setLoadingStep(null);
       setProgress(0);
       setTransactionStatus('error');
       setIsSubmitting(false);
-      
+
       toast.error(
         t("presaleCreationFailed") || error.message || "Failed to create presale",
         {
@@ -331,7 +331,7 @@ const CreateDMTForm = () => {
         try {
           // Step 2: Submitting
           updateLoadingStep(loadingSteps.SUBMITTING);
-          
+
           // Call the smart contract
           writeContract({
             address: CONTRACT_ADDRESS,
@@ -390,7 +390,7 @@ const CreateDMTForm = () => {
     try {
       // Step 3: Confirming (transaction confirmed)
       updateLoadingStep(loadingSteps.CONFIRMING);
-      
+
       // Show initial success toast
       toast.success(t("transactionSuccess") || "DMT Token created successfully!", {
         duration: 5000,
@@ -534,15 +534,15 @@ const CreateDMTForm = () => {
                     </span>
                     <span className="text-sm text-blue-600">{progress}%</span>
                   </div>
-                  
+
                   {/* Progress Bar */}
                   <div className="w-full bg-blue-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
                       style={{ width: `${progress}%` }}
                     ></div>
                   </div>
-                  
+
                   {/* Step Indicators */}
                   <div className="flex justify-between mt-3 text-xs">
                     <div className={`flex flex-col items-center ${progress >= 10 ? 'text-blue-600' : 'text-gray-400'}`}>
