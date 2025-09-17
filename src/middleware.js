@@ -1,20 +1,30 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 
+const intlMiddleware = createMiddleware(routing);
+
+export default function middleware(req) {
+  const url = req.nextUrl;
+  const hostname = req.headers.get("host") || "";
+
+  // Only redirect if no locale prefix is present
+  if (!url.pathname.startsWith("/fa") && !url.pathname.startsWith("/en")) {
+    if (hostname.endsWith("dimito.ir")) {
+      url.pathname = `/fa${url.pathname}`;
+    } else if (hostname.endsWith("dimito.io")) {
+      url.pathname = `/en${url.pathname}`;
+    }
+    return Response.redirect(url);
+  }
+
+  // Let next-intl handle requests with a locale
+  return intlMiddleware(req);
+}
+
 export const config = {
   matcher: [
-    // Enable a redirect to a matching locale at the root
     "/",
-
-    // Set a cookie to remember the previous locale for
-    // all requests that have a locale prefix
     "/(fa|en)/:path*",
-
-    // Enable redirects that add missing locales
-    // (e.g. `/pathnames` -> `/en/pathnames`)
-    // Match all paths except Next.js internals and static files
     "/((?!_next|_vercel|.*\\..*).*)",
   ],
 };
-
-export default createMiddleware(routing);
