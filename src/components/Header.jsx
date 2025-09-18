@@ -41,6 +41,11 @@ const Header = () => {
 
   const navItems = [
     {
+      href: "/",
+      label: t("home"),
+      active: pathWithoutLocale === "/",
+    },
+    {
       href: "/presales",
       label: t("presales"),
       active: pathWithoutLocale === "/presales",
