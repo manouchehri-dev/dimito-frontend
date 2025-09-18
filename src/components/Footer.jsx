@@ -85,7 +85,7 @@ const Footer = () => {
       {/* Animated Gradient Border */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 xl:gap-16">
           {/* Brand Section */}
           <div className="lg:col-span-1 flex flex-col items-center lg:items-start gap-4 group">
@@ -105,9 +105,8 @@ const Footer = () => {
               </div>
               <h1
                 id="footer-heading"
-                className={`text-[clamp(16px,2.2vw,28px)] font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent ${
-                  isRtl ? "font-iransans" : "font-poppins"
-                }`}
+                className={`text-[clamp(16px,2.2vw,28px)] font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent ${isRtl ? "font-iransans" : "font-poppins"
+                  }`}
               >
                 DMT Token
               </h1>
@@ -115,16 +114,14 @@ const Footer = () => {
 
             <div className="text-center lg:text-start">
               <p
-                className={`font-bold text-[clamp(14px,1.8vw,18px)] [text-wrap:balance] text-gray-800 mb-2 ${
-                  isRtl ? "font-iransans" : "font-poppins"
-                }`}
+                className={`font-bold text-[clamp(14px,1.8vw,18px)] [text-wrap:balance] text-gray-800 mb-2 ${isRtl ? "font-iransans" : "font-poppins"
+                  }`}
               >
                 {t("subtitle")}
               </p>
               <p
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 max-w-sm mx-auto lg:mx-0 leading-relaxed ${
-                  isRtl ? "font-iransans" : "font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 max-w-sm mx-auto lg:mx-0 leading-relaxed ${isRtl ? "font-iransans" : "font-poppins"
+                  }`}
               >
                 {t("description")}
               </p>
@@ -134,72 +131,65 @@ const Footer = () => {
           {/* Navigation Links */}
           <div className="flex flex-col items-center lg:items-start gap-4">
             <h3
-              className={`font-bold text-[clamp(14px,1.8vw,18px)] text-gray-800 ${
-                isRtl ? "font-iransans" : "font-poppins"
-              }`}
+              className={`font-bold text-[clamp(14px,1.8vw,18px)] text-gray-800 ${isRtl ? "font-iransans" : "font-poppins"
+                }`}
             >
               {isRtl ? "پیوندها" : "Navigation"}
             </h3>
             <nav className="flex flex-col gap-2">
               <Link
                 href={``}
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
                 {t("navigation.home")}
               </Link>
               <Link
                 href="/tokenomics"
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
                 {t("navigation.tokenomics")}
               </Link>
               <Link
                 href="/whitepaper"
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
                 {t("navigation.whitepaper")}
               </Link>
               <Link
                 href={`/transparency`}
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
                 {t("navigation.transparency")}
               </Link>
               <Link
-                href={`/login?redirect=transparency`}
-                className={`text-[clamp(12px,1.4vw,14px)] text-orange-600 hover:text-orange-700 font-medium transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                href={`/dashboard`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
-                {t("navigation.transparencyLogin")}
+                {t("navigation.dashboard")}
               </Link>
               <Link
                 href={`/login?redirect=dashboard`}
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
-                {t("navigation.dashboard")}
+                {t("navigation.transparencyLogin")}
               </Link>
             </nav>
           </div>
@@ -207,40 +197,36 @@ const Footer = () => {
           {/* Social & Legal Links */}
           <div className="flex flex-col items-center lg:items-start gap-4">
             <h3
-              className={`font-bold text-[clamp(14px,1.8vw,18px)] text-gray-800 ${
-                isRtl ? "font-iransans" : "font-poppins"
-              }`}
+              className={`font-bold text-[clamp(14px,1.8vw,18px)] text-gray-800 ${isRtl ? "font-iransans" : "font-poppins"
+                }`}
             >
               {t("social.title")}
             </h3>
             <div className="flex flex-col gap-2">
               <a
                 href="#"
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
                 {t("social.telegram")}
               </a>
               <a
                 href="#"
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
                 {t("social.twitter")}
               </a>
               <a
                 href="#"
-                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${
-                  isRtl
-                    ? "hover:-translate-x-1 font-iransans"
-                    : "hover:translate-x-1 font-poppins"
-                }`}
+                className={`text-[clamp(12px,1.4vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
+                  ? "hover:-translate-x-1 font-iransans"
+                  : "hover:translate-x-1 font-poppins"
+                  }`}
               >
                 {t("social.linkedin")}
               </a>
@@ -248,34 +234,30 @@ const Footer = () => {
 
             <div className="mt-4">
               <h4
-                className={`font-semibold text-[clamp(12px,1.4vw,14px)] text-gray-700 mb-2 ${
-                  isRtl ? "font-iransans" : "font-poppins"
-                }`}
+                className={`font-semibold text-[clamp(12px,1.4vw,14px)] text-gray-700 mb-2 ${isRtl ? "font-iransans" : "font-poppins"
+                  }`}
               >
                 {isRtl ? "قانونی" : "Legal"}
               </h4>
               <div className="flex flex-col gap-1">
                 <a
                   href="#"
-                  className={`text-[clamp(11px,1.2vw,12px)] text-gray-500 hover:text-orange-500 transition-colors duration-200 ${
-                    isRtl ? "font-iransans" : "font-poppins"
-                  }`}
+                  className={`text-[clamp(11px,1.2vw,12px)] text-gray-500 hover:text-orange-500 transition-colors duration-200 ${isRtl ? "font-iransans" : "font-poppins"
+                    }`}
                 >
                   {t("legal.privacy")}
                 </a>
                 <a
                   href="#"
-                  className={`text-[clamp(11px,1.2vw,12px)] text-gray-500 hover:text-orange-500 transition-colors duration-200 ${
-                    isRtl ? "font-iransans" : "font-poppins"
-                  }`}
+                  className={`text-[clamp(11px,1.2vw,12px)] text-gray-500 hover:text-orange-500 transition-colors duration-200 ${isRtl ? "font-iransans" : "font-poppins"
+                    }`}
                 >
                   {t("legal.terms")}
                 </a>
                 <a
                   href="#"
-                  className={`text-[clamp(11px,1.2vw,12px)] text-gray-500 hover:text-orange-500 transition-colors duration-200 ${
-                    isRtl ? "font-iransans" : "font-poppins"
-                  }`}
+                  className={`text-[clamp(11px,1.2vw,12px)] text-gray-500 hover:text-orange-500 transition-colors duration-200 ${isRtl ? "font-iransans" : "font-poppins"
+                    }`}
                 >
                   {t("legal.disclaimer")}
                 </a>
@@ -286,9 +268,8 @@ const Footer = () => {
           {/* Newsletter Section */}
           <div className="flex w-full flex-col items-center lg:items-start gap-4">
             <h3
-              className={`font-bold text-[clamp(14px,1.8vw,18px)] text-gray-800 ${
-                isRtl ? "font-iransans" : "font-poppins"
-              }`}
+              className={`font-bold text-[clamp(14px,1.8vw,18px)] text-gray-800 ${isRtl ? "font-iransans" : "font-poppins"
+                }`}
             >
               {t("subscribe")}
             </h3>
@@ -321,10 +302,9 @@ const Footer = () => {
                       focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-white focus:shadow-md
                       hover:shadow-md hover:ring-orange-300/50
                       ${emailError ? "ring-red-400 ring-2" : "ring-gray-200"}
-                      ${
-                        isRtl
-                          ? "font-iransans text-right"
-                          : "font-poppins text-left"
+                      ${isRtl
+                        ? "font-iransans text-right"
+                        : "font-poppins text-left"
                       }
                     `}
                     dir={isRtl ? "rtl" : "ltr"}
@@ -340,10 +320,9 @@ const Footer = () => {
                     w-full px-4 py-2.5 rounded-lg font-bold text-[clamp(12px,1.4vw,14px)]
                     transition-all duration-300 transform
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-400
-                    ${
-                      isSubscribed
-                        ? "bg-green-500 text-white shadow-sm"
-                        : "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-sm hover:shadow-md hover:shadow-orange-500/20 hover:scale-[1.02]"
+                    ${isSubscribed
+                      ? "bg-green-500 text-white shadow-sm"
+                      : "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-sm hover:shadow-md hover:shadow-orange-500/20 hover:scale-[1.02]"
                     }
                     ${isLoading && "cursor-wait opacity-80"}
                     ${isRtl ? "font-iransans" : "font-poppins"}
@@ -382,22 +361,20 @@ const Footer = () => {
               {/* Error/Success Messages */}
               {emailError && (
                 <p
-                  className={`text-red-500 text-xs mt-2 animate-in slide-in-from-top-1 duration-200 ${
-                    isRtl
-                      ? "font-iransans text-right"
-                      : "font-poppins text-left"
-                  }`}
+                  className={`text-red-500 text-xs mt-2 animate-in slide-in-from-top-1 duration-200 ${isRtl
+                    ? "font-iransans text-right"
+                    : "font-poppins text-left"
+                    }`}
                 >
                   {emailError}
                 </p>
               )}
               {isSubscribed && (
                 <p
-                  className={`text-green-600 text-xs mt-2 animate-in slide-in-from-bottom-2 duration-500 ${
-                    isRtl
-                      ? "font-iransans text-right"
-                      : "font-poppins text-left"
-                  }`}
+                  className={`text-green-600 text-xs mt-2 animate-in slide-in-from-bottom-2 duration-500 ${isRtl
+                    ? "font-iransans text-right"
+                    : "font-poppins text-left"
+                    }`}
                 >
                   {isRtl ? "✓ " : "✓ "}
                   {t("subscribeSuccess")}

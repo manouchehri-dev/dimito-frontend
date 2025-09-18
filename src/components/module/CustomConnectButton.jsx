@@ -27,7 +27,7 @@ export default function CustomConnectButton({ className, isMobile = false }) {
   const [hasAuthenticated, setHasAuthenticated] = useState(false);
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isConnecting, isReconnecting } = useAccount();
   const { disconnect } = useDisconnect();
   const router = useRouter();
   const dropdownRef = useRef(null);
@@ -137,10 +137,36 @@ export default function CustomConnectButton({ className, isMobile = false }) {
     ? "w-full justify-center py-3 text-sm font-medium"
     : "px-4 lg:px-4 xl:px-6 py-1.5 lg:py-2 xl:py-2.5 text-xs lg:text-xs xl:text-sm font-medium";
 
+  // Show loading state when connecting or reconnecting
+  if (isConnecting || isReconnecting) {
+    return (
+      <Button
+        className={`${className} ${buttonBaseClass} whitespace-nowrap flex items-center gap-2 opacity-75 cursor-not-allowed`}
+        disabled
+        title={isConnecting ? t("connecting") : t("reconnecting")}
+      >
+        {/* Loading spinner */}
+        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+
+        <span className={`${isMobile ? "inline" : "hidden xl:inline"}`}>
+          {isConnecting ? t("connecting") : t("reconnecting")}
+        </span>
+        {!isMobile && (
+          <span className="xl:hidden">
+            {isConnecting 
+              ? (isRTL ? "اتصال..." : "Connecting...") 
+              : (isRTL ? "اتصال مجدد..." : "Reconnecting...")
+            }
+          </span>
+        )}
+      </Button>
+    );
+  }
+
   if (!isConnected) {
     return (
       <Button
-        className={`${className} ${buttonBaseClass} whitespace-nowrap flex items-center gap-2`}
+        className={`${className} ${buttonBaseClass} whitespace-nowrap flex items-center gap-2 cursor-pointer`}
         onClick={handleConnectClick}
         title={t("connect")}
       >

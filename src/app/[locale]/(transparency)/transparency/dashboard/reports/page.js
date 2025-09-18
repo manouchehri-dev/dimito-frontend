@@ -1,8 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
 import DashboardReportsPage from "@/components/transparency/DashboardReportsPage";
 
-export default function DashboardReportsPageRoute({ params }) {
-  const { locale } = params;
+export default async function DashboardReportsPageRoute({ params }) {
+  const { locale } = await params;
   setRequestLocale(locale);
 
   return <DashboardReportsPage />;

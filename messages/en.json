@@ -6,15 +6,27 @@
     "whitepaper": "White paper",
     "connectWallet": "Connect wallet"
   },
+  "navigation": {
+    "home": "Home",
+    "presales": "Presales",
+    "tokenomics": "Tokenomics",
+    "whitepaper": "Whitepaper",
+    "transparency": "Transparency",
+    "listing": "Listing",
+    "transparencyLogin": "Transparency (Login)",
+    "dashboard": "Dashboard"
+  },
   "Navbar": {
     "home": "Home",
+    "presales": "Presales",
+    "learn": "Learn",
     "tokenomics": "Tokenomics",
-    "whitepaper": "White paper",
-    "connect_wallet": "Connect wallet",
+    "whitepaper": "Whitepaper",
+    "tokenizationRequest": "Listing",
+    "transparency": "Transparency",
+    "connect_wallet": "Connect Wallet",
     "about": "About",
-    "dashboard": "Dashboard",
-    "tokenizationRequest": "Token Listing",
-    "transparency": "Transparency Platform"
+    "dashboard": "Dashboard"
   },
   "Hero": {
     "title": "DiMiTo - Real-World Mining Meets Web3",
@@ -213,28 +225,81 @@
     },
     "help": "Still having trouble? Contact our support team for assistance."
   },
+  "presales": {
+    "title": "Presales",
+    "subtitle": "Discover and participate in DMT token presales",
+    "refresh": "Refresh",
+    "tryAgain": "Try Again",
+    "stats": {
+      "total": "Total Presales",
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "ended": "Ended"
+    },
+    "status": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "ended": "Ended",
+      "inactive": "Inactive",
+      "unknown": "Unknown"
+    },
+    "filters": {
+      "status": "Filter by Status",
+      "sortBy": "Sort By",
+      "all": "All Presales",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "price": "Price",
+      "supply": "Supply"
+    },
+    "card": {
+      "price": "Price",
+      "supply": "Total Supply",
+      "progress": "Progress",
+      "purchases": "Purchases",
+      "timing": "Timing",
+      "starts": "Starts",
+      "ends": "Ends",
+      "viewDetails": "View Details"
+    },
+    "empty": {
+      "title": "No Presales Found",
+      "description": "There are no presales matching your current filters."
+    },
+    "error": {
+      "title": "Failed to Load Presales",
+      "description": "We couldn't load the presales data. Please try again."
+    }
+  },
+  "floatingPresale": {
+    "title": "🔥 HOT",
+    "activePresales": "Active Presales",
+    "highReturns": "High Returns",
+    "limitedTime": "Limited Time",
+    "tooltip": "Click to view all active presales"
+  },
+  "presaleBanner": {
+    "title": "🔥 Live Now:",
+    "activePresales": "Active Presales",
+    "description": "Don't miss out on guaranteed returns from real mining projects!",
+    "cta": "Invest Now"
+  },
   "footer": {
     "title": "DiMiTo",
     "subtitle": "Innovative Ecosystem Connecting Mining and DeFi",
     "description": "Tokenization of mining revenue streams with complete transparency and strong legal guarantees. The future of democratic investing.",
-    "subscribe": "Subscribe to our newsletter",
-    "email": "Email or phone number",
-    "button": "Register in the newsletter",
-    "emailRequired": "Email is required",
-    "emailInvalid": "Please enter a valid email",
-    "navigation": {
+    "quickLinks": {
+      "title": "Quick Links",
       "home": "Home",
-      "tokenomics": "Tokenomics",
-      "whitepaper": "White Paper",
-      "transparency": "Transparency Platform",
-      "transparencyLogin": "Transparency Login",
-      "dashboard": "Dashboard",
-      "about": "About Us"
+      "about": "About",
+      "services": "Services",
+      "contact": "Contact"
     },
     "legal": {
+      "title": "Legal",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
-      "disclaimer": "Disclaimer"
+      "cookies": "Cookie Policy"
     },
     "social": {
       "title": "Follow Us",
@@ -246,12 +311,30 @@
   },
   "wallet": {
     "connect": "Connect Wallet",
+    "connecting": "Connecting...",
+    "reconnecting": "Reconnecting...",
     "connected": "Connected",
     "dashboard": "Dashboard",
     "disconnect": "Disconnect",
     "viewProfile": "View Profile",
     "copyAddress": "Copy Address",
     "copied": "Copied!"
+  },
+  "walletModal": {
+    "title": "Connect Your Wallet",
+    "subtitle": "Access your personalized dashboard and manage your DMT token portfolio",
+    "accessRequired": "Wallet Connection Required",
+    "accessRequiredDesc": "To access your dashboard and view your portfolio, please connect your wallet. This ensures secure access to your personal data and transactions.",
+    "secureAccess": "Secure Access",
+    "secureAccessDesc": "Your wallet connection is encrypted and secure",
+    "instantAccess": "Instant Access",
+    "instantAccessDesc": "Get immediate access to your dashboard and portfolio",
+    "globalCompatibility": "Global Compatibility",
+    "globalCompatibilityDesc": "Works with all major wallet providers worldwide",
+    "connectWallet": "Connect Wallet",
+    "goToHomepage": "Go to Homepage",
+    "securityNote": "Security First",
+    "securityNoteDesc": "We never store your private keys. Your wallet connection is always secure and under your control."
   },
   "contact": {
     "title": "Contact Us",
@@ -328,8 +411,9 @@
     "title": "Transparency Dashboard",
     "subtitle": "Manage your transparency reports and view analytics",
     "welcome": "Welcome",
-    "connectWallet": "Connect Your Wallet",
-    "connectWalletDescription": "Please connect your wallet to view your dashboard and portfolio information.",
+    "connectWallet": "Connect Wallet",
+    "connectWalletDescription": "Please connect your wallet to access your personalized dashboard and manage your DMT tokens.",
+    "checkingWalletConnection": "Checking wallet connection...",
     "loading": "Loading dashboard data...",
     "refreshData": "Refresh Data",
     "totalSpent": "Total Spent",

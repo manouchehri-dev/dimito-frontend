@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import FloatingPresaleButton from "@/components/FloatingPresaleButton";
 
 export function generateViewport() {
   return {
@@ -98,6 +99,7 @@ export default async function Layout({ children }) {
       <Header />
       {children}
       <Footer />
+      <FloatingPresaleButton />
     </>
   );
 }

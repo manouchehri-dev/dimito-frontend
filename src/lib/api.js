@@ -132,5 +132,19 @@ export function useApiMutationFormData(
   });
 }
 
+// Presales API hook
+export function usePresales(options = {}) {
+  return useApiQuery(
+    ["presales"],
+    "/presale/presales/",
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
+}
+
 // Export the api instance for direct use
 export default api;
