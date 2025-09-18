@@ -134,16 +134,34 @@ export function useApiMutationFormData(
 
 // Presales API hook
 export function usePresales(options = {}) {
-  return useApiQuery(
-    ["presales"],
-    "/presale/presales/",
-    {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
-      refetchOnWindowFocus: false,
-      ...options,
-    }
-  );
+  return useApiQuery(["presales"], "/presale/presales/", {
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+}
+
+// Token Details Hook
+export function useTokenDetails(tokenId, options = {}) {
+  return useApiQuery(["tokenDetails", tokenId], `/presale/tokens/${tokenId}/`, {
+    enabled: !!tokenId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+}
+
+// Presale Details Hook
+export function usePresaleDetails(presaleId, options = {}) {
+  return useApiQuery(["presaleDetails", presaleId], `/presale/presales/${presaleId}/`, {
+    enabled: !!presaleId,
+    staleTime: 2 * 60 * 1000, // 2 minutes (more frequent updates for buy page)
+    cacheTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    ...options,
+  });
 }
 
 // Export the api instance for direct use

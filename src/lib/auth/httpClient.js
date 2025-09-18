@@ -128,6 +128,13 @@ export const presaleEndpoints = {
 };
 
 /**
+ * API endpoints for token operations
+ */
+export const tokenEndpoints = {
+  details: (id) => `/presale/tokens/${id}/`,
+};
+
+/**
  * Generic API request function with error handling
  * @param {string} method - HTTP method
  * @param {string} url - API endpoint

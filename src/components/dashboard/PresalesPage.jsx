@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { usePresales } from "@/lib/api";
+import { useRouter } from "@/i18n/navigation";
 import {
   Clock,
   DollarSign,
@@ -16,19 +17,37 @@ import {
   RefreshCw,
   AlertCircle,
   CheckCircle,
-  XCircle
+  XCircle,
+  ShoppingCart
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { enUS, faIR } from "date-fns/locale";
+// Removed modal import - using dedicated buy page instead
 
 export default function PresalesPage() {
   const t = useTranslations("presales");
   const locale = useLocale();
   const isRTL = locale === "fa";
   const dateLocale = locale === "fa" ? faIR : enUS;
+  const router = useRouter();
 
   const { data: presalesData, isLoading, error, refetch, isRefetching } = usePresales();
 
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const dateStr = date.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
+    });
+    const timeStr = date.toLocaleTimeString(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    return `${dateStr} ${timeStr}`;
+  };
   const [sortBy, setSortBy] = useState("start_time");
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -95,6 +114,13 @@ export default function PresalesPage() {
     }
   };
 
+  const handleBuyClick = (e, presale) => {
+    e.stopPropagation(); // Prevent card click navigation
+    // Navigate to buy page - since each token has 1 presale, use token ID
+    const presaleId = presale.id;
+    router.push(`/presales/${presaleId}/buy`);
+  };
+
   // Filter and sort presales
   const processedPresales = presalesData?.results
     ?.filter(presale => {
@@ -104,7 +130,11 @@ export default function PresalesPage() {
     ?.sort((a, b) => {
       switch (sortBy) {
         case "start_time":
-          return b.start_unix_timestamp - a.start_unix_timestamp;
+          // Sort by status priority: active > upcoming > ended > inactive
+          const statusPriority = { active: 4, upcoming: 3, ended: 2, inactive: 1 };
+          const statusA = getPresaleStatus(a);
+          const statusB = getPresaleStatus(b);
+          return statusPriority[statusB] - statusPriority[statusA];
         case "end_time":
           return a.end_unix_timestamp - b.end_unix_timestamp;
         case "price":
@@ -300,8 +330,8 @@ export default function PresalesPage() {
                 key={presale.id}
                 className="bg-white rounded-xl border border-gray-200 hover:border-[#FF5D1B] transition-all duration-200 hover:shadow-lg cursor-pointer group hover:scale-[1.01] active:scale-[0.99]"
                 onClick={() => {
-                  // TODO: Navigate to presale details page
-                  console.log('Navigate to presale:', presale.id);
+                  // Navigate to token details page
+                  router.push(`/tokens/${presale.mine_token.id || presale.id}`);
                 }}
               >
                 {/* Header */}
@@ -341,15 +371,20 @@ export default function PresalesPage() {
                     </span>
                   </div>
 
-                  {/* Timing - Single Line */}
+                  {/* Timing - Ultra Compact */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-500" />
                       <span className="text-sm text-gray-600">{t("card.timing")}</span>
                     </div>
-                    <span className="text-xs text-gray-600">
-                      {format(new Date(presale.start_time), "d/M/yy", { locale: dateLocale })} - {format(new Date(presale.end_time), "d/M/yy", { locale: dateLocale })}
-                    </span>
+                    <div className={isRTL ? "text-end" : "text-start"}>
+                      <div className="text-xs text-gray-900 font-medium">
+                        {isRTL ? `${formatDate(new Date(presale.end_time)).split(' ')[0]} → ${formatDate(new Date(presale.start_time)).split(' ')[0]}` : `${formatDate(new Date(presale.start_time)).split(' ')[0]} → ${formatDate(new Date(presale.end_time)).split(' ')[0]}`}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {isRTL ? `${formatDate(new Date(presale.end_time)).split(' ')[1]} - ${formatDate(new Date(presale.start_time)).split(' ')[1]}` : `${formatDate(new Date(presale.start_time)).split(' ')[1]} - ${formatDate(new Date(presale.end_time)).split(' ')[1]}`}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Progress */}
@@ -373,8 +408,19 @@ export default function PresalesPage() {
 
                 {/* Footer */}
                 <div className="px-4 py-3 bg-gray-50 rounded-b-xl">
-                  <div className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] group-hover:from-[#FF4A0F] group-hover:to-[#FF2A2A] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 group-hover:shadow-lg text-center">
-                    {t("card.viewDetails")}
+                  <div className="flex gap-2">
+                    <div className="flex-1 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] group-hover:from-[#FF4A0F] group-hover:to-[#FF2A2A] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 group-hover:shadow-lg text-center">
+                      {t("card.viewDetails")}
+                    </div>
+                    {status === "active" && (
+                      <button
+                        onClick={(e) => handleBuyClick(e, presale)}
+                        className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg flex items-center gap-1 cursor-pointer"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        {t("card.buy")}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

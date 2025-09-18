@@ -72,17 +72,6 @@ export default async function PublicPresalesPage({ params }) {
                   <span className="text-sm font-medium text-violet-300">
                     {locale === "fa" ? "نقدشوندگی بالا" : "High Liquidity"}
                   </span>
-                  <div className="flex items-center gap-1 text-violet-300/80">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-xs">
-                      {locale === "fa" 
-                        ? format(new Date(), 'd/M/yyyy', { locale: faIR })
-                        : format(new Date(), 'M/d/yyyy', { locale: enUS })
-                      }
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>

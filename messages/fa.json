@@ -12,7 +12,7 @@
     "learn": "یادگیری",
     "tokenomics": "توکنومیکس",
     "whitepaper": "وایت‌پیپر",
-    "tokenizationRequest": "درخواست لیست",
+    "tokenizationRequest": "درخواست لیستینگ",
     "transparency": "سامانه شفافیت",
     "connect_wallet": "اتصال کیف پول",
     "about": "درباره ما",
@@ -349,7 +349,8 @@
       "timing": "زمان‌بندی",
       "starts": "شروع",
       "ends": "پایان",
-      "viewDetails": "مشاهده جزئیات"
+      "viewDetails": "مشاهده جزئیات",
+      "buy": "خرید"
     },
     "empty": {
       "title": "پیش‌فروشی یافت نشد",
@@ -1098,5 +1099,177 @@
     "extract": "استخراج",
     "presale": "پیش‌فروش",
     "done": "تمام"
+  },
+  "tokenDetails": {
+    "back": "بازگشت",
+    "refresh": "بروزرسانی",
+    "error": {
+      "title": "خطا در بارگذاری جزئیات توکن",
+      "message": "نتوانستیم جزئیات توکن را بارگذاری کنیم. لطفاً دوباره تلاش کنید.",
+      "retry": "تلاش مجدد"
+    },
+    "tabs": {
+      "overview": "نمای کلی",
+      "presales": "خرید",
+      "mines": "معادن",
+      "reports": "گزارش‌ها"
+    },
+    "stats": {
+      "totalMines": "کل معادن",
+      "totalPresales": "توکن‌های فروخته شده",
+      "totalReports": "کل گزارش‌ها",
+      "allocation": "تخصیص"
+    },
+    "status": {
+      "active": "فعال",
+      "upcoming": "آینده",
+      "ended": "پایان یافته",
+      "inactive": "غیرفعال"
+    },
+    "overview": {
+      "tokenInfo": "اطلاعات توکن",
+      "name": "نام",
+      "symbol": "نماد",
+      "decimals": "اعشار",
+      "type": "نوع",
+      "address": "آدرس",
+      "description": "توضیحات",
+      "performance": "نمای کلی عملکرد",
+      "mineAllocation": "تخصیص معدن",
+      "activeMines": "معادن فعال",
+      "presalePerformance": "عملکرد پیش‌فروش",
+      "tokensSold": "توکن‌های فروخته شده",
+      "transparency": "شفافیت",
+      "publishedReports": "گزارش‌های منتشر شده"
+    },
+    "presales": {
+      "title": "خرید توکن",
+      "total": "موجود",
+      "presaleId": "فروش",
+      "price": "قیمت هر توکن",
+      "totalSupply": "کل عرضه",
+      "sold": "فروخته شده",
+      "progress": "پیشرفت",
+      "buyNow": "خرید فوری",
+      "empty": {
+        "title": "امکان خرید وجود ندارد",
+        "message": "این توکن هنوز برای خرید در دسترس نیست."
+      }
+    },
+    "mines": {
+      "title": "تخصیص معادن",
+      "total": "کل",
+      "allocation": "تخصیص",
+      "capacity": "ظرفیت",
+      "status": "وضعیت",
+      "active": "فعال",
+      "inactive": "غیرفعال",
+      "empty": {
+        "title": "هیچ تخصیص معدنی وجود ندارد",
+        "message": "این توکن هنوز هیچ تخصیص معدنی ندارد."
+      }
+    },
+    "reports": {
+      "title": "گزارش‌های شفافیت",
+      "total": "کل",
+      "attachments": "پیوست‌ها",
+      "minesCovered": "معادن پوشش داده شده",
+      "empty": {
+        "title": "هیچ گزارشی موجود نیست",
+        "message": "هنوز هیچ گزارش شفافیتی برای این توکن منتشر نشده است."
+      }
+    }
+  },
+  "presaleBuy": {
+    "title": "خرید توکن",
+    "header": {
+      "buy": "خرید",
+      "price": "قیمت",
+      "perToken": "هر توکن"
+    },
+    "sections": {
+      "youPay": "شما پرداخت می‌کنید",
+      "youReceive": "شما دریافت می‌کنید",
+      "balance": "موجودی"
+    },
+    "status": {
+      "notStarted": "پیش‌فروش شروع نشده",
+      "ended": "پیش‌فروش پایان یافته",
+      "inactive": "پیش‌فروش غیرفعال"
+    },
+    "presaleInfo": {
+      "price": "قیمت هر توکن",
+      "remaining": "عرضه باقی‌مانده"
+    },
+    "input": {
+      "tokenAmount": "مقدار توکن",
+      "paymentAmount": "مبلغ پرداخت",
+      "balance": "موجودی",
+      "quickAmounts": "مقادیر سریع"
+    },
+    "confirm": {
+      "title": "تأیید خرید",
+      "subtitle": "لطفاً جزئیات تراکنش خود را قبل از تأیید بررسی کنید",
+      "tokenAmount": "مقدار توکن",
+      "paymentAmount": "مبلغ پرداخت",
+      "pricePerToken": "قیمت هر توکن",
+      "total": "مجموع"
+    },
+    "processing": {
+      "title": "در حال پردازش تراکنش",
+      "subtitle": "تراکنش شما در حال پردازش در بلاک‌چین است",
+      "viewTransaction": "مشاهده در BSCScan"
+    },
+    "success": {
+      "title": "خرید موفق!",
+      "subtitle": "توکن‌های شما با موفقیت خریداری شدند",
+      "purchased": "توکن‌های خریداری شده",
+      "paid": "مبلغ پرداخت شده"
+    },
+    "error": {
+      "title": "تراکنش ناموفق",
+      "subtitle": "خطایی در پردازش تراکنش شما رخ داد"
+    },
+    "errors": {
+      "walletNotConnected": "لطفاً ابتدا کیف پول خود را متصل کنید",
+      "invalidAmount": "لطفاً مقدار معتبری برای توکن وارد کنید",
+      "insufficientBalance": "موجودی کافی برای این خرید وجود ندارد",
+      "exceedsSupply": "مقدار از عرضه باقی‌مانده توکن بیشتر است"
+    },
+    "buttons": {
+      "connectWallet": "اتصال کیف پول",
+      "buyNow": "خرید فوری",
+      "back": "بازگشت",
+      "confirm": "تأیید خرید",
+      "confirming": "در حال تأیید...",
+      "tryAgain": "تلاش مجدد",
+      "close": "بستن",
+      "viewTransaction": "مشاهده تراکنش",
+      "backToPresales": "بازگشت به پیش‌فروش‌ها"
+    },
+    "sidebar": {
+      "presaleProgress": "پیشرفت پیش‌فروش",
+      "presaleDetails": "جزئیات پیش‌فروش",
+      "tokenInfo": "اطلاعات توکن",
+      "progress": "پیشرفت",
+      "sold": "فروخته شده",
+      "remaining": "باقی‌مانده",
+      "startTime": "زمان شروع",
+      "endTime": "زمان پایان",
+      "totalSupply": "کل عرضه",
+      "purchases": "خریدها",
+      "tokenName": "نام توکن",
+      "symbol": "نماد",
+      "contractAddress": "آدرس قرارداد",
+      "viewOnBSCScan": "مشاهده در BSCScan",
+      "start": "شروع",
+      "end": "پایان",
+      "supply": "عرضه",
+      "bscscan": "BSCScan"
+    },
+    "messages": {
+      "purchaseImplemented": "قابلیت خرید با ادغام قرارداد هوشمند پیاده‌سازی خواهد شد",
+      "purchaseFailed": "پردازش خرید ناموفق بود"
+    }
   }
 }

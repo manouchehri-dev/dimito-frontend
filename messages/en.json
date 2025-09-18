@@ -8,7 +8,7 @@
   },
   "navigation": {
     "home": "Home",
-    "presales": "Presales",
+    "presales": "🔥 Presales",
     "tokenomics": "Tokenomics",
     "whitepaper": "Whitepaper",
     "transparency": "Transparency",
@@ -18,7 +18,7 @@
   },
   "Navbar": {
     "home": "Home",
-    "presales": "Presales",
+    "presales": "🔥 Presales",
     "learn": "Learn",
     "tokenomics": "Tokenomics",
     "whitepaper": "Whitepaper",
@@ -258,6 +258,7 @@
       "progress": "Progress",
       "purchases": "Purchases",
       "timing": "Timing",
+      "buy": "Buy",
       "starts": "Starts",
       "ends": "Ends",
       "viewDetails": "View Details"
@@ -285,6 +286,17 @@
     "cta": "Invest Now"
   },
   "footer": {
+    "navigation":{
+      "home":"Home",
+      "tokenomics":"About",
+      "whitepaper":"Services",
+      "transparency":"Contact",
+      "dashboard":"Dashboard",
+      "transparencyLogin":"Transparency Login"
+    },
+    "subscribe":"Subscribe",
+    "email": "Email or Phone Number",
+    "button": "Submit",
     "title": "DiMiTo",
     "subtitle": "Innovative Ecosystem Connecting Mining and DeFi",
     "description": "Tokenization of mining revenue streams with complete transparency and strong legal guarantees. The future of democratic investing.",
@@ -299,7 +311,8 @@
       "title": "Legal",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
-      "cookies": "Cookie Policy"
+      "cookies": "Cookie Policy",
+      "disclaimer":"Disclaimer"
     },
     "social": {
       "title": "Follow Us",
@@ -1349,5 +1362,177 @@
     "extract": "Extract",
     "presale": "Presale",
     "done": "Done"
+  },
+  "tokenDetails": {
+    "back": "Back",
+    "refresh": "Refresh",
+    "error": {
+      "title": "Error Loading Token Details",
+      "message": "We couldn't load the token details. Please try again.",
+      "retry": "Try Again"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "presales": "Purchase",
+      "mines": "Mines",
+      "reports": "Reports"
+    },
+    "stats": {
+      "totalMines": "Total Mines",
+      "totalPresales": "Tokens Sold",
+      "totalReports": "Total Reports",
+      "allocation": "Allocation"
+    },
+    "status": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "ended": "Ended",
+      "inactive": "Inactive"
+    },
+    "overview": {
+      "tokenInfo": "Token Information",
+      "name": "Name",
+      "symbol": "Symbol",
+      "decimals": "Decimals",
+      "type": "Type",
+      "address": "Address",
+      "description": "Description",
+      "performance": "Performance Overview",
+      "mineAllocation": "Mine Allocation",
+      "activeMines": "Active Mines",
+      "presalePerformance": "Presale Performance",
+      "tokensSold": "Tokens Sold",
+      "transparency": "Transparency",
+      "publishedReports": "Published Reports"
+    },
+    "presales": {
+      "title": "Token Purchase",
+      "total": "Available",
+      "presaleId": "Sale",
+      "price": "Price per Token",
+      "totalSupply": "Total Supply",
+      "sold": "Sold",
+      "progress": "Progress",
+      "buyNow": "Buy Now",
+      "empty": {
+        "title": "No Purchase Available",
+        "message": "This token is not available for purchase yet."
+      }
+    },
+    "mines": {
+      "title": "Mine Allocations",
+      "total": "Total",
+      "allocation": "Allocation",
+      "capacity": "Capacity",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "empty": {
+        "title": "No Mine Allocations",
+        "message": "This token doesn't have any mine allocations yet."
+      }
+    },
+    "reports": {
+      "title": "Transparency Reports",
+      "total": "Total",
+      "attachments": "Attachments",
+      "minesCovered": "Mines Covered",
+      "empty": {
+        "title": "No Reports Available",
+        "message": "No transparency reports have been published for this token yet."
+      }
+    }
+  },
+  "presaleBuy": {
+    "title": "Buy Tokens",
+    "header": {
+      "buy": "Buy",
+      "price": "Price",
+      "perToken": "per token"
+    },
+    "sections": {
+      "youPay": "You Pay",
+      "youReceive": "You Receive",
+      "balance": "Balance"
+    },
+    "status": {
+      "notStarted": "Presale Not Started",
+      "ended": "Presale Ended",
+      "inactive": "Presale Inactive"
+    },
+    "presaleInfo": {
+      "price": "Price per Token",
+      "remaining": "Remaining Supply"
+    },
+    "input": {
+      "tokenAmount": "Token Amount",
+      "paymentAmount": "Payment Amount",
+      "balance": "Balance",
+      "quickAmounts": "Quick Amounts"
+    },
+    "confirm": {
+      "title": "Confirm Purchase",
+      "subtitle": "Please review your transaction details before confirming",
+      "tokenAmount": "Token Amount",
+      "paymentAmount": "Payment Amount",
+      "pricePerToken": "Price per Token",
+      "total": "Total"
+    },
+    "processing": {
+      "title": "Processing Transaction",
+      "subtitle": "Your transaction is being processed on the blockchain",
+      "viewTransaction": "View on BSCScan"
+    },
+    "success": {
+      "title": "Purchase Successful!",
+      "subtitle": "Your tokens have been successfully purchased",
+      "purchased": "Tokens Purchased",
+      "paid": "Amount Paid"
+    },
+    "error": {
+      "title": "Transaction Failed",
+      "subtitle": "There was an error processing your transaction"
+    },
+    "errors": {
+      "walletNotConnected": "Please connect your wallet first",
+      "invalidAmount": "Please enter a valid token amount",
+      "insufficientBalance": "Insufficient balance for this purchase",
+      "exceedsSupply": "Amount exceeds remaining token supply"
+    },
+    "buttons": {
+      "connectWallet": "Connect Wallet",
+      "buyNow": "Buy Now",
+      "back": "Back",
+      "confirm": "Confirm Purchase",
+      "confirming": "Confirming...",
+      "tryAgain": "Try Again",
+      "close": "Close",
+      "viewTransaction": "View Transaction",
+      "backToPresales": "Back to Presales"
+    },
+    "sidebar": {
+      "presaleProgress": "Presale Progress",
+      "presaleDetails": "Presale Details",
+      "tokenInfo": "Token Info",
+      "progress": "Progress",
+      "sold": "Sold",
+      "remaining": "Remaining",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "totalSupply": "Total Supply",
+      "purchases": "Purchases",
+      "tokenName": "Token Name",
+      "symbol": "Symbol",
+      "contractAddress": "Contract Address",
+      "viewOnBSCScan": "View on BSCScan",
+      "start": "Start",
+      "end": "End",
+      "supply": "Supply",
+      "bscscan": "BSCScan"
+    },
+    "messages": {
+      "purchaseImplemented": "Purchase functionality will be implemented with smart contract integration",
+      "purchaseFailed": "Failed to process purchase"
+    }
   }
 }

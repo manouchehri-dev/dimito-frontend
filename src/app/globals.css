@@ -7,7 +7,7 @@
 @font-face {
   font-family: "IRANSansX";
   src: url("/fonts/IRANSansX-Regular.woff2") format("woff2"),
-       url("/fonts/IRANSansX-Regular.woff") format("woff");
+    url("/fonts/IRANSansX-Regular.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -16,7 +16,7 @@
 @font-face {
   font-family: "IRANSansX";
   src: url("/fonts/IRANSansX-Bold.woff2") format("woff2"),
-       url("/fonts/IRANSansX-Bold.woff") format("woff");
+    url("/fonts/IRANSansX-Bold.woff") format("woff");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -151,18 +151,20 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
 
   }
+
   html[dir="rtl"] {
     direction: rtl;
   }
-  
+
   html[dir="ltr"] {
     direction: ltr;
   }
-  
+
   /* Force only RainbowKit modals to render left-to-right on RTL pages */
   html[dir="rtl"] [data-rk][role="dialog"],
   html[dir="rtl"] [data-rk][role="document"] {
@@ -172,41 +174,42 @@ body {
 }
 
 @layer utilities {
+
   /* Force LTR direction for specific elements */
   .force-ltr {
     direction: ltr;
     text-align: left;
   }
-  
+
   /* Force RTL direction for specific elements */
   .force-rtl {
     direction: rtl;
     text-align: right;
   }
-  
+
   /* Responsive text alignment based on direction */
   .text-start {
     text-align: start;
   }
-  
+
   .text-end {
     text-align: end;
   }
-  
+
   /* Custom utilities for mixed content */
   .content-start {
     text-align: start;
   }
-  
+
   .content-end {
     text-align: end;
   }
-  
+
   /* For elements that should maintain their direction */
   .maintain-ltr {
     direction: ltr;
   }
-  
+
   .maintain-rtl {
     direction: rtl;
   }
@@ -243,9 +246,12 @@ a {
 
 /* Custom animations for Hero section */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
+
   50% {
     transform: translateY(-10px) rotate(5deg);
   }
