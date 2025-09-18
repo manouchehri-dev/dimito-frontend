@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { usePresales } from "@/lib/api";
-import { 
-  Clock, 
-  DollarSign, 
-  TrendingUp, 
-  Users, 
+import {
+  Clock,
+  DollarSign,
+  TrendingUp,
+  Users,
   Calendar,
   ExternalLink,
   Coins,
@@ -26,7 +26,7 @@ export default function PresalesPage() {
   const locale = useLocale();
   const isRTL = locale === "fa";
   const dateLocale = locale === "fa" ? faIR : enUS;
-  
+
   const { data: presalesData, isLoading, error, refetch, isRefetching } = usePresales();
 
   const [sortBy, setSortBy] = useState("start_time");
@@ -123,7 +123,7 @@ export default function PresalesPage() {
           <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
           <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
         </div>
-        
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
@@ -172,7 +172,7 @@ export default function PresalesPage() {
             {t("subtitle")}
           </p>
         </div>
-        
+
         <button
           onClick={() => refetch()}
           disabled={isRefetching}
@@ -197,7 +197,7 @@ export default function PresalesPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -211,7 +211,7 @@ export default function PresalesPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -225,7 +225,7 @@ export default function PresalesPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -260,7 +260,7 @@ export default function PresalesPage() {
             <option value="inactive">{t("status.inactive")}</option>
           </select>
         </div>
-        
+
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t("filters.sortBy")}
@@ -294,39 +294,31 @@ export default function PresalesPage() {
           {processedPresales.map((presale) => {
             const status = getPresaleStatus(presale);
             const statusDisplay = getStatusDisplay(status);
-            
+
             return (
               <div
                 key={presale.id}
-                className="bg-white rounded-xl border border-gray-200 hover:border-[#FF5D1B] transition-all duration-200 hover:shadow-lg"
+                className="bg-white rounded-xl border border-gray-200 hover:border-[#FF5D1B] transition-all duration-200 hover:shadow-lg cursor-pointer group hover:scale-[1.01] active:scale-[0.99]"
+                onClick={() => {
+                  // TODO: Navigate to presale details page
+                  console.log('Navigate to presale:', presale.id);
+                }}
               >
                 {/* Header */}
-                <div className="p-6 border-b border-gray-100">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-bold text-lg text-gray-900">
-                        {presale.mine_token.token_name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {presale.mine_token.token_symbol}
-                      </p>
-                    </div>
+                <div className="p-4 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-lg text-gray-900">
+                      {presale.mine_token.token_name}
+                    </h3>
                     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${statusDisplay.color}`}>
                       {statusDisplay.icon}
                       {statusDisplay.text}
                     </span>
                   </div>
-                  
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <ExternalLink className="w-4 h-4" />
-                    <span className="font-mono">
-                      {presale.mine_token.token_address.slice(0, 6)}...{presale.mine_token.token_address.slice(-4)}
-                    </span>
-                  </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 space-y-4">
+                <div className="p-4 space-y-3">
                   {/* Price */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -338,14 +330,25 @@ export default function PresalesPage() {
                     </span>
                   </div>
 
-                  {/* Supply */}
+                  {/* Purchases */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Coins className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">{t("card.supply")}</span>
+                      <Users className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-600">{t("card.purchases")}</span>
                     </div>
                     <span className="font-bold text-gray-900">
-                      {formatNumber(presale.total_supply)}
+                      {presale.total_purchases}
+                    </span>
+                  </div>
+
+                  {/* Timing - Single Line */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-600">{t("card.timing")}</span>
+                    </div>
+                    <span className="text-xs text-gray-600">
+                      {format(new Date(presale.start_time), "d/M/yy", { locale: dateLocale })} - {format(new Date(presale.end_time), "d/M/yy", { locale: dateLocale })}
                     </span>
                   </div>
 
@@ -366,42 +369,13 @@ export default function PresalesPage() {
                       ></div>
                     </div>
                   </div>
-
-                  {/* Purchases */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">{t("card.purchases")}</span>
-                    </div>
-                    <span className="font-bold text-gray-900">
-                      {presale.total_purchases}
-                    </span>
-                  </div>
-
-                  {/* Timing */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">{t("card.timing")}</span>
-                    </div>
-                    <div className="text-xs text-gray-600 space-y-1">
-                      <div>
-                        <span className="font-medium">{t("card.starts")}: </span>
-                        {format(new Date(presale.start_time), "d/M/yyyy", { locale: dateLocale })}
-                      </div>
-                      <div>
-                        <span className="font-medium">{t("card.ends")}: </span>
-                        {format(new Date(presale.end_time), "d/M/yyyy", { locale: dateLocale })}
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 bg-gray-50 rounded-b-xl">
-                  <button className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] hover:from-[#FF4A0F] hover:to-[#FF2A2A] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 hover:shadow-lg">
+                <div className="px-4 py-3 bg-gray-50 rounded-b-xl">
+                  <div className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] group-hover:from-[#FF4A0F] group-hover:to-[#FF2A2A] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 group-hover:shadow-lg text-center">
                     {t("card.viewDetails")}
-                  </button>
+                  </div>
                 </div>
               </div>
             );
