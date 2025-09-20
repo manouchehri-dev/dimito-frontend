@@ -14,17 +14,28 @@ import { Separator } from "@/components/ui/separator";
 export async function generateMetadata({ params }) {
   const { locale } = await params;
 
+  const metadata = {
+    en: {
+      title: "DMT Token - Real-World Mining Meets Web3 | Home",
+      description: "Discover DiMiTo - the revolutionary platform connecting real-world mining with blockchain technology. Invest in verified mineral assets through DMT tokens with complete transparency and security."
+    },
+    fa: {
+      title: "توکن DMT - معدنکاری واقعی ملاقات می‌کند با وب۳ | خانه",
+      description: "DiMiTo را کشف کنید - پلتفرم انقلابی که معدنکاری دنیای واقعی را با فناوری بلاکچین متصل می‌کند. با شفافیت و امنیت کامل در دارایی‌های معدنی تأیید شده از طریق توکن‌های DMT سرمایه‌گذاری کنید."
+    }
+  };
+
+  const currentMeta = metadata[locale] || metadata.en;
+
   return {
-    title: "DMT Token - Real-World Mining Meets Web3",
-    description:
-      "Invest in real, verified mineral assets through blockchain. The first digital token backed by real, mined assets.",
+    title: currentMeta.title,
+    description: currentMeta.description,
     alternates: {
       canonical: `/${locale}`,
     },
     openGraph: {
-      title: "DMT Token - Real-World Mining Meets Web3",
-      description:
-        "Invest in real, verified mineral assets through blockchain. The first digital token backed by real, mined assets.",
+      title: currentMeta.title,
+      description: currentMeta.description,
       url: `/${locale}`,
       locale: locale,
     },
@@ -37,7 +48,7 @@ export default async function Home({ params }) {
   // Enable static rendering
   setRequestLocale(locale);
   return (
-    <div className="min-h-full text-primary px-[28px] lg:px-[72px] relative">
+    <div className="min-h-full text-primary lg:px-[72px] relative">
       <Hero />
       <Separator className="border-[#FFB30F] border-1 my-5 lg:my-15" />
       <About />

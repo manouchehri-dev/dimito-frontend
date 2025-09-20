@@ -1,90 +1,98 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations, useLocale } from "next-intl";
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { Button } from "./ui/button";
+import { Globe, Eye, DollarSign, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
 
 const About = () => {
   const t = useTranslations("about");
-  const isRTL = useLocale() === "fa";
+  const locale = useLocale();
+  const isRTL = locale === "fa";
 
   const cardData = [
     {
       title: t("globalAccess.title"),
       description: t("globalAccess.description"),
-      icon: "/icons/globe.png",
-      bgColor: "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E]",
+      icon: Globe,
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50"
     },
     {
       title: t("fullTransparency.title"),
       description: t("fullTransparency.description"),
-      icon: "/icons/overview.png",
-      bgColor: "bg-gradient-to-r from-[#A463FF] to-[#8036FF]",
+      icon: Eye,
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50"
     },
     {
       title: t("realSupport.title"),
       description: t("realSupport.description"),
-      icon: "/icons/sack-dollar.png",
-      bgColor: "bg-gradient-to-r from-[#FAD43B] to-[#FFAB36]",
+      icon: DollarSign,
+      color: "from-[#FF5D1B] to-[#FF363E]",
+      bgColor: "bg-orange-50"
     },
   ];
 
   return (
-    <section id="about" dir={isRTL ? "rtl" : "ltr"}>
-      {/* Header */}
-      <div className="mx-auto">
-        <div className="flex flex-col items-center justify-center lg:items-start">
-          <div className="flex w-full items-end justify-between gap-4">
-            <h1 className="border-b-2 border-[#FF5D1B] pb-3 text-center text-[clamp(14px,2.5vw,24px)] font-bold lg:border-b-4 lg:pb-4">
-              {t("title")}
-            </h1>
-          </div>
+    <section
+      id="about"
+      className="relative overflow-hidden"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
+      {/* Background Elements */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-10 left-10 w-64 h-64 bg-gradient-to-r from-green-500/5 to-blue-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-l from-[#FF5D1B]/5 to-[#FF363E]/5 rounded-full blur-3xl"></div>
+      </div>
 
-          <p
-            className={[
-              "mt-3 lg:mt-6 px-1.5 lg:px-0 text-center lg:text-start leading-[170%] text-[clamp(12px,2.2vw,20px)]",
-              isRTL ? "lg:pl-32" : "lg:pr-32",
-            ].join(" ")}
-          >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-[clamp(28px,4vw,48px)] font-bold text-gray-900 mb-4">
+            {t("title")}
+          </h2>
+          <p className="text-[clamp(16px,2.5vw,20px)] text-gray-600 max-w-6xl mx-auto leading-relaxed">
             {t("description")}
           </p>
         </div>
 
-        {/* Responsive Cards */}
-        <div className="my-8 lg:my-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-          {cardData.map((card, index) => (
-            <Card
-              key={index}
-              className="h-full text-center transition-shadow hover:shadow-md"
-            >
-              <CardHeader className="pb-2">
-                <CardTitle className="flex flex-col items-center gap-4">
-                  <div
-                    className={[
-                      "flex items-center justify-center rounded-lg p-2 sm:p-3",
-                      card.bgColor,
-                    ].join(" ")}
-                  >
-                    <Image
-                      src={card.icon}
-                      alt={String(card.title)}
-                      width={56}
-                      height={56}
-                      className="h-[30px] w-[30px] sm:h-[40px] sm:w-[40px] lg:h-[56px] lg:w-[56px]"
-                    />
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          {cardData.map((card, index) => {
+            const IconComponent = card.icon;
+
+            return (
+              <div
+                key={index}
+                className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] border border-gray-100 overflow-hidden"
+              >
+                {/* Background Gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+
+                {/* Floating Elements */}
+                <div className="absolute -top-2 -right-2 w-20 h-20 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative text-center">
+                  {/* Icon */}
+                  <div className="flex justify-center mb-6">
+                    <div className={`w-16 h-16 bg-gradient-to-r ${card.color} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}>
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
                   </div>
-                  <p className="text-center text-[clamp(14px,2vw,22px)] font-bold">
+
+                  {/* Content */}
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-[#FF5D1B] transition-colors duration-300">
                     {card.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed text-lg">
+                    {card.description}
                   </p>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[clamp(12px,2vw,18px)] leading-[170%] text-center">
-                  {card.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+
+                  {/* Check Icon */}
+                  <div className="flex justify-center mt-6">
+                    <CheckCircle className="w-6 h-6 text-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

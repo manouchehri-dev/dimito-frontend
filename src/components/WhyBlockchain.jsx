@@ -1,89 +1,121 @@
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import Image from "next/image";
+import { Shield, Globe, Zap, Eye, CheckCircle } from "lucide-react";
+
 const WhyBlockchain = () => {
   const locale = useLocale();
   const isRTL = locale === "fa";
   const t = useTranslations("whyBlockchain");
+
   const benefits = [
-    t("benefits.transparency"),
-    t("benefits.smartContracts"),
-    t("benefits.resistance"),
-    t("benefits.globalAccess"),
+    {
+      icon: Eye,
+      title: t("benefits.transparency"),
+      description: t("benefits.transparencyDesc")
+    },
+    {
+      icon: Shield,
+      title: t("benefits.resistance"),
+      description: t("benefits.resistanceDesc")
+    },
+    {
+      icon: Globe,
+      title: t("benefits.globalAccess"),
+      description: t("benefits.globalAccessDesc")
+    },
   ];
 
   return (
     <section
       id="why-blockchain"
-      className="pt-12 lg:my-20 lg:mb-30"
+      className="py-14 relative overflow-hidden"
+      dir={isRTL ? "rtl" : "ltr"}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div className="lg:pl-10">
-          {/* Header */}
-          <div className="mb-2 flex flex-col items-center justify-center lg:items-start">
-            <h1 className="font-poppins text-center text-[clamp(14px,2.5vw,24px)] font-bold [text-wrap:balance]">
-              {t("title")}
-            </h1>
-          </div>
+      {/* Background Elements */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-l from-[#FF363E]/8 to-[#FF5D1B]/8 rounded-full blur-3xl"></div>
+      </div>
 
-          {/* Benefits List with Connected Design */}
-          <div
-            className={`relative max-w-2xl mx-auto lg:mx-0  border-[#FF5D1B] border-t-4 rounded-t-xl py-10 ${
-              isRTL ? "rounded-l-none border-r-4" : "rounded-r-none border-l-4"
-            }`}
-          >
-            {/* Benefits */}
-            <div className="space-y-8">
-              {benefits.map((benefit, index) => (
-                <div key={index} className="relative flex items-center">
-                  {/* Horizontal connector line */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-[clamp(24px,4vw,48px)] font-bold text-gray-900 mb-4">
+            {t("title")}
+          </h2>
+        </div>
 
-                  {isRTL ? (
-                    <>
-                      {/* Arrow/connector dot */}
-                      <div className="absolute right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-md transform translate-x-1/2"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Benefits Cards */}
+          <div className="space-y-6">
+            {benefits.map((benefit, index) => {
+              const IconComponent = benefit.icon;
+              return (
+                <div
+                  key={index}
+                  className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] border border-gray-100 hover:border-[#FF5D1B]/30"
+                >
+                  <div className="flex items-start gap-4">
+                    {/* Icon */}
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
 
-                      {/* Arrow shape */}
-                      <div className="absolute right-10 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[8px] border-t-transparent border-b-transparent border-r-red-500"></div>
-                      <div className="absolute right-0 w-12 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"></div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="absolute left-0 w-12 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"></div>
+                    {/* Content */}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#FF5D1B] transition-colors duration-300">
+                        {benefit.title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {benefit.description}
+                      </p>
+                    </div>
 
-                      {/* Arrow/connector dot */}
-                      <div className="absolute left-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-md transform -translate-x-1/2"></div>
-
-                      {/* Arrow shape */}
-                      <div className="absolute left-12 w-0 h-0 border-t-[6px] border-b-[6px] border-l-[8px] border-t-transparent border-b-transparent border-l-red-500"></div>
-                    </>
-                  )}
-
-                  {/* Benefit text */}
-                  <div
-                    className={`${
-                      isRTL ? "mr-16" : "ml-16"
-                    } bg-white w-full px-1 py-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200`}
-                  >
-                    <p className="text-[clamp(14px,2.2vw,20px)] leading-relaxed">
-                      {benefit}
-                    </p>
+                    {/* Check Icon */}
+                    <div className="flex-shrink-0">
+                      <CheckCircle className="w-5 h-5 text-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        </div>
-        <div className="mx-auto w-full max-w-[684px] overflow-hidden rounded-3xl">
-          <div className="relative aspect-[4/3] w-full">
-            <Image
-              src="/images/blockchain.webp"
-              alt="blockchain"
-              fill
-              className="object-cover"
-              sizes="(min-width:1024px) 684px, (min-width:640px) 80vw, 90vw"
-              priority
-            />
+
+          {/* Image Section */}
+          <div className="relative">
+            {/* Decorative Elements */}
+            <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-r from-[#FF5D1B]/20 to-[#FF363E]/20 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-r from-[#FF363E]/20 to-[#FF5D1B]/20 rounded-full blur-xl"></div>
+
+            {/* Main Image */}
+            <div className="relative bg-white rounded-3xl p-4 shadow-2xl">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                <Image
+                  src="/images/blockchain.webp"
+                  alt="blockchain technology"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(min-width:1024px) 50vw, 90vw"
+                  priority
+                />
+
+                {/* Overlay Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+
+                {/* Floating Badge */}
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-gray-900">
+                      {isRTL ? "فناوری بلاکچین" : "Blockchain Tech"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

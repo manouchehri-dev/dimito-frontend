@@ -33,7 +33,9 @@
     "description": "Participate in future net profits of real mining projects without direct ownership complexities. Global access, complete transparency, high liquidity.",
     "connect_wallet": "Connect Wallet",
     "dashboard": "Dashboard",
-    "roadmap": "Roadmap"
+    "roadmap": "Roadmap",
+    "whitepaper": "Whitepaper",
+    "tokenomics": "Tokenomics"
   },
   "tokenDashboard": {
     "statistics": "Statistics",
@@ -62,10 +64,27 @@
   },
   "projects": {
     "title": "DiMiTo Mining Projects",
-    "description": "Each DiMiTo token represents a specific share of future net profits from one or more valid and licensed mining projects.",
+    "description": "Each DiMiTo token represents a specific share of future net profits from one or more verified and licensed mining projects.",
     "quantity": "Quantity",
     "value": "Value",
     "status": "Status",
+    "viewMorePresales": "View More Presales",
+    "viewPresales": "View All Presales",
+    "card": {
+      "price": "Price",
+      "purchases": "Purchases",
+      "timing": "Timing",
+      "progress": "Progress",
+      "startingAt": "Starting at",
+      "sold": "Sold",
+      "investors": "Investors",
+      "endsOn": "Ends on",
+      "viewDetails": "View Details",
+      "estimatedValue": "Estimated Value",
+      "currentPhase": "Current Phase",
+      "projectStatus": "Project Status",
+      "learnMore": "Learn More"
+    },
     "lithium": {
       "title": "Digital Mine Token #1 (DMT1)",
       "quantity": "Exploration Phase",
@@ -86,12 +105,19 @@
     }
   },
   "roadmap": {
-    "title": "DiMiTo Roadmap",
+    "title": "Project Roadmap",
+    "subtitle": "Our strategic plan to revolutionize mining investments through blockchain technology.",
     "items": {
-      "ico": "Structured presales of DMT tokens",
-      "contracts": "Development of refining and extraction infrastructure",
-      "market": "Activation of secondary market and profit distribution",
-      "physical": "Real-time reporting and complete transparency"
+      "platform": "Platform Development",
+      "platformDesc": "Complete development of DiMiTo platform with smart contracts, user interface, and security audits.",
+      "presales": "Token Presales Launch",
+      "presalesDesc": "Launch of structured presale events for DMT tokens with transparent pricing and community access.",
+      "market": "Secondary Market Development",
+      "marketDesc": "Launch dedicated secondary market and exchange listings for DiMiTo tokens with enhanced liquidity.",
+      "mining": "Mining Operations",
+      "miningDesc": "Begin actual mining operations and start profit distribution to token holders through smart contracts.",
+      "expansion": "Global Expansion",
+      "expansionDesc": "Scale operations globally, add new mining projects, and expand the DiMiTo ecosystem."
     }
   },
   "tokenomics": {
@@ -172,40 +198,46 @@
     }
   },
   "whyBlockchain": {
-    "title": "Why do we use blockchain?",
+    "title": "Why Blockchain Technology?",
+    "subtitle": "Discover how blockchain revolutionizes mining investments with transparency, security, and global accessibility.",
     "benefits": {
-      "transparency": "Transparency and tracking of transactions",
-      "smartContracts": "Smart contracts for profit distribution",
-      "resistance": "Resistance to corruption and manipulation",
-      "globalAccess": "Global access to investment"
+      "transparency": "Complete Transparency",
+      "transparencyDesc": "Every transaction and profit distribution is recorded on the blockchain, providing full visibility and accountability for all stakeholders.",
+      "smartContracts": "Smart Contracts",
+      "smartContractsDesc": "Automated profit distribution through smart contracts ensures fair and timely payments without intermediaries or delays.",
+      "resistance": "Tamper-Proof Security",
+      "resistanceDesc": "Blockchain's immutable nature protects against fraud, corruption, and manipulation, ensuring your investments remain secure.",
+      "globalAccess": "Global Accessibility",
+      "globalAccessDesc": "Access mining investments from anywhere in the world, 24/7, without geographical restrictions or traditional banking limitations."
     }
   },
   "faq": {
-    "title": "FAQ",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about DiMiTo and DMT tokens",
     "questions": {
       "buyTokens": {
-        "question": "How can I buy tokens?",
-        "answer": "Through reputable online exchanges or directly from the official MID Token website with a digital wallet connection. Step-by-step purchasing instructions are also available on the site."
+        "question": "How can I participate in presales?",
+        "answer": "DMT tokens are released through structured presale events. All supply is distributed only through presales, ensuring complete transparency and market-based pricing."
       },
       "tokenValue": {
-        "question": "How is the token's value maintained?",
-        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+        "question": "How does token value increase?",
+        "answer": "Profits from mining operations are used in three ways to strengthen token value: buying back tokens from the open market, injecting liquidity at higher prices, and market making in the secondary market."
       },
       "tokenValue2": {
-        "question": "How is the token's value maintained?",
-        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+        "question": "Do token holders have operational responsibilities?",
+        "answer": "No. Token buyers have no operational or legal obligations regarding mining activities. Token ownership means participation in future net benefits, not shares or ownership in the mines."
       },
       "tokenValue3": {
-        "question": "How is the token's value maintained?",
-        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+        "question": "How is operational transparency guaranteed?",
+        "answer": "A dedicated reporting module on the website provides real-time and historical views of each mine token's financial and operational performance, capital allocation methods, and profitability details."
       },
       "tokenValue4": {
-        "question": "How is the token's value maintained?",
-        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+        "question": "Can I sell my tokens?",
+        "answer": "Yes. Immediately after presale, two markets are available: initial liquidity pool for instant trading, and secondary on-chain order book market for custom price trading."
       },
       "tokenValue5": {
-        "question": "How is the token's value maintained?",
-        "answer": "The token's value is maintained through real mineral asset backing, market demand, and transparent blockchain technology that ensures trust and stability."
+        "question": "What guarantees exist for investor protection?",
+        "answer": "Mine owners are required to provide valid licenses, feasibility studies, expert reports, and collateral equivalent to 2.5 times the funding amount, which is held under platform supervision."
       }
     }
   },
@@ -297,6 +329,10 @@
     "subscribe":"Subscribe",
     "email": "Email or Phone Number",
     "button": "Submit",
+    "subscribing": "Subscribing...",
+    "subscribeSuccess": "Successfully subscribed to newsletter!",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
     "title": "DiMiTo",
     "subtitle": "Innovative Ecosystem Connecting Mining and DeFi",
     "description": "Tokenization of mining revenue streams with complete transparency and strong legal guarantees. The future of democratic investing.",
@@ -1062,7 +1098,19 @@
       "title": "Dual Market Benefits",
       "fastSecureTrading": "Liquidity Pool: Instant trading at market price",
       "stableLiquidity": "Order Book: Custom pricing and full control",
-      "accessExchanges": "Non-custodial: User maintains control of assets"
+      "accessExchanges": "Non-custodial: User maintains control of assets",
+      "liquidityPool": "Liquidity Pool",
+      "orderBook": "Order Book",
+      "nonCustodial": "Non-Custodial"
+    },
+    "comingSoon": {
+      "badge": "Coming Soon",
+      "title": "DiMiTo Secondary Market",
+      "description": "Advanced trading platform for buying and selling DMT tokens with high liquidity and complete security.",
+      "trading": "Trading",
+      "fees": "Fees",
+      "enterMarket": "Enter Market",
+      "launchInfo": "Secondary market will launch in Q3 2024"
     },
     "enterMarket": "Enter Market",
     "trading": {
