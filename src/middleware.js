@@ -8,7 +8,14 @@ export default function middleware(req) {
   const hostname = req.headers.get("host") || "";
 
   // --- Skip health probes (kubelet requests via pod IP, not domain) ---
-  if (!hostname.includes("dimito.ir") && !hostname.includes("dimito.io")) {
+  // Only skip for production health checks (IP addresses without domain names)
+  const isHealthProbe = /^\d+\.\d+\.\d+\.\d+/.test(hostname) && 
+                       !hostname.includes("dimito.ir") && 
+                       !hostname.includes("dimito.io") &&
+                       !hostname.includes("localhost") &&
+                       !hostname.includes("127.0.0.1");
+  
+  if (isHealthProbe) {
     return new Response("ok", { status: 200 });
   }
 
@@ -16,10 +23,12 @@ export default function middleware(req) {
   if (!url.pathname.startsWith("/fa") && !url.pathname.startsWith("/en")) {
     if (hostname.endsWith("dimito.ir")) {
       url.pathname = `/fa${url.pathname}`;
+      return Response.redirect(url);
     } else if (hostname.endsWith("dimito.io")) {
       url.pathname = `/en${url.pathname}`;
+      return Response.redirect(url);
     }
-    return Response.redirect(url);
+    // For development (localhost) or other domains, let intl middleware handle default locale
   }
 
   // --- Fallback to intl middleware ---

@@ -30,7 +30,7 @@ const Roadmap = () => {
   return (
     <section
       id="roadmap"
-      className="pt-16 lg:py-24 -mx-[28px] lg:-mx-[72px] bg-gradient-to-b from-[#F5F5F5] to-[#FFEDE4] relative"
+      className="pt-16 lg:py-24 -mx-[28px] lg:-mx-[72px] relative"
     >
       {/* Vertical Timeline Line */}
       <div className="hidden lg:block absolute left-1/2 transform -translate-x-0.5 top-0 bottom-0 w-px border-[2px] border-dashed border-[#FFC7AF]"></div>

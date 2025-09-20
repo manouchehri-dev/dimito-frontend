@@ -3,6 +3,7 @@ import "../globals.css";
 import { Poppins } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
+import { Toaster } from "react-hot-toast";
 
 import Provider from "@/providers/WagmiProvider";
 import QueryProvider from "@/providers/QueryProvider";
@@ -92,6 +93,50 @@ export default async function RootLayout({ children, params }) {
           <NextIntlClientProvider locale={locale || "fa"} messages={messages}>
             <Provider key={`provider-${locale || "fa"}`}>
               <main className="flex-1">{children}</main>
+              <Toaster
+                position="top-center"
+                reverseOrder={false}
+                gutter={8}
+                containerClassName=""
+                containerStyle={{}}
+                toastOptions={{
+                  // Default options for all toasts
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    maxWidth: '500px',
+                    wordBreak: 'break-word'
+                  },
+                  // Specific styles for different types
+                  success: {
+                    duration: 4000,
+                    iconTheme: {
+                      primary: '#10B981',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    duration: 5000,
+                    iconTheme: {
+                      primary: '#EF4444',
+                      secondary: '#fff',
+                    },
+                  },
+                  loading: {
+                    duration: Infinity,
+                    iconTheme: {
+                      primary: '#3B82F6',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
             </Provider>
           </NextIntlClientProvider>
         </QueryProvider>

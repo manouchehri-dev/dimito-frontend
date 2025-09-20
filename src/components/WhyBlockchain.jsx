@@ -15,7 +15,7 @@ const WhyBlockchain = () => {
   return (
     <section
       id="why-blockchain"
-      className="bg-gray-100 pt-12 lg:my-20 lg:mb-30"
+      className="pt-12 lg:my-20 lg:mb-30"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div className="lg:pl-10">

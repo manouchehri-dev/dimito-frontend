@@ -14,6 +14,7 @@ const Header = () => {
   const router = useRouter();
   const pathWithoutLocale = pathname.replace(/^\/(en|fa)/, "") || "/";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -39,26 +40,26 @@ const Header = () => {
   };
 
   const navItems = [
-    { href: "/", label: t("home"), active: pathWithoutLocale === "/" },
     {
-      href: "/tokenomics",
-      label: t("tokenomics"),
-      active: pathWithoutLocale === "/tokenomics",
+      href: "/",
+      label: t("home"),
+      active: pathWithoutLocale === "/",
     },
     {
-      href: "/whitepaper",
-      label: t("whitepaper"),
-      active: pathWithoutLocale === "/whitepaper",
-    },
-    {
-      href: "/listing",
-      label: t("tokenizationRequest"),
-      active: pathWithoutLocale === "/listing",
+      href: "/presales",
+      label: t("presales"),
+      active: pathWithoutLocale === "/presales",
+      highlight: true, // Special highlight for revenue-generating page
     },
     {
       href: "/transparency",
       label: t("transparency"),
       active: pathWithoutLocale === "/transparency",
+    },
+    {
+      href: "/listing",
+      label: t("tokenizationRequest"),
+      active: pathWithoutLocale === "/listing",
     },
   ];
 
@@ -82,28 +83,73 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex justify-center">
-            <ul className="flex items-center gap-2 xl:gap-4">
-              {navItems.map((item) => (
-                <li key={item.href} className="flex">
-                  <NavLink
-                    href={item.href}
-                    active={item.active}
-                    className={`relative px-4 xl:px-6 py-3 xl:py-4 text-[14px] xl:text-[16px] font-medium transition-all duration-300 ease-out whitespace-nowrap group ${
-                      item.active
+            <ul className="flex items-center gap-1 lg:gap-1 xl:gap-2">
+              {navItems.map((item, index) => (
+                <li key={index} className="relative group">
+                  {item.dropdown ? (
+                    // Dropdown menu item
+                    <div className="relative">
+                      <button
+                        onClick={() => setDropdownOpen(dropdownOpen === index ? null : index)}
+                        className={`relative px-3 lg:px-4 xl:px-6 py-2 lg:py-2.5 xl:py-3 text-xs lg:text-sm xl:text-base font-medium rounded-lg transition-all duration-300 ease-out group flex items-center gap-1 ${item.dropdown.some(subItem => subItem.active)
+                          ? "text-[#FF4135] font-semibold"
+                          : "text-gray-700 hover:text-[#FF4135]"
+                          }`}
+                      >
+                        {item.label}
+                        <svg className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen === index ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                        {/* Active underline */}
+                        <span
+                          className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] rounded-full transition-all duration-300 ease-out ${item.dropdown.some(subItem => subItem.active) ? "w-full opacity-100" : "w-0 opacity-0"
+                            }`}
+                        />
+                        {/* Hover background effect */}
+                        <span className="absolute inset-0 bg-gradient-to-r from-[#FF5D1B]/5 to-[#FF363E]/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out -z-10" />
+                      </button>
+
+
+                      {/* Dropdown menu */}
+                      {dropdownOpen === index && (
+                        <div className="absolute top-full left-0 mt-2 w-48 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                          {item.dropdown.map((subItem, subIndex) => (
+                            <NavLink
+                              key={subIndex}
+                              href={subItem.href}
+                              onClick={() => setDropdownOpen(null)}
+                              className={`block px-4 py-2 text-sm transition-colors duration-200 ${subItem.active
+                                ? "text-[#FF4135] font-semibold bg-[#FF5D1B]/5"
+                                : "text-gray-700 hover:text-[#FF4135] hover:bg-gray-50"
+                                }`}
+                            >
+                              {subItem.label}
+                            </NavLink>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    // Regular menu item
+                    <NavLink
+                      href={item.href}
+                      className={`relative px-3 lg:px-4 xl:px-5 py-2 lg:py-2.5 xl:py-3 text-sm lg:text-base xl:text-base font-medium rounded-lg transition-all duration-300 ease-out group whitespace-nowrap ${item.active
                         ? "text-[#FF4135] font-semibold"
-                        : "text-gray-700 hover:text-[#FF4135]"
-                    }`}
-                  >
-                    {item.label}
-                    {/* Active underline */}
-                    <span
-                      className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] rounded-full transition-all duration-300 ease-out ${
-                        item.active && "w-full opacity-100"
-                      }`}
-                    />
-                    {/* Hover background effect */}
-                    <span className="absolute inset-0 bg-gradient-to-r from-[#FF5D1B]/5 to-[#FF363E]/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out -z-10" />
-                  </NavLink>
+                        : item.highlight
+                          ? "text-[#FF4135] font-semibold hover:text-[#FF2A2A] animate-pulse"
+                          : "text-gray-700 hover:text-[#FF4135]"
+                        }`}
+                    >
+                      {item.label}
+                      {/* Active underline */}
+                      <span
+                        className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] rounded-full transition-all duration-300 ease-out ${item.active ? "w-full opacity-100" : "w-0 opacity-0"
+                          }`}
+                      />
+                      {/* Hover background effect */}
+                      <span className="absolute inset-0 bg-gradient-to-r from-[#FF5D1B]/5 to-[#FF363E]/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out -z-10" />
+                    </NavLink>
+                  )}
                 </li>
               ))}
             </ul>
@@ -150,9 +196,8 @@ const Header = () => {
 
       {/* Mobile Menu Sliding Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-[320px] bg-white z-50 transform transition-transform duration-300 ease-in-out lg:hidden shadow-2xl ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-[320px] bg-white z-50 transform transition-transform duration-300 ease-in-out lg:hidden shadow-2xl ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full bg-transparent">
           {/* Mobile Menu Header */}
@@ -178,19 +223,17 @@ const Header = () => {
                   <NavLink
                     href={item.href}
                     active={item.active}
-                    className={`relative block w-full px-6 py-4 text-[16px] font-medium transition-all duration-300 ease-out rounded-xl min-h-[56px] group ${
-                      item.active
-                        ? "text-[#FF4135] bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 border-l-4 border-[#FF4135] font-semibold"
-                        : "text-gray-700 hover:text-[#FF4135] hover:bg-gray-50 hover:border-l-4 hover:border-[#FF4135]/30 active:scale-[0.98]"
-                    }`}
+                    className={`relative block w-full px-6 py-4 text-[16px] font-medium transition-all duration-300 ease-out rounded-xl min-h-[56px] group ${item.active
+                      ? "text-[#FF4135] bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 border-l-4 border-[#FF4135] font-semibold"
+                      : "text-gray-700 hover:text-[#FF4135] hover:bg-gray-50 hover:border-l-4 hover:border-[#FF4135]/30 active:scale-[0.98]"
+                      }`}
                   >
                     <div className="flex items-center gap-3 w-full h-full">
                       <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 transition-all duration-300 ${
-                          item.active
-                            ? "bg-[#FF4135] scale-125"
-                            : "bg-gray-300 group-hover:bg-[#FF4135] group-hover:scale-110"
-                        }`}
+                        className={`w-2 h-2 rounded-full flex-shrink-0 transition-all duration-300 ${item.active
+                          ? "bg-[#FF4135] scale-125"
+                          : "bg-gray-300 group-hover:bg-[#FF4135] group-hover:scale-110"
+                          }`}
                       />
                       <span className="flex-1">{item.label}</span>
                       {/* Mobile active indicator */}

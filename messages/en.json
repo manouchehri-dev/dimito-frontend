@@ -6,15 +6,27 @@
     "whitepaper": "White paper",
     "connectWallet": "Connect wallet"
   },
+  "navigation": {
+    "home": "Home",
+    "presales": "🔥 Presales",
+    "tokenomics": "Tokenomics",
+    "whitepaper": "Whitepaper",
+    "transparency": "Transparency",
+    "listing": "Listing",
+    "transparencyLogin": "Transparency (Login)",
+    "dashboard": "Dashboard"
+  },
   "Navbar": {
     "home": "Home",
+    "presales": "🔥 Presales",
+    "learn": "Learn",
     "tokenomics": "Tokenomics",
-    "whitepaper": "White paper",
-    "connect_wallet": "Connect wallet",
+    "whitepaper": "Whitepaper",
+    "tokenizationRequest": "Listing",
+    "transparency": "Transparency",
+    "connect_wallet": "Connect Wallet",
     "about": "About",
-    "dashboard": "Dashboard",
-    "tokenizationRequest": "Token Listing",
-    "transparency": "Transparency Platform"
+    "dashboard": "Dashboard"
   },
   "Hero": {
     "title": "DiMiTo - Real-World Mining Meets Web3",
@@ -213,28 +225,94 @@
     },
     "help": "Still having trouble? Contact our support team for assistance."
   },
+  "presales": {
+    "title": "Presales",
+    "subtitle": "Discover and participate in DMT token presales",
+    "refresh": "Refresh",
+    "tryAgain": "Try Again",
+    "stats": {
+      "total": "Total Presales",
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "ended": "Ended"
+    },
+    "status": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "ended": "Ended",
+      "inactive": "Inactive",
+      "unknown": "Unknown"
+    },
+    "filters": {
+      "status": "Filter by Status",
+      "sortBy": "Sort By",
+      "all": "All Presales",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "price": "Price",
+      "supply": "Supply"
+    },
+    "card": {
+      "price": "Price",
+      "supply": "Total Supply",
+      "progress": "Progress",
+      "purchases": "Purchases",
+      "timing": "Timing",
+      "buy": "Buy",
+      "starts": "Starts",
+      "ends": "Ends",
+      "viewDetails": "View Details"
+    },
+    "empty": {
+      "title": "No Presales Found",
+      "description": "There are no presales matching your current filters."
+    },
+    "error": {
+      "title": "Failed to Load Presales",
+      "description": "We couldn't load the presales data. Please try again."
+    }
+  },
+  "floatingPresale": {
+    "title": "🔥 HOT",
+    "activePresales": "Active Presales",
+    "highReturns": "High Returns",
+    "limitedTime": "Limited Time",
+    "tooltip": "Click to view all active presales"
+  },
+  "presaleBanner": {
+    "title": "🔥 Live Now:",
+    "activePresales": "Active Presales",
+    "description": "Don't miss out on guaranteed returns from real mining projects!",
+    "cta": "Invest Now"
+  },
   "footer": {
+    "navigation":{
+      "home":"Home",
+      "tokenomics":"About",
+      "whitepaper":"Services",
+      "transparency":"Contact",
+      "dashboard":"Dashboard",
+      "transparencyLogin":"Transparency Login"
+    },
+    "subscribe":"Subscribe",
+    "email": "Email or Phone Number",
+    "button": "Submit",
     "title": "DiMiTo",
     "subtitle": "Innovative Ecosystem Connecting Mining and DeFi",
     "description": "Tokenization of mining revenue streams with complete transparency and strong legal guarantees. The future of democratic investing.",
-    "subscribe": "Subscribe to our newsletter",
-    "email": "Email or phone number",
-    "button": "Register in the newsletter",
-    "emailRequired": "Email is required",
-    "emailInvalid": "Please enter a valid email",
-    "navigation": {
+    "quickLinks": {
+      "title": "Quick Links",
       "home": "Home",
-      "tokenomics": "Tokenomics",
-      "whitepaper": "White Paper",
-      "transparency": "Transparency Platform",
-      "transparencyLogin": "Transparency Login",
-      "dashboard": "Dashboard",
-      "about": "About Us"
+      "about": "About",
+      "services": "Services",
+      "contact": "Contact"
     },
     "legal": {
+      "title": "Legal",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
-      "disclaimer": "Disclaimer"
+      "cookies": "Cookie Policy",
+      "disclaimer":"Disclaimer"
     },
     "social": {
       "title": "Follow Us",
@@ -246,12 +324,30 @@
   },
   "wallet": {
     "connect": "Connect Wallet",
+    "connecting": "Connecting...",
+    "reconnecting": "Reconnecting...",
     "connected": "Connected",
     "dashboard": "Dashboard",
     "disconnect": "Disconnect",
     "viewProfile": "View Profile",
     "copyAddress": "Copy Address",
     "copied": "Copied!"
+  },
+  "walletModal": {
+    "title": "Connect Your Wallet",
+    "subtitle": "Access your personalized dashboard and manage your DMT token portfolio",
+    "accessRequired": "Wallet Connection Required",
+    "accessRequiredDesc": "To access your dashboard and view your portfolio, please connect your wallet. This ensures secure access to your personal data and transactions.",
+    "secureAccess": "Secure Access",
+    "secureAccessDesc": "Your wallet connection is encrypted and secure",
+    "instantAccess": "Instant Access",
+    "instantAccessDesc": "Get immediate access to your dashboard and portfolio",
+    "globalCompatibility": "Global Compatibility",
+    "globalCompatibilityDesc": "Works with all major wallet providers worldwide",
+    "connectWallet": "Connect Wallet",
+    "goToHomepage": "Go to Homepage",
+    "securityNote": "Security First",
+    "securityNoteDesc": "We never store your private keys. Your wallet connection is always secure and under your control."
   },
   "contact": {
     "title": "Contact Us",
@@ -328,8 +424,9 @@
     "title": "Transparency Dashboard",
     "subtitle": "Manage your transparency reports and view analytics",
     "welcome": "Welcome",
-    "connectWallet": "Connect Your Wallet",
-    "connectWalletDescription": "Please connect your wallet to view your dashboard and portfolio information.",
+    "connectWallet": "Connect Wallet",
+    "connectWalletDescription": "Please connect your wallet to access your personalized dashboard and manage your DMT tokens.",
+    "checkingWalletConnection": "Checking wallet connection...",
     "loading": "Loading dashboard data...",
     "refreshData": "Refresh Data",
     "totalSpent": "Total Spent",
@@ -1265,5 +1362,257 @@
     "extract": "Extract",
     "presale": "Presale",
     "done": "Done"
+  },
+  "tokenDetails": {
+    "back": "Back",
+    "refresh": "Refresh",
+    "error": {
+      "title": "Error Loading Token Details",
+      "message": "We couldn't load the token details. Please try again.",
+      "retry": "Try Again"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "presales": "Purchase",
+      "mines": "Mines",
+      "reports": "Reports"
+    },
+    "stats": {
+      "totalMines": "Total Mines",
+      "totalPresales": "Tokens Sold",
+      "totalReports": "Total Reports",
+      "allocation": "Allocation"
+    },
+    "status": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "ended": "Ended",
+      "inactive": "Inactive"
+    },
+    "overview": {
+      "tokenInfo": "Token Information",
+      "name": "Name",
+      "symbol": "Symbol",
+      "decimals": "Decimals",
+      "type": "Type",
+      "address": "Address",
+      "description": "Description",
+      "performance": "Performance Overview",
+      "mineAllocation": "Mine Allocation",
+      "activeMines": "Active Mines",
+      "presalePerformance": "Presale Performance",
+      "tokensSold": "Tokens Sold",
+      "transparency": "Transparency",
+      "publishedReports": "Published Reports"
+    },
+    "presales": {
+      "title": "Token Purchase",
+      "total": "Available",
+      "presaleId": "Sale",
+      "price": "Price per Token",
+      "totalSupply": "Total Supply",
+      "sold": "Sold",
+      "progress": "Progress",
+      "buyNow": "Buy Now",
+      "empty": {
+        "title": "No Purchase Available",
+        "message": "This token is not available for purchase yet."
+      }
+    },
+    "mines": {
+      "title": "Mine Allocations",
+      "total": "Total",
+      "allocation": "Allocation",
+      "capacity": "Capacity",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "viewMore": "View All Mines",
+      "more": "more",
+      "empty": {
+        "title": "No Mine Allocations",
+        "message": "This token doesn't have any mine allocations yet."
+      }
+    },
+    "reports": {
+      "title": "Transparency Reports",
+      "total": "Total",
+      "attachments": "Attachments",
+      "minesCovered": "Mines Covered",
+      "mines": "mines",
+      "viewMore": "View All Reports",
+      "viewAll": "View All",
+      "more": "more",
+      "empty": {
+        "title": "No Reports Available",
+        "message": "No transparency reports have been published for this token yet."
+      }
+    }
+  },
+  "presaleBuy": {
+    "back":"Back",
+    "title": "Buy Tokens",
+    "header": {
+      "buy": "Buy",
+      "price": "Price",
+      "perToken": "per token"
+    },
+    "sections": {
+      "youPay": "You Pay",
+      "youReceive": "You Receive",
+      "balance": "Balance"
+    },
+    "status": {
+      "notStarted": "Presale Not Started",
+      "ended": "Presale Ended",
+      "inactive": "Presale Inactive"
+    },
+    "presaleInfo": {
+      "price": "Price per Token",
+      "remaining": "Remaining Supply"
+    },
+    "input": {
+      "tokenAmount": "Token Amount",
+      "paymentAmount": "Payment Amount",
+      "balance": "Balance",
+      "quickAmounts": "Quick Amounts"
+    },
+    "confirm": {
+      "title": "Confirm Purchase",
+      "subtitle": "Please review your transaction details before confirming",
+      "tokenAmount": "Token Amount",
+      "paymentAmount": "Payment Amount",
+      "pricePerToken": "Price per Token",
+      "total": "Total"
+    },
+    "processing": {
+      "title": "Processing Transaction",
+      "subtitle": "Your transaction is being processed on the blockchain",
+      "viewTransaction": "View on BSCScan"
+    },
+    "success": {
+      "title": "Purchase Successful!",
+      "subtitle": "Your tokens have been successfully purchased",
+      "purchased": "Tokens Purchased",
+      "paid": "Amount Paid"
+    },
+    "error": {
+      "title": "Transaction Failed",
+      "subtitle": "There was an error processing your transaction"
+    },
+    "errors": {
+      "walletNotConnected": "Please connect your wallet first",
+      "invalidAmount": "Please enter a valid token amount",
+      "insufficientBalance": "Insufficient balance for this purchase",
+      "exceedsSupply": "Amount exceeds remaining token supply",
+      "presaleNoLongerActive": "Presale is no longer active",
+      "transactionCancelled": "Transaction was cancelled by user",
+      "insufficientGas": "Insufficient funds for gas fees",
+      "networkError": "Network error. Please check your connection",
+      "contractError": "Smart contract error. Please try again"
+    },
+    "buttons": {
+      "connectWallet": "Connect Wallet",
+      "buyNow": "Buy Now",
+      "approveAndBuy": "Approve & Buy",
+      "approving": "Approving...",
+      "purchasing": "Purchasing...",
+      "purchaseNow": "Purchase Now",
+      "success": "Success!",
+      "back": "Back",
+      "confirm": "Confirm Purchase",
+      "confirming": "Confirming...",
+      "tryAgain": "Try Again",
+      "close": "Close",
+      "viewTransaction": "View Transaction",
+      "backToPresales": "Back to Presales",
+      "enterAmount": "Enter amount to continue"
+    },
+    "sidebar": {
+      "presaleProgress": "Presale Progress",
+      "presaleDetails": "Presale Details",
+      "tokenInfo": "Token Info",
+      "progress": "Progress",
+      "sold": "Sold",
+      "remaining": "Remaining",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "totalSupply": "Total Supply",
+      "purchases": "Purchases",
+      "tokenName": "Token Name",
+      "symbol": "Symbol",
+      "contractAddress": "Contract Address",
+      "viewOnBSCScan": "View on BSCScan",
+      "addToWallet": "Add to Wallet",
+      "addToWalletShort": "+ Wallet",
+      "start": "Start",
+      "end": "End",
+      "supply": "Supply",
+      "bscscan": "BSCScan"
+    },
+    "progress": {
+      "title": "Transaction Progress",
+      "completed": "Transaction Completed",
+      "step1": "Approve Token Spending",
+      "step2": "Purchase Tokens",
+      "approving": "Approving token spending...",
+      "approved": "Token spending approved",
+      "waitingApproval": "Waiting for approval",
+      "purchasing": "Purchasing tokens...",
+      "purchased": "Tokens purchased successfully",
+      "readyToPurchase": "Ready to purchase",
+      "waitingPurchase": "Waiting for approval to complete",
+      "reset": "Reset transaction flow",
+      "successTitle": "Purchase Successful!",
+      "successMessage": "Your tokens have been purchased and the presale data is being updated"
+    },
+    "messages": {
+      "purchaseImplemented": "Purchase functionality will be implemented with smart contract integration",
+      "purchaseFailed": "Failed to process purchase",
+      "approvalSuccess": "Token spending approved successfully",
+      "purchaseInitiated": "Purchase transaction initiated",
+      "purchaseSuccess": "Tokens purchased successfully!",
+      "approvalCancelled": "Approval transaction was cancelled",
+      "purchaseCancelled": "Purchase transaction was cancelled",
+      "step1Starting": "Step 1: Approving token spending...",
+      "step2Starting": "Step 2: Processing purchase...",
+      "purchaseStarting": "Processing purchase...",
+      "flowReset": "Transaction flow has been reset",
+      "walletDisconnected": "Wallet disconnected. Please reconnect to continue"
+    },
+    "addToWallet": {
+      "title": "Add Token to Wallet",
+      "subtitle": "Add your tokens for easy tracking",
+      "description": "Click the button below to automatically add the token to your wallet. This will make it easier to view your balance and manage your tokens.",
+      "buttonText": "Add to Wallet",
+      "addingText": "Adding to Wallet...",
+      "successText": "Token Added Successfully!",
+      "alreadyAdded": "Token Already in Wallet",
+      "errorText": "Failed to Add Token",
+      "notSupported": "Your wallet doesn't support this feature",
+      "networkMismatch": "Please switch to BSC network first",
+      "userRejected": "Token addition was cancelled",
+      "tryAgain": "Try Again",
+      "skip": "Skip for Now",
+      "checkingStatus": "Checking token status...",
+      "done": "Done",
+      "successMessage": "You can now view your {tokenSymbol} tokens in your wallet!",
+      "alreadyAddedMessage": "The token is already in your wallet!",
+      "networkName": "BSC Network",
+      "currentNetwork": "Current network: {networkName}",
+      "benefits": {
+        "title": "Benefits of Adding Token:",
+        "tracking": "Track Balance",
+        "management": "Easy Management",
+        "visibility": "Wallet Visibility"
+      },
+      "tokenDetails": {
+        "name": "Token Name",
+        "symbol": "Symbol",
+        "address": "Contract Address",
+        "network": "Network",
+        "viewOnBSCScan": "View on BSCScan"
+      }
+    }
   }
 }

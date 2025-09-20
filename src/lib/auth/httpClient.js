@@ -121,9 +121,17 @@ export const authEndpoints = {
 export const presaleEndpoints = {
   createFromToken: "/presale/create-from-token/",
   list: "/presale/",
+  presales: "/presale/presales/",
   detail: (id) => `/presale/${id}/`,
   update: (id) => `/presale/${id}/`,
   delete: (id) => `/presale/${id}/`,
+};
+
+/**
+ * API endpoints for token operations
+ */
+export const tokenEndpoints = {
+  details: (id) => `/presale/tokens/${id}/`,
 };
 
 /**
