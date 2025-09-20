@@ -1,160 +1,228 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Button } from "./ui/button";
+import {
+  Network,
+  Coins,
+  PieChart,
+  TrendingUp,
+  BarChart3,
+  Shield,
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft
+} from "lucide-react";
 
 const Tokenomics = () => {
   const t = useTranslations("tokenomics");
+  const locale = useLocale();
+  const isRTL = locale === "fa";
 
-  const Data = [
+  const tokenomicsData = [
     {
+      id: "network",
+      icon: Network,
       title: t("cards.network.title"),
       description: t("cards.network.description"),
-      features: {
-        title: t("cards.network.features.title"),
-        items: [
-          t("cards.network.features.items.0"),
-          t("cards.network.features.items.1"),
-          t("cards.network.features.items.2"),
-        ],
-      },
+      features: [
+        t("cards.network.features.items.0"),
+        t("cards.network.features.items.1"),
+        t("cards.network.features.items.2"),
+      ],
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      highlight: "BSC Network"
     },
     {
+      id: "supply",
+      icon: Coins,
       title: t("cards.supply.title"),
       description: t("cards.supply.description"),
-      features: {
-        title: t("cards.supply.features.title"),
-        items: [
-          t("cards.supply.features.items.0"),
-          t("cards.supply.features.items.1"),
-          t("cards.supply.features.items.2"),
-        ],
-      },
+      features: [
+        t("cards.supply.features.items.0"),
+        t("cards.supply.features.items.1"),
+        t("cards.supply.features.items.2"),
+      ],
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50",
+      highlight: "1B Tokens"
     },
     {
+      id: "allocation",
+      icon: PieChart,
       title: t("cards.allocation.title"),
       description: t("cards.allocation.description"),
-      features: {
-        title: t("cards.allocation.features.title"),
-        items: [
-          t("cards.allocation.features.items.0"),
-          t("cards.allocation.features.items.1"),
-          t("cards.allocation.features.items.2"),
-        ],
-      },
+      features: [
+        t("cards.allocation.features.items.0"),
+        t("cards.allocation.features.items.1"),
+        t("cards.allocation.features.items.2"),
+      ],
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      highlight: "No Reserve"
     },
     {
+      id: "profitability",
+      icon: TrendingUp,
       title: t("cards.profitability.title"),
       description: t("cards.profitability.description"),
-      features: {
-        title: t("cards.profitability.features.title"),
-        items: [
-          t("cards.profitability.features.items.0"),
-          t("cards.profitability.features.items.1"),
-          t("cards.profitability.features.items.2"),
-        ],
-      },
+      features: [
+        t("cards.profitability.features.items.0"),
+        t("cards.profitability.features.items.1"),
+        t("cards.profitability.features.items.2"),
+      ],
+      color: "from-[#FF5D1B] to-[#FF363E]",
+      bgColor: "bg-orange-50",
+      highlight: "Profit Sharing"
     },
     {
+      id: "markets",
+      icon: BarChart3,
       title: t("cards.markets.title"),
       description: t("cards.markets.description"),
-      features: {
-        title: t("cards.markets.features.title"),
-        items: [
-          t("cards.markets.features.items.0"),
-          t("cards.markets.features.items.1"),
-          t("cards.markets.features.items.2"),
-        ],
-      },
+      features: [
+        t("cards.markets.features.items.0"),
+        t("cards.markets.features.items.1"),
+        t("cards.markets.features.items.2"),
+      ],
+      color: "from-indigo-500 to-indigo-600",
+      bgColor: "bg-indigo-50",
+      highlight: "Dual Markets"
     },
     {
+      id: "transparency",
+      icon: Shield,
       title: t("cards.transparency.title"),
       description: t("cards.transparency.description"),
-      features: {
-        title: t("cards.transparency.features.title"),
-        items: [
-          t("cards.transparency.features.items.0"),
-          t("cards.transparency.features.items.1"),
-          t("cards.transparency.features.items.2"),
-        ],
-      },
+      features: [
+        t("cards.transparency.features.items.0"),
+        t("cards.transparency.features.items.1"),
+        t("cards.transparency.features.items.2"),
+      ],
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+      highlight: "Full Transparency"
     },
   ];
 
   return (
     <section
       id="tokenomics"
-      className="py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 lg:px-8"
+      className="relative overflow-hidden"
+      dir={isRTL ? "rtl" : "ltr"}
     >
-      <div className="mx-auto">
-        {/* Title Section */}
-        <div className="flex flex-col items-center justify-center lg:items-start mb-8 lg:mb-12">
-          <h1 className="text-[14px] lg:text-[24px] font-bold border-b-2 lg:border-b-4 border-[#FF5D1B] pb-4 text-center">
+      {/* Background Elements */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-80 h-80 bg-gradient-to-l from-[#FF5D1B]/5 to-[#FF363E]/5 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-[clamp(28px,4vw,48px)] font-bold text-gray-900 mb-4">
             {t("title")}
-          </h1>
+          </h2>
+          <p className="text-[clamp(16px,2.5vw,20px)] text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            {isRTL
+              ? "مدل اقتصادی جامع DiMiTo که شفافیت، سودآوری و پایداری را تضمین می‌کند."
+              : "Comprehensive economic model of DiMiTo ensuring transparency, profitability, and sustainability."
+            }
+          </p>
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 xl:gap-12">
-          {/* Dynamic Cards */}
-          {Data.map((data, index) => (
-            <Card
-              className="h-min-fit w-full max-w-md mx-auto md:max-w-none transition-all duration-300 hover:shadow-lg flex flex-col overflow-hidden"
-              key={index}
-            >
-              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6 flex-shrink-0">
-                <CardTitle>
-                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-start leading-tight line-clamp-2 break-words">
-                    {data.title}
+        {/* Tokenomics Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {tokenomicsData.map((item, index) => {
+            const IconComponent = item.icon;
+
+            return (
+              <div
+                key={item.id}
+                className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] border border-gray-100 overflow-hidden"
+              >
+                {/* Background Gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+
+                {/* Floating Elements */}
+                <div className="absolute -top-2 -right-2 w-20 h-20 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-6">
+                    {/* Icon */}
+                    <div className={`w-16 h-16 bg-gradient-to-r ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}>
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+
+                    {/* Highlight Badge */}
+                    <div className={`${item.bgColor} px-3 py-1 rounded-full`}>
+                      <span className="text-xs font-semibold text-gray-700">
+                        {item.highlight}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#FF5D1B] transition-colors duration-300">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-gray-600 leading-relaxed mb-6 text-sm">
+                    {item.description}
                   </p>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 flex-grow overflow-hidden space-y-3 sm:space-y-4">
-                <div className="text-xs sm:text-sm md:text-base font-normal text-start leading-relaxed line-clamp-3 break-words">
-                  {data.description}
+
+                  {/* Features List */}
+                  <div className="space-y-3">
+                    {item.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-1">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                        </div>
+                        <span className="text-sm text-gray-600 leading-relaxed">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+
                 </div>
+              </div>
+            );
+          })}
+        </div>
 
-                {data.footer && (
-                  <div className="text-xs sm:text-sm md:text-base font-normal text-start leading-relaxed line-clamp-2 break-words">
-                    {data.footer}
-                  </div>
-                )}
-
-                {data.features && (
-                  <div className="text-start text-xs sm:text-sm md:text-base overflow-hidden">
-                    <span className="font-semibold block mb-2 text-sm sm:text-base">
-                      {data.features.title}
-                    </span>
-                    <ul className="list-disc list-inside space-y-1 pr-2 sm:pr-4">
-                      {data.features.items
-                        .slice(0, 3)
-                        .map((item, itemIndex) => (
-                          <li
-                            key={itemIndex}
-                            className="leading-snug text-xs sm:text-sm line-clamp-1 break-words"
-                          >
-                            {item}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+        {/* Key Statistics */}
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            { label: isRTL ? "کل عرضه" : "Total Supply", value: "1B", subtext: isRTL ? "توکن" : "Tokens" },
+            { label: isRTL ? "شبکه" : "Network", value: "BSC", subtext: isRTL ? "بلاکچین" : "Blockchain" },
+            { label: isRTL ? "توزیع سود" : "Profit Share", value: "100%", subtext: isRTL ? "شفاف" : "Transparent" },
+            { label: isRTL ? "نقدینگی" : "Liquidity", value: "10%", subtext: isRTL ? "اولیه" : "Initial" },
+          ].map((stat, index) => (
+            <div key={index} className="text-center bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="text-3xl font-bold text-[#FF5D1B] mb-2">{stat.value}</div>
+              <div className="text-gray-900 font-semibold mb-1">{stat.label}</div>
+              <div className="text-gray-500 text-sm">{stat.subtext}</div>
+            </div>
           ))}
         </div>
 
-        <div className="mt-4 flex w-full justify-center">
-          <Button
-            className="w-full max-w-sm rounded-2xl bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] py-3 text-base hover:scale-[1.02] hover:shadow-md hover:shadow-orange-500/25"
-            asChild
+        {/* CTA Button */}
+        <div className="text-center mt-16">
+          <Link
+            href="/tokenomics"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white rounded-2xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 font-semibold text-lg"
           >
-            <Link href="/tokenomics">
-              {useLocale() === "fa"
-                ? "مطالعه کامل توکنومیکس"
-                : "Complete Tokenomics Details"}
-            </Link>
-          </Button>
+            <span>
+              {isRTL ? "مطالعه کامل توکنومیکس" : "Complete Tokenomics Details"}
+            </span>
+            {isRTL ? (
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
+            ) : (
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+            )}
+          </Link>
         </div>
       </div>
     </section>

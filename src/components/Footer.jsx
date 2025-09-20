@@ -4,6 +4,8 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { httpClient } from "@/lib/auth/httpClient";
+import toast from "react-hot-toast";
 
 const Footer = () => {
   const t = useTranslations("footer");
@@ -46,11 +48,115 @@ const Footer = () => {
 
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await httpClient.post("/newsletter/subscribe/", {
+        contact: email.trim()
+      });
 
-    setIsLoading(false);
-    setIsSubscribed(true);
+      // httpClient returns response.data directly, so response should contain the API response
+      if (response.success) {
+        setIsSubscribed(true);
+        setEmail("");
+        
+        // Show success toast
+        toast.success(
+          isRtl 
+            ? "✅ با موفقیت در خبرنامه عضو شدید!"
+            : "✅ Successfully subscribed to newsletter!",
+          {
+            duration: 4000,
+            position: "top-center",
+            style: {
+              background: "#10B981",
+              color: "#fff",
+              fontWeight: "600",
+              borderRadius: "12px",
+              padding: "16px",
+            },
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Newsletter subscription error:", error);
+      
+      // Handle validation errors from API
+      // The httpClient transforms errors, so check both patterns
+      if (error.status === 400 && error.data?.contact) {
+        const errorMessage = Array.isArray(error.data.contact) 
+          ? error.data.contact[0] 
+          : error.data.contact;
+        
+        setEmailError(errorMessage);
+        
+        // Show error toast
+        toast.error(
+          isRtl 
+            ? "❌ لطفاً یک آدرس ایمیل معتبر وارد کنید"
+            : "❌ Please enter a valid email address",
+          {
+            duration: 4000,
+            position: "top-center",
+            style: {
+              background: "#EF4444",
+              color: "#fff",
+              fontWeight: "600",
+              borderRadius: "12px",
+              padding: "16px",
+            },
+          }
+        );
+      } else if (error.response?.status === 400 && error.response?.data?.contact) {
+        // Fallback for direct axios error structure
+        const errorMessage = Array.isArray(error.response.data.contact) 
+          ? error.response.data.contact[0] 
+          : error.response.data.contact;
+        
+        setEmailError(errorMessage);
+        
+        toast.error(
+          isRtl 
+            ? "❌ لطفاً یک آدرس ایمیل معتبر وارد کنید"
+            : "❌ Please enter a valid email address",
+          {
+            duration: 4000,
+            position: "top-center",
+            style: {
+              background: "#EF4444",
+              color: "#fff",
+              fontWeight: "600",
+              borderRadius: "12px",
+              padding: "16px",
+            },
+          }
+        );
+      } else {
+        // Handle other errors
+        const errorMessage = isRtl 
+          ? "خطا در عضویت در خبرنامه. لطفاً دوباره تلاش کنید."
+          : "Error subscribing to newsletter. Please try again.";
+        
+        setEmailError(errorMessage);
+        
+        toast.error(
+          isRtl 
+            ? "❌ خطا در عضویت. لطفاً دوباره تلاش کنید"
+            : "❌ Subscription failed. Please try again",
+          {
+            duration: 4000,
+            position: "top-center",
+            style: {
+              background: "#EF4444",
+              color: "#fff",
+              fontWeight: "600",
+              borderRadius: "12px",
+              padding: "16px",
+            },
+          }
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -136,7 +242,7 @@ const Footer = () => {
             >
               {isRtl ? "پیوندها" : "Navigation"}
             </h3>
-            <nav className="flex flex-col gap-1 sm:gap-1.5 text-center md:text-left">
+            <nav className="flex flex-col gap-1 sm:gap-1.5 text-center md:text-start md:text-left">
               <Link
                 href={``}
                 className={`text-[clamp(12px,3vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
@@ -183,7 +289,7 @@ const Footer = () => {
                 {t("navigation.dashboard")}
               </Link>
               <Link
-                href={`/login?redirect=dashboard`}
+                href={`/login?redirect=transparency`}
                 className={`text-[clamp(12px,3vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
                   ? "hover:-translate-x-1 font-iransans"
                   : "hover:translate-x-1 font-poppins"
