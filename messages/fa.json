@@ -1164,6 +1164,8 @@
       "status": "وضعیت",
       "active": "فعال",
       "inactive": "غیرفعال",
+      "viewMore": "مشاهده همه معادن",
+      "more": "بیشتر",
       "empty": {
         "title": "هیچ تخصیص معدنی وجود ندارد",
         "message": "این توکن هنوز هیچ تخصیص معدنی ندارد."
@@ -1174,13 +1176,18 @@
       "total": "کل",
       "attachments": "پیوست‌ها",
       "minesCovered": "معادن پوشش داده شده",
+      "mines": "معدن",
+      "viewMore": "مشاهده همه گزارش‌ها",
+      "viewAll": "مشاهده همه",
+      "more": "بیشتر",
       "empty": {
-        "title": "هیچ گزارشی موجود نیست",
-        "message": "هنوز هیچ گزارش شفافیتی برای این توکن منتشر نشده است."
+        "title": "گزارشی موجود نیست",
+        "message": "هنوز گزارش شفافیتی برای این توکن منتشر نشده است."
       }
     }
   },
   "presaleBuy": {
+    "back":"بازگشت",
     "title": "خرید توکن",
     "header": {
       "buy": "خرید",
@@ -1234,18 +1241,29 @@
       "walletNotConnected": "لطفاً ابتدا کیف پول خود را متصل کنید",
       "invalidAmount": "لطفاً مقدار معتبری برای توکن وارد کنید",
       "insufficientBalance": "موجودی کافی برای این خرید وجود ندارد",
-      "exceedsSupply": "مقدار از عرضه باقی‌مانده توکن بیشتر است"
+      "exceedsSupply": "مقدار از عرضه باقی‌مانده توکن بیشتر است",
+      "presaleNoLongerActive": "پیش‌فروش دیگر فعال نیست",
+      "transactionCancelled": "تراکنش توسط کاربر لغو شد",
+      "insufficientGas": "موجودی کافی برای هزینه گاز وجود ندارد",
+      "networkError": "خطای شبکه. لطفاً اتصال خود را بررسی کنید",
+      "contractError": "خطای قرارداد هوشمند. لطفاً دوباره تلاش کنید"
     },
     "buttons": {
       "connectWallet": "اتصال کیف پول",
       "buyNow": "خرید فوری",
+      "approveAndBuy": "تأیید و خرید",
+      "approving": "در حال تأیید...",
+      "purchasing": "در حال خرید...",
+      "purchaseNow": "خرید اکنون",
+      "success": "موفق!",
       "back": "بازگشت",
       "confirm": "تأیید خرید",
       "confirming": "در حال تأیید...",
       "tryAgain": "تلاش مجدد",
       "close": "بستن",
       "viewTransaction": "مشاهده تراکنش",
-      "backToPresales": "بازگشت به پیش‌فروش‌ها"
+      "backToPresales": "بازگشت به پیش‌فروش‌ها",
+      "enterAmount": "مقدار را وارد کنید تا ادامه دهید"
     },
     "sidebar": {
       "presaleProgress": "پیشرفت پیش‌فروش",
@@ -1262,14 +1280,76 @@
       "symbol": "نماد",
       "contractAddress": "آدرس قرارداد",
       "viewOnBSCScan": "مشاهده در BSCScan",
+      "addToWallet": "افزودن به کیف پول",
+      "addToWalletShort": "+ کیف پول",
       "start": "شروع",
       "end": "پایان",
       "supply": "عرضه",
       "bscscan": "BSCScan"
     },
+    "progress": {
+      "title": "پیشرفت تراکنش",
+      "completed": "تراکنش تکمیل شد",
+      "step1": "تأیید هزینه‌کرد توکن",
+      "step2": "خرید توکن‌ها",
+      "approving": "در حال تأیید هزینه‌کرد توکن...",
+      "approved": "هزینه‌کرد توکن تأیید شد",
+      "waitingApproval": "در انتظار تأیید",
+      "purchasing": "در حال خرید توکن‌ها...",
+      "purchased": "توکن‌ها با موفقیت خریداری شدند",
+      "readyToPurchase": "آماده برای خرید",
+      "waitingPurchase": "در انتظار تکمیل تأیید",
+      "reset": "بازنشانی جریان تراکنش",
+      "successTitle": "خرید موفق!",
+      "successMessage": "توکن‌های شما خریداری شدند و داده‌های پیش‌فروش در حال به‌روزرسانی است"
+    },
     "messages": {
       "purchaseImplemented": "قابلیت خرید با ادغام قرارداد هوشمند پیاده‌سازی خواهد شد",
-      "purchaseFailed": "پردازش خرید ناموفق بود"
+      "purchaseFailed": "پردازش خرید ناموفق بود",
+      "approvalSuccess": "هزینه‌کرد توکن با موفقیت تأیید شد",
+      "purchaseInitiated": "تراکنش خرید آغاز شد",
+      "purchaseSuccess": "توکن‌ها با موفقیت خریداری شدند!",
+      "approvalCancelled": "تراکنش تأیید لغو شد",
+      "purchaseCancelled": "تراکنش خرید لغو شد",
+      "step1Starting": "مرحله ۱: تأیید هزینه‌کرد توکن...",
+      "step2Starting": "مرحله ۲: پردازش خرید...",
+      "purchaseStarting": "پردازش خرید...",
+      "flowReset": "جریان تراکنش بازنشانی شد",
+      "walletDisconnected": "کیف پول قطع شد. لطفاً برای ادامه دوباره متصل شوید"
+    },
+    "addToWallet": {
+      "title": "افزودن توکن به کیف پول",
+      "subtitle": "توکن‌های خود را برای ردیابی آسان اضافه کنید",
+      "description": "روی دکمه زیر کلیک کنید تا توکن به طور خودکار به کیف پول شما اضافه شود. این کار مشاهده موجودی و مدیریت توکن‌های شما را آسان‌تر می‌کند.",
+      "buttonText": "افزودن به کیف پول",
+      "addingText": "در حال افزودن به کیف پول...",
+      "successText": "توکن با موفقیت اضافه شد!",
+      "alreadyAdded": "توکن قبلاً در کیف پول موجود است",
+      "errorText": "افزودن توکن ناموفق بود",
+      "notSupported": "کیف پول شما از این قابلیت پشتیبانی نمی‌کند",
+      "networkMismatch": "لطفاً ابتدا به شبکه BSC تغییر دهید",
+      "userRejected": "افزودن توکن لغو شد",
+      "tryAgain": "تلاش مجدد",
+      "skip": "فعلاً رد کن",
+      "checkingStatus": "بررسی وضعیت توکن...",
+      "done": "تمام",
+      "successMessage": "اکنون می‌توانید توکن‌های {tokenSymbol} خود را در کیف پول مشاهده کنید!",
+      "alreadyAddedMessage": "توکن قبلاً در کیف پول شما موجود است!",
+      "networkName": "شبکه BSC",
+      "currentNetwork": "شبکه فعلی: {networkName}",
+      "benefits": {
+        "title": "مزایای افزودن توکن:",
+        "tracking": "ردیابی موجودی",
+        "management": "مدیریت آسان",
+        "visibility": "نمایش در کیف پول"
+      },
+      "tokenDetails": {
+        "name": "نام توکن",
+        "symbol": "نماد",
+        "address": "آدرس قرارداد",
+        "network": "شبکه",
+        "viewOnBSCScan": "مشاهده در BSCScan"
+      }
     }
   }
 }

@@ -1427,6 +1427,8 @@
       "status": "Status",
       "active": "Active",
       "inactive": "Inactive",
+      "viewMore": "View All Mines",
+      "more": "more",
       "empty": {
         "title": "No Mine Allocations",
         "message": "This token doesn't have any mine allocations yet."
@@ -1437,6 +1439,10 @@
       "total": "Total",
       "attachments": "Attachments",
       "minesCovered": "Mines Covered",
+      "mines": "mines",
+      "viewMore": "View All Reports",
+      "viewAll": "View All",
+      "more": "more",
       "empty": {
         "title": "No Reports Available",
         "message": "No transparency reports have been published for this token yet."
@@ -1444,6 +1450,7 @@
     }
   },
   "presaleBuy": {
+    "back":"Back",
     "title": "Buy Tokens",
     "header": {
       "buy": "Buy",
@@ -1497,18 +1504,29 @@
       "walletNotConnected": "Please connect your wallet first",
       "invalidAmount": "Please enter a valid token amount",
       "insufficientBalance": "Insufficient balance for this purchase",
-      "exceedsSupply": "Amount exceeds remaining token supply"
+      "exceedsSupply": "Amount exceeds remaining token supply",
+      "presaleNoLongerActive": "Presale is no longer active",
+      "transactionCancelled": "Transaction was cancelled by user",
+      "insufficientGas": "Insufficient funds for gas fees",
+      "networkError": "Network error. Please check your connection",
+      "contractError": "Smart contract error. Please try again"
     },
     "buttons": {
       "connectWallet": "Connect Wallet",
       "buyNow": "Buy Now",
+      "approveAndBuy": "Approve & Buy",
+      "approving": "Approving...",
+      "purchasing": "Purchasing...",
+      "purchaseNow": "Purchase Now",
+      "success": "Success!",
       "back": "Back",
       "confirm": "Confirm Purchase",
       "confirming": "Confirming...",
       "tryAgain": "Try Again",
       "close": "Close",
       "viewTransaction": "View Transaction",
-      "backToPresales": "Back to Presales"
+      "backToPresales": "Back to Presales",
+      "enterAmount": "Enter amount to continue"
     },
     "sidebar": {
       "presaleProgress": "Presale Progress",
@@ -1525,14 +1543,76 @@
       "symbol": "Symbol",
       "contractAddress": "Contract Address",
       "viewOnBSCScan": "View on BSCScan",
+      "addToWallet": "Add to Wallet",
+      "addToWalletShort": "+ Wallet",
       "start": "Start",
       "end": "End",
       "supply": "Supply",
       "bscscan": "BSCScan"
     },
+    "progress": {
+      "title": "Transaction Progress",
+      "completed": "Transaction Completed",
+      "step1": "Approve Token Spending",
+      "step2": "Purchase Tokens",
+      "approving": "Approving token spending...",
+      "approved": "Token spending approved",
+      "waitingApproval": "Waiting for approval",
+      "purchasing": "Purchasing tokens...",
+      "purchased": "Tokens purchased successfully",
+      "readyToPurchase": "Ready to purchase",
+      "waitingPurchase": "Waiting for approval to complete",
+      "reset": "Reset transaction flow",
+      "successTitle": "Purchase Successful!",
+      "successMessage": "Your tokens have been purchased and the presale data is being updated"
+    },
     "messages": {
       "purchaseImplemented": "Purchase functionality will be implemented with smart contract integration",
-      "purchaseFailed": "Failed to process purchase"
+      "purchaseFailed": "Failed to process purchase",
+      "approvalSuccess": "Token spending approved successfully",
+      "purchaseInitiated": "Purchase transaction initiated",
+      "purchaseSuccess": "Tokens purchased successfully!",
+      "approvalCancelled": "Approval transaction was cancelled",
+      "purchaseCancelled": "Purchase transaction was cancelled",
+      "step1Starting": "Step 1: Approving token spending...",
+      "step2Starting": "Step 2: Processing purchase...",
+      "purchaseStarting": "Processing purchase...",
+      "flowReset": "Transaction flow has been reset",
+      "walletDisconnected": "Wallet disconnected. Please reconnect to continue"
+    },
+    "addToWallet": {
+      "title": "Add Token to Wallet",
+      "subtitle": "Add your tokens for easy tracking",
+      "description": "Click the button below to automatically add the token to your wallet. This will make it easier to view your balance and manage your tokens.",
+      "buttonText": "Add to Wallet",
+      "addingText": "Adding to Wallet...",
+      "successText": "Token Added Successfully!",
+      "alreadyAdded": "Token Already in Wallet",
+      "errorText": "Failed to Add Token",
+      "notSupported": "Your wallet doesn't support this feature",
+      "networkMismatch": "Please switch to BSC network first",
+      "userRejected": "Token addition was cancelled",
+      "tryAgain": "Try Again",
+      "skip": "Skip for Now",
+      "checkingStatus": "Checking token status...",
+      "done": "Done",
+      "successMessage": "You can now view your {tokenSymbol} tokens in your wallet!",
+      "alreadyAddedMessage": "The token is already in your wallet!",
+      "networkName": "BSC Network",
+      "currentNetwork": "Current network: {networkName}",
+      "benefits": {
+        "title": "Benefits of Adding Token:",
+        "tracking": "Track Balance",
+        "management": "Easy Management",
+        "visibility": "Wallet Visibility"
+      },
+      "tokenDetails": {
+        "name": "Token Name",
+        "symbol": "Symbol",
+        "address": "Contract Address",
+        "network": "Network",
+        "viewOnBSCScan": "View on BSCScan"
+      }
     }
   }
 }

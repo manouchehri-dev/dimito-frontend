@@ -4,11 +4,11 @@ import PresaleBuyPage from "@/components/PresaleBuyPage";
 
 // Generate metadata for the page
 export async function generateMetadata({ params }) {
-  const { locale, presaleId } = await params;
+  const { locale, tokenId } = await params;
   const t = await getTranslations({ locale, namespace: "presaleBuy" });
 
   return {
-    title: `${t("title")} - Token #${presaleId} | DiMiTo`,
+    title: `${t("title")} - Token #${tokenId} | DiMiTo`,
     description: t("input.tokenAmount"),
   };
 }

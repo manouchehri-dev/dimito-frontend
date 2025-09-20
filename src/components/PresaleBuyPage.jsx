@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { usePresaleDetails } from "@/lib/api";
 import { useRouter } from "@/i18n/navigation";
-import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { parseUnits, formatUnits } from "viem";
 import toast from "react-hot-toast";
+import { useERC20Approval } from "@/hooks/useERC20Approval";
+import { usePresalePurchase } from "@/hooks/usePresalePurchase";
+import AddTokenToWallet from "@/components/AddTokenToWallet";
 import {
     ArrowLeft,
     AlertCircle,
@@ -22,7 +25,9 @@ import {
     ExternalLink,
     Calendar,
     DollarSign,
-    Coins
+    Coins,
+    CheckCircle,
+    Circle
 } from "lucide-react";
 
 export default function PresaleBuyPage({ preSaleId }) {
@@ -33,23 +38,88 @@ export default function PresaleBuyPage({ preSaleId }) {
 
     // Wagmi hooks
     const { address, isConnected } = useAccount();
-    const { writeContract, data: hash, isPending, error } = useWriteContract();
-    const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-        hash,
-    });
 
     // State
     const [paymentAmount, setPaymentAmount] = useState("");
+    const [currentStep, setCurrentStep] = useState(1); // 1: Approve, 2: Purchase
+    const [isApprovalComplete, setIsApprovalComplete] = useState(false);
+    const [wasApproving, setWasApproving] = useState(false);
+    const [wasPurchasing, setWasPurchasing] = useState(false);
+    const [showAddTokenModal, setShowAddTokenModal] = useState(false);
+    const [hasTriggeredPurchase, setHasTriggeredPurchase] = useState(false);
 
     // API data
     const { data: presale, isLoading, error: apiError, refetch } = usePresaleDetails(preSaleId);
 
     // Get payment token balance
-    const { data: balance } = useBalance({
+    const { data: balance, refetch: refetchBalance } = useBalance({
         address,
         token: presale?.payment_token?.token_address,
         enabled: !!address && !!presale?.payment_token?.token_address,
     });
+
+    // Contract interaction hooks
+    const {
+        needsApproval,
+        approve,
+        isApproving,
+        isSuccess: approvalSuccess,
+    } = useERC20Approval(
+        presale?.payment_token?.token_address,
+        '0x4c64cbe581cd251cf7ab42f68f7aea15ae2f8faf' // Presale contract address
+    );
+
+    const {
+        purchasePresale,
+        isPurchasing,
+        isSuccess: purchaseSuccess,
+        isError: purchaseError,
+        hash: purchaseHash,
+    } = usePresalePurchase();
+
+    // Track transaction states to detect cancellations
+    useEffect(() => {
+        if (isApproving && !wasApproving) {
+            setWasApproving(true);
+        }
+        if (!isApproving && wasApproving && !approvalSuccess) {
+            // Approval was cancelled or failed
+            toast.dismiss('approval-step');
+            toast.error(t("messages.approvalCancelled") || "Approval cancelled", {
+                duration: 4000,
+                style: {
+                    background: '#FEF2F2',
+                    color: '#DC2626',
+                    border: '1px solid #FECACA'
+                },
+                icon: '❌'
+            });
+            setCurrentStep(1);
+            setIsApprovalComplete(false);
+            setWasApproving(false);
+        }
+    }, [isApproving, wasApproving, approvalSuccess, t]);
+
+    useEffect(() => {
+        if (isPurchasing && !wasPurchasing) {
+            setWasPurchasing(true);
+        }
+        if (!isPurchasing && wasPurchasing && !purchaseSuccess && purchaseError) {
+            // Purchase was cancelled or failed
+            toast.dismiss('purchase-step');
+            toast.error(t("messages.purchaseCancelled") || "Purchase cancelled", {
+                duration: 4000,
+                style: {
+                    background: '#FEF2F2',
+                    color: '#DC2626',
+                    border: '1px solid #FECACA'
+                },
+                icon: '❌'
+            });
+            setCurrentStep(isApprovalComplete ? 2 : 1);
+            setWasPurchasing(false);
+        }
+    }, [isPurchasing, wasPurchasing, purchaseSuccess, purchaseError, isApprovalComplete, t]);
 
     // Calculate token amount
     const tokenAmount = useMemo(() => {
@@ -99,32 +169,317 @@ export default function PresaleBuyPage({ preSaleId }) {
         });
     };
 
-    // Validation
+    // Input validation and formatting
+    const formatPaymentAmount = (value) => {
+        // Remove any non-numeric characters except decimal point
+        let cleanValue = value.replace(/[^0-9.]/g, '');
+
+        // Ensure only one decimal point
+        const parts = cleanValue.split('.');
+        if (parts.length > 2) {
+            cleanValue = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        // Limit to 2 decimal places
+        if (parts[1] && parts[1].length > 2) {
+            cleanValue = parts[0] + '.' + parts[1].substring(0, 2);
+        }
+
+        // Prevent leading zeros (except for 0.xx)
+        if (cleanValue.length > 1 && cleanValue[0] === '0' && cleanValue[1] !== '.') {
+            cleanValue = cleanValue.substring(1);
+        }
+
+        return cleanValue;
+    };
+
+    // Validation - only show errors when there's actual input and not during success state
     const validationError = useMemo(() => {
+        // Don't show validation errors during success state or when form is being reset
+        if (purchaseSuccess) return null;
+
         if (!isConnected) return t("errors.walletNotConnected");
-        if (!paymentAmount || parseFloat(paymentAmount) <= 0) return t("errors.invalidAmount");
+        if (!paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0) return t("errors.invalidAmount");
         if (balance && parseFloat(paymentAmount) > parseFloat(formatUnits(balance.value, balance.decimals))) {
             return t("errors.insufficientBalance");
         }
         const remainingSupply = parseFloat(presale?.total_supply || 0) - parseFloat(presale?.total_sold || 0);
         if (parseFloat(tokenAmount) > remainingSupply) return t("errors.exceedsSupply");
-        return null;
-    }, [isConnected, paymentAmount, tokenAmount, balance, presale, t]);
 
-    // Handle purchase
+        // Check if presale is still active during transaction
+        const currentStatus = getPresaleStatus(presale);
+        if (currentStatus !== "active" && (isApproving || isPurchasing)) {
+            return t("errors.presaleNoLongerActive");
+        }
+
+        return null;
+    }, [isConnected, paymentAmount, tokenAmount, balance, presale, t, isApproving, isPurchasing, purchaseSuccess]);
+
+    // Handle the two-step purchase process
     const handlePurchase = async () => {
+        // Validate input before proceeding
+        if (!paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0) {
+            toast.error(t("errors.invalidAmount"));
+            return;
+        }
+
         if (validationError) {
             toast.error(validationError);
             return;
         }
 
+        // Reset all purchase-related states when starting a new purchase
+        setHasTriggeredPurchase(false);
+        
+        // Reset purchase success state to allow new purchases
+        if (purchaseSuccess) {
+            // User is starting a new purchase, reset success state
+            // Note: purchaseSuccess will be reset by the smart contract hooks automatically
+            // but we can add any additional cleanup here if needed
+        }
+
         try {
-            toast.success(t("messages.purchaseImplemented"));
-            setPaymentAmount("");
+            // If we're at step 2 (approval complete), proceed with purchase
+            if (currentStep === 2 && isApprovalComplete) {
+                await handleDirectPurchase();
+                return;
+            }
+
+            // Step 1: Check if approval is needed
+            if (needsApproval(paymentAmount)) {
+                setCurrentStep(1);
+
+                // Show step 1 toast
+                toast.loading(t("messages.step1Starting") || "Step 1: Approving token spending...", {
+                    id: 'approval-step',
+                    duration: Infinity,
+                    style: {
+                        background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+                        color: 'white',
+                        fontWeight: '600'
+                    },
+                    icon: '1️⃣'
+                });
+
+                const success = await approve(paymentAmount);
+                if (!success) {
+                    toast.dismiss('approval-step');
+                    return;
+                }
+
+                // The approval success will be handled by useEffect which will automatically trigger purchase
+                return;
+            } else {
+                // Skip to step 2 if already approved
+                setCurrentStep(2);
+                setIsApprovalComplete(true);
+
+                // Show direct purchase toast
+                toast.loading(t("messages.purchaseStarting") || "Processing purchase...", {
+                    id: 'purchase-step',
+                    duration: Infinity,
+                    style: {
+                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        color: 'white',
+                        fontWeight: '600'
+                    },
+                    icon: '💳'
+                });
+
+                // Proceed directly to purchase
+                await handleDirectPurchase();
+            }
         } catch (error) {
             console.error("Purchase error:", error);
             toast.error(t("messages.purchaseFailed"));
         }
+    };
+
+    // Handle direct purchase (when approval is not needed or already completed)
+    const handleDirectPurchase = useCallback(async () => {
+        try {
+            const success = await purchasePresale(
+                presale.presale_id,
+                paymentAmount,
+                presale?.payment_token?.token_decimals || 18
+            );
+
+            if (success) {
+                toast.success(t("messages.purchaseInitiated"));
+            }
+        } catch (error) {
+            console.error("Direct purchase error:", error);
+            toast.error(t("messages.purchaseFailed"));
+        }
+    }, [purchasePresale, presale?.presale_id, paymentAmount, presale?.payment_token?.token_decimals, t]);
+
+    // Handle successful transactions with useEffect to prevent re-render loops
+    useEffect(() => {
+        if (approvalSuccess && !isApprovalComplete && !purchaseSuccess) {
+            setIsApprovalComplete(true);
+            setCurrentStep(2);
+            setWasApproving(false); // Reset tracking state
+
+            // Dismiss step 1 loading and show success
+            toast.dismiss('approval-step');
+            toast.success(`✅ ${t("messages.approvalSuccess")}`, {
+                duration: 2000,
+                style: {
+                    background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                    color: 'white',
+                    fontWeight: '600'
+                },
+                icon: '1️⃣'
+            });
+
+            // Show step 2 starting
+            setTimeout(() => {
+                // Don't proceed if purchase is already successful
+                if (purchaseSuccess) return;
+                
+                toast.loading(t("messages.step2Starting") || "Step 2: Processing purchase...", {
+                    id: 'purchase-step',
+                    duration: Infinity,
+                    style: {
+                        background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                        color: 'white',
+                        fontWeight: '600'
+                    },
+                    icon: '2️⃣'
+                });
+
+                // Automatically proceed to purchase after approval success
+                setTimeout(async () => {
+                    // Don't proceed if purchase is already successful
+                    if (purchaseSuccess) return;
+                    
+                    // Check if payment amount is still valid before auto-purchase
+                    if (!paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0) {
+                        toast.dismiss('purchase-step');
+                        toast.error(t("errors.invalidAmount"));
+                        setCurrentStep(1);
+                        setIsApprovalComplete(false);
+                        return;
+                    }
+
+                    if (validationError) {
+                        toast.dismiss('purchase-step');
+                        toast.error(validationError);
+                        return;
+                    }
+                    
+                    // Only proceed if we haven't already started purchasing
+                    if (!isPurchasing && !purchaseSuccess && !hasTriggeredPurchase) {
+                        setHasTriggeredPurchase(true);
+                        await handleDirectPurchase();
+                    }
+                }, 500);
+            }, 1500); // Small delay to show approval success message
+        }
+    }, [approvalSuccess, isApprovalComplete, purchaseSuccess, t]);
+
+    useEffect(() => {
+        if (purchaseSuccess) {
+            setWasPurchasing(false); // Reset tracking state
+            
+            // Immediately reset critical states to prevent loops
+            setHasTriggeredPurchase(false);
+            setIsApprovalComplete(false);
+            setCurrentStep(1);
+
+            // Dismiss step 2 loading
+            toast.dismiss('purchase-step');
+            toast.dismiss('approval-step');
+
+
+
+            // Show final success celebration
+            toast.success(
+                `🎉 ${t("messages.purchaseSuccess")} 🎉`,
+                {
+                    duration: 7000, // Show for 7 seconds
+                    style: {
+                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                        padding: '16px 20px',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(16, 185, 129, 0.3)',
+                        border: '2px solid rgba(255, 255, 255, 0.2)',
+                        backdropFilter: 'blur(10px)'
+                    },
+                    icon: '🚀',
+                    position: 'top-center',
+                    className: 'animate-bounce'
+                }
+            );
+
+            // Refresh presale data to show updated sold amount
+            refetch();
+            refetchBalance();
+
+            // Show Add Token to Wallet modal after a short delay
+            setTimeout(() => {
+                setShowAddTokenModal(true);
+            }, 2000); // Show modal after 2 seconds to let success message be seen
+
+            // Show success state briefly, then reset everything for new purchases
+            setTimeout(() => {
+                // Clear payment amount and reset all states
+                setPaymentAmount("");
+                setCurrentStep(1);
+                setIsApprovalComplete(false);
+                setHasTriggeredPurchase(false);
+                // purchaseSuccess will be reset automatically by wagmi hooks when user starts new transaction
+            }, 3000); // Reset after 3 seconds - shorter time for better UX
+        }
+    }, [purchaseSuccess, t, refetch, refetchBalance]);
+
+    // Handle wallet disconnection - reset all states
+    useEffect(() => {
+        if (!isConnected) {
+            setPaymentAmount("");
+            setCurrentStep(1);
+            setIsApprovalComplete(false);
+            setWasApproving(false);
+            setWasPurchasing(false);
+            setShowAddTokenModal(false);
+            setHasTriggeredPurchase(false);
+            toast.dismiss('approval-step');
+            toast.dismiss('purchase-step');
+        }
+    }, [isConnected]);
+
+    // Handle presale status changes - reset if presale becomes inactive
+    useEffect(() => {
+        const currentStatus = getPresaleStatus(presale);
+        if (currentStatus !== "active" && (isApproving || isPurchasing)) {
+            toast.error(t("errors.presaleNoLongerActive"));
+            setCurrentStep(1);
+            setIsApprovalComplete(false);
+        }
+    }, [presale, isApproving, isPurchasing, t]);
+
+    // Reset flow function for error recovery
+    const resetFlow = () => {
+        setPaymentAmount("");
+        setCurrentStep(1);
+        setIsApprovalComplete(false);
+        setWasApproving(false);
+        setWasPurchasing(false);
+        setHasTriggeredPurchase(false);
+        toast.dismiss('approval-step');
+        toast.dismiss('purchase-step');
+        toast.info(t("messages.flowReset"), {
+            duration: 3000,
+            style: {
+                background: '#F3F4F6',
+                color: '#374151',
+                border: '1px solid #D1D5DB'
+            },
+            icon: '🔄'
+        });
     };
 
     if (isLoading) {
@@ -193,21 +548,14 @@ export default function PresaleBuyPage({ preSaleId }) {
             <div className="relative z-10 pt-[80px] lg:pt-[120px]">
                 <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
                     {/* Header */}
-                    <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-8">
+                    <div className="mb-6">
                         <button
                             onClick={() => router.push("/presales")}
-                            className="p-2 sm:p-3 hover:bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation cursor-pointer"
+                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
                         >
-                            {isRTL ? <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" /> : <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />}
+                            <ArrowLeft className={`h-4 w-4 ${isRTL ? "rotate-180" : ""}`} />
+                            {t("back")}
                         </button>
-                        <div className="min-w-0 flex-1">
-                            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 truncate">
-                                {t("title")}
-                            </h1>
-                            <p className="text-gray-600 text-sm sm:text-base lg:text-lg truncate">
-                                {presale.mine_token.token_name}
-                            </p>
-                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
@@ -247,10 +595,20 @@ export default function PresaleBuyPage({ preSaleId }) {
                                         <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl sm:rounded-2xl p-3 sm:p-5 border-2 border-gray-200 focus-within:border-[#FF5D1B] focus-within:shadow-lg transition-all duration-300">
                                             <div className="flex items-center justify-between">
                                                 <input
-                                                    type="number"
+                                                    type="text"
+                                                    inputMode="decimal"
                                                     value={paymentAmount}
-                                                    onChange={(e) => setPaymentAmount(e.target.value)}
-                                                    placeholder="0.0"
+                                                    onChange={(e) => {
+                                                        const formattedValue = formatPaymentAmount(e.target.value);
+                                                        setPaymentAmount(formattedValue);
+                                                        
+                                                        // Reset purchase success state when user enters new amount
+                                                        if (purchaseSuccess && formattedValue && formattedValue !== '') {
+                                                            // User is entering a new amount, reset success state
+                                                            // This will re-enable the button for new purchases
+                                                        }
+                                                    }}
+                                                    placeholder="0.00"
                                                     className="bg-transparent text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 placeholder-gray-400 outline-none flex-1"
                                                 />
                                                 <div className="flex items-center gap-2 sm:gap-3">
@@ -318,6 +676,7 @@ export default function PresaleBuyPage({ preSaleId }) {
                                         </div>
                                     )}
 
+
                                     {/* Buy Button */}
                                     <div className="pt-2 sm:pt-4">
                                         {!isConnected ? (
@@ -346,16 +705,38 @@ export default function PresaleBuyPage({ preSaleId }) {
                                             >
                                                 {validationError}
                                             </button>
+                                        ) : !paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0 ? (
+                                            // Don't show button when form is empty - better UX
+                                            <div className="w-full py-4 sm:py-5 text-center">
+                                                <p className="text-gray-500 text-sm">
+                                                    {t("buttons.enterAmount") || "Enter amount to continue"}
+                                                </p>
+                                            </div>
                                         ) : (
                                             <button
                                                 onClick={handlePurchase}
-                                                disabled={isPending || isConfirming}
+                                                disabled={isApproving || isPurchasing || (currentStep === 2 && isApprovalComplete)}
                                                 className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] hover:from-[#FF4A0F] hover:to-[#FF2A2A] text-white font-bold py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg transform hover:scale-[1.02] touch-manipulation cursor-pointer"
                                             >
-                                                {isPending || isConfirming ? (
+                                                {isApproving ? (
                                                     <>
                                                         <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
-                                                        {t("buttons.confirming")}
+                                                        {t("buttons.approving")}
+                                                    </>
+                                                ) : isPurchasing ? (
+                                                    <>
+                                                        <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
+                                                        {t("buttons.purchasing")}
+                                                    </>
+                                                ) : currentStep === 2 && isApprovalComplete ? (
+                                                    <>
+                                                        <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
+                                                        {t("buttons.purchasing")}
+                                                    </>
+                                                ) : needsApproval && needsApproval(paymentAmount) ? (
+                                                    <>
+                                                        <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                                                        {t("buttons.approveAndBuy")}
                                                     </>
                                                 ) : (
                                                     <>
@@ -466,6 +847,26 @@ export default function PresaleBuyPage({ preSaleId }) {
                                         <div className="text-xs text-gray-500 mb-1">{t("sidebar.symbol")}</div>
                                         <div className="font-semibold text-gray-900 text-sm sm:text-base">{presale?.mine_token?.token_symbol}</div>
                                     </div>
+
+                                    {/* Add to Wallet Button - Prominent Position */}
+                                    <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-orange-200">
+                                        <button
+                                            onClick={() => setShowAddTokenModal(true)}
+                                            className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] hover:from-[#FF4A0F] hover:to-[#FF2A2A] text-white font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02] touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 cursor-pointer"
+                                            disabled={!isConnected}
+                                            title={!isConnected ? "Connect wallet to add token" : "Add token to your wallet"}
+                                        >
+                                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>
+                                            <span className="text-sm sm:text-base">{t("sidebar.addToWallet")}</span>
+                                        </button>
+                                        {!isConnected && (
+                                            <p className="text-xs text-orange-600 mt-2 text-center">
+                                                Connect your wallet first
+                                            </p>
+                                        )}
+                                    </div>
                                     <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4">
                                         <div className="text-xs text-gray-500 mb-1">{t("sidebar.contractAddress")}</div>
                                         <div className="font-mono text-xs text-gray-700 break-all">
@@ -488,6 +889,18 @@ export default function PresaleBuyPage({ preSaleId }) {
                     </div>
                 </div>
             </div>
+
+            {/* Add Token to Wallet Modal */}
+            {showAddTokenModal && (
+                <AddTokenToWallet
+                    tokenAddress={presale?.mine_token?.token_address}
+                    tokenSymbol={presale?.mine_token?.token_symbol}
+                    tokenName={presale?.mine_token?.token_name}
+                    tokenDecimals={18}
+                    onClose={() => setShowAddTokenModal(false)}
+                    onSkip={() => setShowAddTokenModal(false)}
+                />
+            )}
         </div>
     );
 }

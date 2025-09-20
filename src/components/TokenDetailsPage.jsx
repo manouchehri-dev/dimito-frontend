@@ -531,58 +531,71 @@ export default function TokenDetailsPage({ tokenId }) {
                       <p className="text-gray-500">{t("mines.empty.message")}</p>
                     </div>
                   ) : (
-                    <div className="grid gap-6">
-                      {mines.mines.map((mine) => (
-                        <div key={mine.id} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
-                              <h4 className="text-lg font-semibold text-gray-900">{mine.name}</h4>
-                              <div className="flex items-center gap-2 mt-1">
-                                <MapPin className="w-4 h-4 text-gray-400" />
-                                <span className="text-sm text-gray-600">{mine.location}</span>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {mines.mines.map((mine) => (
+                          <div
+                            key={mine.id}
+                            onClick={() => window.open(`/transparency?mine_name=${encodeURIComponent(mine.name)}`, '_blank')}
+                            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all duration-200 hover:border-[#FF5D1B]/30 cursor-pointer"
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] rounded-lg flex items-center justify-center">
+                                  <Zap className="w-4 h-4 text-white" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 text-sm truncate">{mine.name}</h4>
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <MapPin className="w-3 h-3 text-gray-400" />
+                                    <span className="text-xs text-gray-500 truncate">{mine.location}</span>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-2xl font-bold text-[#FF5D1B]">
-                                {mine.allocation_percentage}%
-                              </p>
-                              <p className="text-sm text-gray-600">{t("mines.allocation")}</p>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                            <div>
-                              <p className="text-sm text-gray-600 mb-1">{t("mines.capacity")}</p>
-                              <p className="text-lg font-semibold text-gray-900">{mine.capacity} MW</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-600 mb-1">{t("mines.status")}</p>
                               <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${mine.is_active
-                                ? "bg-green-100 text-green-800 border border-green-200"
-                                : "bg-red-100 text-red-800 border border-red-200"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
                                 }`}>
                                 {mine.is_active ? (
-                                  <>
-                                    <CheckCircle className="w-3 h-3" />
-                                    {t("mines.active")}
-                                  </>
+                                  <CheckCircle className="w-3 h-3" />
                                 ) : (
-                                  <>
-                                    <AlertCircle className="w-3 h-3" />
-                                    {t("mines.inactive")}
-                                  </>
+                                  <AlertCircle className="w-3 h-3" />
                                 )}
                               </span>
                             </div>
-                          </div>
 
-                          {mine.description && (
-                            <div className="mt-4">
-                              <p className="text-sm text-gray-600">{mine.description}</p>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-500">{t("mines.allocation")}</span>
+                                <span className="text-lg font-bold text-[#FF5D1B]">{mine.allocation_percentage}%</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-500">{t("mines.capacity")}</span>
+                                <span className="text-sm font-semibold text-gray-900">{mine.capacity} MW</span>
+                              </div>
                             </div>
-                          )}
+
+                            {mine.description && (
+                              <div className="mt-3 pt-3 border-t border-gray-100">
+                                <p className="text-xs text-gray-600 line-clamp-2">{mine.description}</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* More Mines Button */}
+                      {mines.count > mines.mines.length && (
+                        <div className="text-center">
+                          <button
+                            onClick={() => router.push(`/transparency?token=${token.id}`)}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white rounded-lg hover:shadow-lg transition-all duration-200 cursor-pointer"
+                          >
+                            <Zap className="w-4 h-4" />
+                            {t("mines.viewMore")} ({mines.count - mines.mines.length} {t("mines.more")})
+                          </button>
                         </div>
-                      ))}
+                      )}
                     </div>
                   )}
                 </div>
@@ -592,9 +605,14 @@ export default function TokenDetailsPage({ tokenId }) {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-gray-900">{t("reports.title")}</h3>
-                    <span className="text-sm text-gray-500">
-                      {reports.count} {t("reports.total")}
-                    </span>
+                    <button
+                      onClick={() => window.open(`/transparency?token=${token.id}`, '_blank')}
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white text-sm rounded-lg hover:shadow-lg transition-all duration-200 cursor-pointer"
+                    >
+                      <FileText className="w-4 h-4" />
+                      {t("reports.viewAll")}
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
                   </div>
 
                   {reports.reports.length === 0 ? (
@@ -604,48 +622,86 @@ export default function TokenDetailsPage({ tokenId }) {
                       <p className="text-gray-500">{t("reports.empty.message")}</p>
                     </div>
                   ) : (
-                    <div className="grid gap-4">
-                      {reports.reports.map((report) => (
-                        <div key={report.id} className="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h4>
-                              <p className="text-gray-600 mb-3">{report.description}</p>
-
-                              <div className="flex items-center gap-4 text-sm text-gray-500">
-                                <div className="flex items-center gap-1">
-                                  <Calendar className="w-4 h-4" />
-                                  {formatDate(report.created_date)}
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {reports.reports.map((report) => (
+                          <div key={report.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all duration-200 hover:border-[#FF5D1B]/30 cursor-pointer" onClick={() => window.open(`/transparency/reports/${report.id}`, '_blank')}>
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                                  <FileText className="w-4 h-4 text-white" />
                                 </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-semibold text-gray-900 text-sm truncate">{report.title}</h4>
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <Calendar className="w-3 h-3 text-gray-400" />
+                                    <span className="text-xs text-gray-500">
+                                      {new Date(report.created_date).toLocaleDateString(locale, {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                      })}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <button className="text-gray-400 hover:text-[#FF5D1B] transition-colors cursor-pointer">
+                                <ExternalLink className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            <p className="text-xs text-gray-600 mb-3 line-clamp-2">{report.description}</p>
+
+                            <div className="flex items-center justify-between text-xs">
+                              <div className="flex items-center gap-3">
                                 {report.attachments_count > 0 && (
-                                  <div className="flex items-center gap-1">
-                                    <FileText className="w-4 h-4" />
-                                    {report.attachments_count} {t("reports.attachments")}
+                                  <div className="flex items-center gap-1 text-gray-500">
+                                    <FileText className="w-3 h-3" />
+                                    <span>{report.attachments_count}</span>
+                                  </div>
+                                )}
+                                {report.mines_covered.length > 0 && (
+                                  <div className="flex items-center gap-1 text-gray-500">
+                                    <MapPin className="w-3 h-3" />
+                                    <span>{report.mines_covered.length} {t("reports.mines")}</span>
                                   </div>
                                 )}
                               </div>
-
-                              {report.mines_covered.length > 0 && (
-                                <div className="mt-3">
-                                  <p className="text-sm text-gray-600 mb-1">{t("reports.minesCovered")}:</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {report.mines_covered.map((mine) => (
-                                      <span key={mine.id} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                        <MapPin className="w-3 h-3" />
-                                        {mine.name} ({mine.location})
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
                             </div>
 
-                            <button className="ml-4 text-gray-400 hover:text-[#FF5D1B] transition-colors cursor-pointer">
-                              <ExternalLink className="w-5 h-5" />
-                            </button>
+                            {report.mines_covered.length > 0 && (
+                              <div className="mt-3 pt-3 border-t border-gray-100">
+                                <div className="flex flex-wrap gap-1">
+                                  {report.mines_covered.slice(0, 2).map((mine) => (
+                                    <span key={mine.id} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+                                      <MapPin className="w-2 h-2" />
+                                      {mine.name}
+                                    </span>
+                                  ))}
+                                  {report.mines_covered.length > 2 && (
+                                    <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                                      +{report.mines_covered.length - 2}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                           </div>
+                        ))}
+                      </div>
+
+                      {/* More Reports Button */}
+                      {reports.count > reports.reports.length && (
+                        <div className="text-center">
+                          <button
+                            onClick={() => router.push(`/transparency?token=${token.id}`)}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white rounded-lg hover:shadow-lg transition-all duration-200 cursor-pointer"
+                          >
+                            <FileText className="w-4 h-4" />
+                            {t("reports.viewMore")} ({reports.count - reports.reports.length} {t("reports.more")})
+                          </button>
                         </div>
-                      ))}
+                      )}
                     </div>
                   )}
                 </div>
