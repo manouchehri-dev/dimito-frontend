@@ -1,18 +1,19 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { useDisconnect } from "wagmi";
+import Link from "next/link";
 import {
   LayoutDashboard,
-  Wallet,
-  TrendingUp,
-  History,
   Settings,
   LogOut,
+  Menu,
   X,
-  PieChart,
-  CreditCard,
+  ShoppingBag,
+  Rocket,
+  TrendingUp,
 } from "lucide-react";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 export default function DashboardSidebar({
   isOpen,
@@ -25,6 +26,13 @@ export default function DashboardSidebar({
   const isRTL = locale === "fa";
   const pathname = usePathname();
   const router = useRouter();
+  const { disconnect } = useDisconnect();
+
+  const handleLogout = () => {
+    disconnect();
+    router.push("/");
+    if (onClose) onClose(); // Close mobile sidebar
+  };
 
   const navigation = [
     {
@@ -34,40 +42,28 @@ export default function DashboardSidebar({
       current: pathname === "/dashboard",
     },
     {
-      name: t("portfolio"),
-      href: "/dashboard/portfolio",
-      icon: PieChart,
-      current: pathname === "/dashboard/portfolio",
-    },
-    {
-      name: t("wallet"),
-      href: "/dashboard/wallet",
-      icon: Wallet,
-      current: pathname === "/dashboard/wallet",
-    },
-    {
-      name: t("trading"),
-      href: "/dashboard/trading",
+      name: t("presale"),
+      href: "/dashboard/presales",
       icon: TrendingUp,
-      current: pathname === "/dashboard/trading",
+      current: pathname === "/dashboard/presales",
     },
     {
-      name: t("transactions"),
-      href: "/dashboard/transactions",
-      icon: History,
-      current: pathname === "/dashboard/transactions",
+      name: t("purchases.title"),
+      href: "/dashboard/purchases",
+      icon: ShoppingBag,
+      current: pathname === "/dashboard/purchases",
     },
     {
-      name: t("cards"),
-      href: "/dashboard/cards",
-      icon: CreditCard,
-      current: pathname === "/dashboard/cards",
+      name: t("participatedPresales.title"),
+      href: "/dashboard/participated-presales",
+      icon: Rocket,
+      current: pathname === "/dashboard/participated-presales",
     },
   ];
 
   const secondaryNavigation = [
     {
-      name: t("settings"),
+      name: t("settings.title"),
       href: "/dashboard/settings",
       icon: Settings,
       current: pathname === "/dashboard/settings",
@@ -78,15 +74,13 @@ export default function DashboardSidebar({
     <>
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-y-0 ${
-          isRTL ? "right-0" : "left-0"
-        } z-50 w-64 bg-white shadow-xl lg:hidden transform transition-transform duration-300 ${
-          isOpen
+        className={`fixed inset-y-0 ${isRTL ? "right-0" : "left-0"
+          } z-50 w-64 bg-white shadow-xl lg:hidden transform transition-transform duration-300 ${isOpen
             ? "translate-x-0"
             : isRTL
-            ? "translate-x-full"
-            : "-translate-x-full"
-        }`}
+              ? "translate-x-full"
+              : "-translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -115,11 +109,10 @@ export default function DashboardSidebar({
                   key={item.name}
                   href={item.href}
                   onClick={onClose}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    item.current
-                      ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  }`}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${item.current
+                    ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   {item.name}
@@ -137,11 +130,10 @@ export default function DashboardSidebar({
                   key={item.name}
                   href={item.href}
                   onClick={onClose}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    item.current
-                      ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  }`}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${item.current
+                    ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   {item.name}
@@ -150,7 +142,10 @@ export default function DashboardSidebar({
             })}
 
             {/* Logout button */}
-            <button className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full cursor-pointer"
+            >
               <LogOut className="w-5 h-5" />
               {t("logout")}
             </button>
@@ -160,11 +155,9 @@ export default function DashboardSidebar({
 
       {/* Desktop sidebar */}
       <div
-        className={`hidden lg:fixed lg:inset-y-0 ${
-          isRTL ? "lg:right-0" : "lg:left-0"
-        } lg:z-50 ${
-          isCollapsed ? "lg:w-16" : "lg:w-64"
-        } lg:flex lg:flex-col transition-all duration-300`}
+        className={`hidden lg:fixed lg:inset-y-0 ${isRTL ? "lg:right-0" : "lg:left-0"
+          } lg:z-50 ${isCollapsed ? "lg:w-16" : "lg:w-64"
+          } lg:flex lg:flex-col transition-all duration-300`}
       >
         <div className="flex flex-col flex-1 bg-white border-r border-gray-200 shadow-sm">
           {/* Header */}
@@ -190,11 +183,10 @@ export default function DashboardSidebar({
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    item.current
-                      ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  } ${isCollapsed ? "justify-center" : ""}`}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${item.current
+                    ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    } ${isCollapsed ? "justify-center" : ""}`}
                   title={isCollapsed ? item.name : ""}
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
@@ -214,11 +206,10 @@ export default function DashboardSidebar({
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    item.current
-                      ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  } ${isCollapsed ? "justify-center" : ""}`}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${item.current
+                    ? "bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white shadow-lg"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    } ${isCollapsed ? "justify-center" : ""}`}
                   title={isCollapsed ? item.name : ""}
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
@@ -231,9 +222,9 @@ export default function DashboardSidebar({
 
             {/* Logout button */}
             <button
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full ${
-                isCollapsed ? "justify-center" : ""
-              }`}
+              onClick={handleLogout}
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full ${isCollapsed ? "justify-center cursor-pointer" : ""
+                }`}
               title={isCollapsed ? t("logout") : ""}
             >
               <LogOut className="w-5 h-5 flex-shrink-0" />

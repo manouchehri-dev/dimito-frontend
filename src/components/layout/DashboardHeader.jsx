@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Menu, Bell, Search, User, ChevronDown } from "lucide-react";
+import { Menu, Bell } from "lucide-react";
 import CustomConnectButton from "@/components/module/CustomConnectButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -11,10 +10,9 @@ export default function DashboardHeader({
   onToggleCollapse,
   isCollapsed,
 }) {
-  const t = useTranslations("dashboard");
+  const t = useTranslations("dashboard_common");
   const locale = useLocale();
   const isRTL = locale === "fa";
-  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
@@ -51,41 +49,17 @@ export default function DashboardHeader({
                       ? "M15 19l-7-7 7-7"
                       : "M9 5l7 7-7 7"
                     : isRTL
-                    ? "M9 5l7 7-7 7"
-                    : "M15 19l-7-7 7-7"
+                      ? "M9 5l7 7-7 7"
+                      : "M15 19l-7-7 7-7"
                 }
               />
             </svg>
           </button>
 
-          {/* Search bar - hidden on mobile */}
-          <div className="hidden sm:block relative">
-            <div className="relative">
-              <Search
-                className={`absolute ${
-                  isRTL ? "right-3" : "left-3"
-                } top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400`}
-              />
-              <input
-                type="text"
-                placeholder={t("searchPlaceholder")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-64 lg:w-80 ${
-                  isRTL ? "pr-10 pl-4" : "pl-10 pr-4"
-                } py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5D1B] focus:border-transparent transition-colors`}
-              />
-            </div>
-          </div>
         </div>
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Mobile search button */}
-          <button className="sm:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            <Search className="w-5 h-5" />
-          </button>
-
           {/* Notifications */}
           <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <Bell className="w-5 h-5" />
@@ -95,11 +69,12 @@ export default function DashboardHeader({
             </span>
           </button>
 
-          {/* Language Switcher */}
-          <LanguageSwitcher />
 
           {/* Wallet Connection */}
           <CustomConnectButton className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] hover:from-[#FF4A0F] hover:to-[#FF2A2A] text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-lg text-sm" />
+
+          {/* Language Switcher */}
+          <LanguageSwitcher />
         </div>
       </div>
     </header>

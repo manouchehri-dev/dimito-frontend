@@ -18,13 +18,15 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
-  ShoppingCart
+  ShoppingCart,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { enUS, faIR } from "date-fns/locale";
 // Removed modal import - using dedicated buy page instead
 
-export default function PresalesPage() {
+export default function PresalesPage({ onBack }) {
   const t = useTranslations("presales");
   const locale = useLocale();
   const isRTL = locale === "fa";
@@ -194,23 +196,34 @@ export default function PresalesPage() {
     <div className="space-y-6" dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {t("title")}
-          </h1>
-          <p className="text-gray-600 mt-1">
-            {t("subtitle")}
-          </p>
+        <div className="flex items-center gap-4">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            >
+              {isRTL ? <ArrowRight className="w-5 h-5 text-gray-600" /> : <ArrowLeft className="w-5 h-5 text-gray-600" />}
+            </button>
+          )}
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
+              <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 text-orange-500" />
+              {t("title")}
+            </h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">{t("subtitle")}</p>
+          </div>
         </div>
 
-        <button
-          onClick={() => refetch()}
-          disabled={isRefetching}
-          className="flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
-        >
-          <RefreshCw className={`w-4 h-4 ${isRefetching ? "animate-spin" : ""}`} />
-          {t("refresh")}
-        </button>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => refetch()}
+            disabled={isRefetching}
+            className="bg-white border border-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 text-sm sm:text-base"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefetching ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">{t("refresh")}</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

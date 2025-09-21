@@ -1,11 +1,11 @@
 import { setRequestLocale } from "next-intl/server";
-import PresalesPage from "@/components/dashboard/PresalesPage";
+import PresalesPageWrapper from "./PresalesPageWrapper";
 
 export default async function PresalesPageRoute({ params }) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <PresalesPage />;
+  return <PresalesPageWrapper />;
 }
 
 export async function generateMetadata({ params }) {
