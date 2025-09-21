@@ -456,7 +456,9 @@
       "agriculture": "Agriculture",
       "infrastructure": "Infrastructure",
       "other": "Other"
-    }
+    },
+    "pleaseWait": "Please wait {seconds} seconds before submitting again",
+    "maxAttemptsReached": "Maximum attempts reached. Please refresh the page to try again."
   },
   "dashboard": {
     "title": "Transparency Dashboard",
