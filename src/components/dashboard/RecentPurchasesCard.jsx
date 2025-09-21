@@ -2,8 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { format } from "date-fns";
-import { enUS, faIR } from "date-fns/locale";
+import { formatDateByLocale } from "@/lib/date";
 import { useRouter } from "@/i18n/navigation";
 import {
     ShoppingBag,
@@ -17,7 +16,6 @@ import {
 export default function RecentPurchasesCard({ recentPurchases = [] }) {
     const t = useTranslations("dashboard");
     const locale = useLocale();
-    const dateLocale = locale === "fa" ? faIR : enUS;
     const router = useRouter();
 
     // Format large numbers with K, M, B suffixes
@@ -92,7 +90,7 @@ export default function RecentPurchasesCard({ recentPurchases = [] }) {
                                     )}
                                 </div>
                                 <p className="text-xs text-gray-500">
-                                    {format(new Date(purchase.created_at), "MMM dd", { locale: dateLocale })}
+                                    {formatDateByLocale(purchase.created_at, locale, 'medium')}
                                 </p>
                             </div>
                         </div>

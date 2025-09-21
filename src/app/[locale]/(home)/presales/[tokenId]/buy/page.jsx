@@ -15,13 +15,16 @@ export async function generateMetadata({ params }) {
 
 export default async function PresaleBuyPageRoute({ params }) {
   const { tokenId } = await params;
-  const preSaleId = parseInt(tokenId);
+  
+  // Clean tokenId by removing any commas or non-numeric characters except for the ID itself
+  const cleanTokenId = tokenId.toString().replace(/[^0-9]/g, '');
+  const preSaleId = parseInt(cleanTokenId);
 
   // Validate that presaleId is a number
-  if (!preSaleId || isNaN(parseInt(preSaleId))) {
+  if (!preSaleId || isNaN(preSaleId)) {
     notFound();
   }
 
   // Since each token has only 1 presale, we can use the same ID
-  return <PresaleBuyPage preSaleId={parseInt(preSaleId)} />;
+  return <PresaleBuyPage preSaleId={preSaleId} />;
 }

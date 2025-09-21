@@ -263,9 +263,9 @@ export default function TransparencyDashboard() {
                     {loadingReports
                       ? "..."
                       : reports.reduce(
-                          (acc, r) => acc + (r.attachments?.length || 0),
-                          0
-                        ) || 0}
+                        (acc, r) => acc + (r.attachments?.length || 0),
+                        0
+                      ) || 0}
                   </p>
                   <p className="text-sm text-gray-600 font-iransans">
                     {t("attachments")}
@@ -328,7 +328,7 @@ export default function TransparencyDashboard() {
                   <Settings className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-[#2D2D2D] font-iransans">
-                  {t("settings")}
+                  {t("settings.title")}
                 </h3>
               </div>
               <p className="text-gray-600 font-iransans text-sm">
@@ -363,18 +363,16 @@ export default function TransparencyDashboard() {
                     >
                       <div className="flex items-center gap-4">
                         <div
-                          className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                            report.is_published
+                          className={`h-10 w-10 rounded-lg flex items-center justify-center ${report.is_published
                               ? "bg-green-100"
                               : "bg-yellow-100"
-                          }`}
+                            }`}
                         >
                           <FileText
-                            className={`h-5 w-5 ${
-                              report.is_published
+                            className={`h-5 w-5 ${report.is_published
                                 ? "text-green-600"
                                 : "text-yellow-600"
-                            }`}
+                              }`}
                           />
                         </div>
                         <div className="flex-1">
@@ -414,11 +412,10 @@ export default function TransparencyDashboard() {
                           onClick={() => handleTogglePublish(report)}
                           disabled={togglePublishMutation.isPending}
                           size="sm"
-                          className={`transition-all duration-200 ${
-                            report.is_published
+                          className={`transition-all duration-200 ${report.is_published
                               ? "bg-red-500 hover:bg-red-600 text-white"
                               : "bg-green-500 hover:bg-green-600 text-white"
-                          }`}
+                            }`}
                         >
                           {togglePublishMutation.isPending ? (
                             <Loader2 className="w-4 h-4 mr-1 animate-spin" />
@@ -432,8 +429,8 @@ export default function TransparencyDashboard() {
                               ? t("unpublishing")
                               : t("publishing")
                             : report.is_published
-                            ? t("unpublish")
-                            : t("publish")}
+                              ? t("unpublish")
+                              : t("publish")}
                         </Button>
                       </div>
                     </div>
@@ -489,11 +486,10 @@ export default function TransparencyDashboard() {
                                     : "outline"
                                 }
                                 size="sm"
-                                className={`w-8 h-8 p-0 ${
-                                  currentPage === pageNum
+                                className={`w-8 h-8 p-0 ${currentPage === pageNum
                                     ? "bg-[#FF5D1B] text-white border-[#FF5D1B]"
                                     : "text-gray-600 border-gray-300 hover:bg-gray-50"
-                                }`}
+                                  }`}
                               >
                                 {pageNum}
                               </Button>
