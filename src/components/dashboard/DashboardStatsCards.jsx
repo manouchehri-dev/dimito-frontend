@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
+import { formatDateByLocale } from "@/lib/date";
 import {
   ShoppingBag,
   CheckCircle,
@@ -70,14 +71,6 @@ export default function DashboardStatsCards({ statistics }) {
       trend: null
     },
     {
-      title: t("stats.tokensAcquired"),
-      value: formatNumber(purchase_summary?.total_tokens_acquired || 0),
-      subtitle: t("stats.tokensAcquiredDesc"),
-      icon: BarChart3,
-      color: "text-purple-600 bg-purple-50",
-      trend: null
-    },
-    {
       title: t("stats.uniqueTokens"),
       value: participation_summary?.unique_tokens_purchased || 0,
       subtitle: t("stats.uniqueTokensDesc"),
@@ -136,7 +129,7 @@ export default function DashboardStatsCards({ statistics }) {
             <p className="text-xs text-gray-500">{t("stats.memberSince")}</p>
             <p className="text-sm font-medium text-gray-900">
               {account_status?.registration_date 
-                ? new Date(account_status.registration_date).toLocaleDateString(locale)
+                ? formatDateByLocale(account_status.registration_date, locale, 'medium')
                 : "N/A"
               }
             </p>

@@ -8,6 +8,7 @@ import { useAccount, useBalance } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { parseUnits, formatUnits } from "viem";
 import toast from "react-hot-toast";
+import { NumericFormat } from 'react-number-format';
 import { useERC20Approval } from "@/hooks/useERC20Approval";
 import { usePresalePurchase } from "@/hooks/usePresalePurchase";
 import AddTokenToWallet from "@/components/AddTokenToWallet";
@@ -40,7 +41,8 @@ export default function PresaleBuyPage({ preSaleId }) {
     const { address, isConnected } = useAccount();
 
     // State
-    const [paymentAmount, setPaymentAmount] = useState("");
+    const [paymentAmount, setPaymentAmount] = useState('');
+    const [rawPaymentAmount, setRawPaymentAmount] = useState('');
     const [currentStep, setCurrentStep] = useState(1); // 1: Approve, 2: Purchase
     const [isApprovalComplete, setIsApprovalComplete] = useState(false);
     const [wasApproving, setWasApproving] = useState(false);
@@ -123,9 +125,9 @@ export default function PresaleBuyPage({ preSaleId }) {
 
     // Calculate token amount
     const tokenAmount = useMemo(() => {
-        if (!paymentAmount || !presale) return "0";
-        return (parseFloat(paymentAmount) / parseFloat(presale.price_per_token)).toFixed(6);
-    }, [paymentAmount, presale]);
+        if (!rawPaymentAmount || !presale) return "0";
+        return (parseFloat(rawPaymentAmount) / parseFloat(presale.price_per_token)).toFixed(6);
+    }, [rawPaymentAmount, presale]);
 
     // Get presale status
     const getPresaleStatus = (presale) => {
@@ -169,29 +171,6 @@ export default function PresaleBuyPage({ preSaleId }) {
         });
     };
 
-    // Input validation and formatting
-    const formatPaymentAmount = (value) => {
-        // Remove any non-numeric characters except decimal point
-        let cleanValue = value.replace(/[^0-9.]/g, '');
-
-        // Ensure only one decimal point
-        const parts = cleanValue.split('.');
-        if (parts.length > 2) {
-            cleanValue = parts[0] + '.' + parts.slice(1).join('');
-        }
-
-        // Limit to 2 decimal places
-        if (parts[1] && parts[1].length > 2) {
-            cleanValue = parts[0] + '.' + parts[1].substring(0, 2);
-        }
-
-        // Prevent leading zeros (except for 0.xx)
-        if (cleanValue.length > 1 && cleanValue[0] === '0' && cleanValue[1] !== '.') {
-            cleanValue = cleanValue.substring(1);
-        }
-
-        return cleanValue;
-    };
 
     // Validation - only show errors when there's actual input and not during success state
     const validationError = useMemo(() => {
@@ -199,8 +178,8 @@ export default function PresaleBuyPage({ preSaleId }) {
         if (purchaseSuccess) return null;
 
         if (!isConnected) return t("errors.walletNotConnected");
-        if (!paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0) return t("errors.invalidAmount");
-        if (balance && parseFloat(paymentAmount) > parseFloat(formatUnits(balance.value, balance.decimals))) {
+        if (!rawPaymentAmount || rawPaymentAmount === '' || parseFloat(rawPaymentAmount) <= 0) return t("errors.invalidAmount");
+        if (balance && parseFloat(rawPaymentAmount) > parseFloat(formatUnits(balance.value, balance.decimals))) {
             return t("errors.insufficientBalance");
         }
         const remainingSupply = parseFloat(presale?.total_supply || 0) - parseFloat(presale?.total_sold || 0);
@@ -213,12 +192,12 @@ export default function PresaleBuyPage({ preSaleId }) {
         }
 
         return null;
-    }, [isConnected, paymentAmount, tokenAmount, balance, presale, t, isApproving, isPurchasing, purchaseSuccess]);
+    }, [isConnected, rawPaymentAmount, tokenAmount, balance, presale, t, isApproving, isPurchasing, purchaseSuccess]);
 
     // Handle the two-step purchase process
     const handlePurchase = async () => {
         // Validate input before proceeding
-        if (!paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0) {
+        if (!rawPaymentAmount || rawPaymentAmount === '' || parseFloat(rawPaymentAmount) <= 0) {
             toast.error(t("errors.invalidAmount"));
             return;
         }
@@ -230,7 +209,7 @@ export default function PresaleBuyPage({ preSaleId }) {
 
         // Reset all purchase-related states when starting a new purchase
         setHasTriggeredPurchase(false);
-        
+
         // Reset purchase success state to allow new purchases
         if (purchaseSuccess) {
             // User is starting a new purchase, reset success state
@@ -246,7 +225,7 @@ export default function PresaleBuyPage({ preSaleId }) {
             }
 
             // Step 1: Check if approval is needed
-            if (needsApproval(paymentAmount)) {
+            if (needsApproval(rawPaymentAmount)) {
                 setCurrentStep(1);
 
                 // Show step 1 toast
@@ -261,7 +240,7 @@ export default function PresaleBuyPage({ preSaleId }) {
                     icon: '1️⃣'
                 });
 
-                const success = await approve(paymentAmount);
+                const success = await approve(rawPaymentAmount);
                 if (!success) {
                     toast.dismiss('approval-step');
                     return;
@@ -300,7 +279,7 @@ export default function PresaleBuyPage({ preSaleId }) {
         try {
             const success = await purchasePresale(
                 presale.presale_id,
-                paymentAmount,
+                rawPaymentAmount,
                 presale?.payment_token?.token_decimals || 18
             );
 
@@ -311,7 +290,7 @@ export default function PresaleBuyPage({ preSaleId }) {
             console.error("Direct purchase error:", error);
             toast.error(t("messages.purchaseFailed"));
         }
-    }, [purchasePresale, presale?.presale_id, paymentAmount, presale?.payment_token?.token_decimals, t]);
+    }, [purchasePresale, presale?.presale_id, rawPaymentAmount, presale?.payment_token?.token_decimals, t]);
 
     // Handle successful transactions with useEffect to prevent re-render loops
     useEffect(() => {
@@ -336,7 +315,7 @@ export default function PresaleBuyPage({ preSaleId }) {
             setTimeout(() => {
                 // Don't proceed if purchase is already successful
                 if (purchaseSuccess) return;
-                
+
                 toast.loading(t("messages.step2Starting") || "Step 2: Processing purchase...", {
                     id: 'purchase-step',
                     duration: Infinity,
@@ -352,9 +331,9 @@ export default function PresaleBuyPage({ preSaleId }) {
                 setTimeout(async () => {
                     // Don't proceed if purchase is already successful
                     if (purchaseSuccess) return;
-                    
+
                     // Check if payment amount is still valid before auto-purchase
-                    if (!paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0) {
+                    if (!rawPaymentAmount || rawPaymentAmount === '' || parseFloat(rawPaymentAmount) <= 0) {
                         toast.dismiss('purchase-step');
                         toast.error(t("errors.invalidAmount"));
                         setCurrentStep(1);
@@ -367,7 +346,7 @@ export default function PresaleBuyPage({ preSaleId }) {
                         toast.error(validationError);
                         return;
                     }
-                    
+
                     // Only proceed if we haven't already started purchasing
                     if (!isPurchasing && !purchaseSuccess && !hasTriggeredPurchase) {
                         setHasTriggeredPurchase(true);
@@ -381,7 +360,7 @@ export default function PresaleBuyPage({ preSaleId }) {
     useEffect(() => {
         if (purchaseSuccess) {
             setWasPurchasing(false); // Reset tracking state
-            
+
             // Immediately reset critical states to prevent loops
             setHasTriggeredPurchase(false);
             setIsApprovalComplete(false);
@@ -570,7 +549,7 @@ export default function PresaleBuyPage({ preSaleId }) {
                                             {t("header.buy")} {presale.mine_token.token_symbol}
                                         </h2>
                                         <p className="text-white/90 text-xs sm:text-sm lg:text-base">
-                                            {t("header.price")}: {parseFloat(presale.price_per_token).toFixed(6)} {presale.payment_token.token_symbol} {t("header.perToken")}
+                                            {t("header.price")} {t("header.perToken")} : <span dir="ltr">{parseFloat(presale.price_per_token).toFixed(4)} {presale.payment_token.token_symbol}</span>
                                         </p>
                                     </div>
                                     {/* Decorative Elements */}
@@ -594,21 +573,23 @@ export default function PresaleBuyPage({ preSaleId }) {
                                         </div>
                                         <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl sm:rounded-2xl p-3 sm:p-5 border-2 border-gray-200 focus-within:border-[#FF5D1B] focus-within:shadow-lg transition-all duration-300">
                                             <div className="flex items-center justify-between">
-                                                <input
-                                                    type="text"
-                                                    inputMode="decimal"
+                                                <NumericFormat
                                                     value={paymentAmount}
-                                                    onChange={(e) => {
-                                                        const formattedValue = formatPaymentAmount(e.target.value);
-                                                        setPaymentAmount(formattedValue);
-                                                        
+                                                    onValueChange={(values) => {
+                                                        const { formattedValue, value } = values;
+                                                        setPaymentAmount(formattedValue || '');
+                                                        setRawPaymentAmount(value || '');
+
                                                         // Reset purchase success state when user enters new amount
-                                                        if (purchaseSuccess && formattedValue && formattedValue !== '') {
+                                                        if (purchaseSuccess && value && value !== '') {
                                                             // User is entering a new amount, reset success state
                                                             // This will re-enable the button for new purchases
                                                         }
                                                     }}
-                                                    placeholder="0.00"
+                                                    thousandSeparator={true}
+                                                    decimalScale={2}
+                                                    allowNegative={false}
+                                                    placeholder="1,000.00"
                                                     className="bg-transparent text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 placeholder-gray-400 outline-none flex-1"
                                                 />
                                                 <div className="flex items-center gap-2 sm:gap-3">
@@ -641,7 +622,7 @@ export default function PresaleBuyPage({ preSaleId }) {
                                         <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl sm:rounded-2xl p-3 sm:p-5 border-2 border-orange-200">
                                             <div className="flex items-center justify-between">
                                                 <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                                                    {paymentAmount ? tokenAmount : "0.0"}
+                                                    {rawPaymentAmount ? tokenAmount : "0.0"}
                                                 </div>
                                                 <div className="flex items-center gap-2 sm:gap-3">
                                                     <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] rounded-full flex items-center justify-center shadow-lg">
@@ -665,8 +646,14 @@ export default function PresaleBuyPage({ preSaleId }) {
                                                     key={percentage}
                                                     onClick={() => {
                                                         const maxAmount = parseFloat(formatUnits(balance.value, balance.decimals));
-                                                        const amount = (maxAmount * percentage / 100).toFixed(6);
-                                                        setPaymentAmount(amount);
+                                                        const amount = (maxAmount * percentage / 100);
+                                                        const rawValue = amount.toString();
+                                                        const formattedValue = amount.toLocaleString('en-US', {
+                                                            minimumFractionDigits: 0,
+                                                            maximumFractionDigits: 2
+                                                        });
+                                                        setPaymentAmount(formattedValue);
+                                                        setRawPaymentAmount(rawValue);
                                                     }}
                                                     className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-[#FF5D1B] bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 hover:from-[#FF5D1B]/20 hover:to-[#FF363E]/20 rounded-lg sm:rounded-xl transition-all duration-200 hover:shadow-md border border-[#FF5D1B]/20 touch-manipulation cursor-pointer"
                                                 >
@@ -705,7 +692,7 @@ export default function PresaleBuyPage({ preSaleId }) {
                                             >
                                                 {validationError}
                                             </button>
-                                        ) : !paymentAmount || paymentAmount === '' || parseFloat(paymentAmount) <= 0 ? (
+                                        ) : !rawPaymentAmount || rawPaymentAmount === '' || parseFloat(rawPaymentAmount) <= 0 ? (
                                             // Don't show button when form is empty - better UX
                                             <div className="w-full py-4 sm:py-5 text-center">
                                                 <p className="text-gray-500 text-sm">
@@ -733,7 +720,7 @@ export default function PresaleBuyPage({ preSaleId }) {
                                                         <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
                                                         {t("buttons.purchasing")}
                                                     </>
-                                                ) : needsApproval && needsApproval(paymentAmount) ? (
+                                                ) : needsApproval && needsApproval(rawPaymentAmount) ? (
                                                     <>
                                                         <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
                                                         {t("buttons.approveAndBuy")}

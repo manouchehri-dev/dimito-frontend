@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useAccount } from "wagmi";
 import { usePaginatedPresales } from "@/lib/api";
-import { format } from "date-fns";
-import { enUS, faIR } from "date-fns/locale";
+import { formatDateByLocale, formatDateRange } from "@/lib/date";
 import { useRouter } from "@/i18n/navigation";
 import {
     Rocket,
@@ -29,7 +28,6 @@ import ErrorState from "./ErrorState";
 export default function ParticipatedPresalesPage({ onBack }) {
     const t = useTranslations("dashboard.participatedPresales");
     const locale = useLocale();
-    const dateLocale = locale === "fa" ? faIR : enUS;
     const { address } = useAccount();
     const isRTL = locale === "fa";
     const router = useRouter();
@@ -315,7 +313,7 @@ export default function ParticipatedPresalesPage({ onBack }) {
                                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                             <div className="text-sm text-gray-500">
                                                 <p>
-                                                    {t("period")}: {format(new Date(presale.start_time), "MMM dd", { locale: dateLocale })} - {format(new Date(presale.end_time), "MMM dd, yyyy", { locale: dateLocale })}
+                                                    {t("period")}: {formatDateRange(presale.start_time, presale.end_time, locale, "medium")}
                                                 </p>
                                             </div>
 

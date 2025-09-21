@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { format } from "date-fns";
-import { enUS, faIR } from "date-fns/locale";
+import { formatDateByLocale } from "@/lib/date";
 import { useAccount } from "wagmi";
 import { usePaginatedPurchases } from "@/lib/api";
+import { useRouter } from "@/i18n/navigation";
 import {
     ShoppingBag,
     CheckCircle,
@@ -17,7 +17,9 @@ import {
     Filter,
     Download,
     ArrowLeft,
-    ArrowRight
+    ArrowRight,
+    ExternalLink,
+    TrendingUp
 } from "lucide-react";
 import Pagination from "./Pagination";
 import LoadingSpinner from "./LoadingSpinner";
@@ -26,8 +28,8 @@ import ErrorState from "./ErrorState";
 export default function PurchasesPage({ onBack }) {
     const t = useTranslations("dashboard.purchases");
     const locale = useLocale();
-    const dateLocale = locale === "fa" ? faIR : enUS;
     const { address } = useAccount();
+    const router = useRouter();
 
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
@@ -166,7 +168,7 @@ export default function PurchasesPage({ onBack }) {
                             <div className="col-span-2 text-sm font-medium text-gray-700">{t("table.paid")}</div>
                             <div className="col-span-2 text-sm font-medium text-gray-700">{t("table.date")}</div>
                             <div className="col-span-2 text-sm font-medium text-gray-700">{t("table.status")}</div>
-                            <div className="col-span-1 text-sm font-medium text-gray-700">{t("table.presale")}</div>
+                            <div className="col-span-1 text-sm font-medium text-gray-700">{t("table.purchaseId")}</div>
                         </div>
 
                         {/* Responsive List */}
@@ -175,21 +177,30 @@ export default function PurchasesPage({ onBack }) {
                                 <div key={purchase.id} className="hover:bg-gray-50 transition-colors duration-200">
                                     {/* Desktop Table Row */}
                                     <div className="hidden lg:grid lg:grid-cols-12 gap-4 p-6">
-                                        {/* Token Info */}
+                                        {/* Token Info - Clickable */}
                                         <div className="col-span-3">
-                                            <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => router.push(`/tokens/${purchase.token_info.id}`)}
+                                                className={`flex items-center gap-3 w-full text-left p-2 rounded-lg transition-colors duration-200 ${purchase.token_info?.id
+                                                    ? 'hover:bg-blue-50 hover:border-blue-200 border border-transparent cursor-pointer'
+                                                    : 'cursor-default'
+                                                    }`}
+                                                disabled={!purchase.token_info?.id}
+                                            >
                                                 <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                                     {purchase.token_info?.symbol?.charAt(0) || 'T'}
                                                 </div>
-                                                <div>
-                                                    <p className="font-medium text-gray-900 truncate">
+                                                <div className="flex-1 min-w-0 text-start">
+                                                    <p className={`font-medium truncate ${purchase.token_info?.id ? 'text-blue-600' : 'text-gray-900'
+                                                        }`}>
                                                         {purchase.token_info?.name || purchase.token_info?.symbol}
+                                                        {purchase.token_info?.id && <ExternalLink className="w-3 h-3 inline ml-1" />}
                                                     </p>
                                                     <p className="text-sm text-gray-500 font-mono">
                                                         {purchase.token_info?.symbol}
                                                     </p>
                                                 </div>
-                                            </div>
+                                            </button>
                                         </div>
 
                                         {/* Amount Received */}
@@ -212,10 +223,10 @@ export default function PurchasesPage({ onBack }) {
                                         {/* Date */}
                                         <div className="col-span-2">
                                             <p className="text-gray-900">
-                                                {format(new Date(purchase.created_at), "MMM dd, yyyy", { locale: dateLocale })}
+                                                {formatDateByLocale(purchase.created_at, locale, 'medium')}
                                             </p>
                                             <p className="text-sm text-gray-500">
-                                                {format(new Date(purchase.created_at), "HH:mm", { locale: dateLocale })}
+                                                {formatDateByLocale(purchase.created_at, locale, 'time')}
                                             </p>
                                         </div>
 
@@ -240,10 +251,10 @@ export default function PurchasesPage({ onBack }) {
                                             </div>
                                         </div>
 
-                                        {/* Presale ID */}
+                                        {/* Purchase ID */}
                                         <div className="col-span-1">
                                             <span className="text-sm text-gray-500 font-mono">
-                                                #{purchase.presale_info?.presale_id}
+                                                #{purchase.purchase_id || purchase.id}
                                             </span>
                                         </div>
                                     </div>
@@ -251,19 +262,28 @@ export default function PurchasesPage({ onBack }) {
                                     {/* Mobile Card */}
                                     <div className="lg:hidden p-4">
                                         <div className="flex items-start justify-between mb-3">
-                                            <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => purchase.token_info?.id && router.push(`/tokens/${purchase.token_info.id}`)}
+                                                className={`flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 ${purchase.token_info?.id
+                                                    ? 'hover:bg-blue-50 hover:border-blue-200 border border-transparent cursor-pointer'
+                                                    : 'cursor-default border border-transparent'
+                                                    }`}
+                                                disabled={!purchase.token_info?.id}
+                                            >
                                                 <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                                     {purchase.token_info?.symbol?.charAt(0) || 'T'}
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium text-gray-900">
+                                                    <p className={`font-medium ${purchase.token_info?.id ? 'text-blue-600' : 'text-gray-900'
+                                                        }`}>
                                                         {purchase.token_info?.symbol}
+                                                        {purchase.token_info?.id && <ExternalLink className="w-3 h-3 inline ml-1" />}
                                                     </p>
                                                     <p className="text-sm text-gray-500">
-                                                        {format(new Date(purchase.created_at), "MMM dd, yyyy", { locale: dateLocale })}
+                                                        {formatDateByLocale(purchase.created_at, locale, 'medium')}
                                                     </p>
                                                 </div>
-                                            </div>
+                                            </button>
 
                                             {/* Status Badge */}
                                             <div className="flex items-center gap-1">
@@ -275,7 +295,7 @@ export default function PurchasesPage({ onBack }) {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                                             <div>
                                                 <p className="text-gray-500 mb-1">{t("table.amount")}</p>
                                                 <p className="font-semibold text-gray-900">
@@ -289,6 +309,13 @@ export default function PurchasesPage({ onBack }) {
                                                 </p>
                                             </div>
                                         </div>
+
+                                        {/* Purchase ID for Mobile */}
+                                        <div className="pt-2 border-t border-gray-100">
+                                            <p className="text-xs text-gray-500">{t("table.purchaseId")}</p>
+                                            <p className="text-sm font-mono text-gray-700">#{purchase.purchase_id || purchase.id}</p>
+                                        </div>
+
                                     </div>
                                 </div>
                             ))}

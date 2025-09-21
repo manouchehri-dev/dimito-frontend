@@ -22,34 +22,18 @@ import {
   ArrowLeft,
   ArrowRight
 } from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
-import { enUS, faIR } from "date-fns/locale";
+import { formatDateByLocale, formatDateRange } from "@/lib/date";
 // Removed modal import - using dedicated buy page instead
 
 export default function PresalesPage({ onBack }) {
   const t = useTranslations("presales");
   const locale = useLocale();
   const isRTL = locale === "fa";
-  const dateLocale = locale === "fa" ? faIR : enUS;
   const router = useRouter();
 
   const { data: presalesData, isLoading, error, refetch, isRefetching } = usePresales();
 
 
-  const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    const dateStr = date.toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
-    });
-    const timeStr = date.toLocaleTimeString(locale, {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-    return `${dateStr} ${timeStr}`;
-  };
   const [sortBy, setSortBy] = useState("start_time");
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -392,10 +376,10 @@ export default function PresalesPage({ onBack }) {
                     </div>
                     <div className={isRTL ? "text-end" : "text-start"}>
                       <div className="text-xs text-gray-900 font-medium">
-                        {isRTL ? `${formatDate(new Date(presale.end_time)).split(' ')[0]} → ${formatDate(new Date(presale.start_time)).split(' ')[0]}` : `${formatDate(new Date(presale.start_time)).split(' ')[0]} → ${formatDate(new Date(presale.end_time)).split(' ')[0]}`}
+                        {formatDateRange(presale.start_time, presale.end_time, locale, "medium")}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {isRTL ? `${formatDate(new Date(presale.end_time)).split(' ')[1]} - ${formatDate(new Date(presale.start_time)).split(' ')[1]}` : `${formatDate(new Date(presale.start_time)).split(' ')[1]} - ${formatDate(new Date(presale.end_time)).split(' ')[1]}`}
+                        {formatDateByLocale(presale.start_time, locale, 'time')} - {formatDateByLocale(presale.end_time, locale, 'time')}
                       </div>
                     </div>
                   </div>

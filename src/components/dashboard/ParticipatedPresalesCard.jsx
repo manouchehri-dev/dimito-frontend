@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { enUS, faIR } from "date-fns/locale";
 import {
     Rocket,
     CheckCircle,
@@ -17,7 +16,6 @@ import { useRouter } from "@/i18n/navigation";
 export default function ParticipatedPresalesCard({ participatedPresales = [] }) {
     const t = useTranslations("dashboard");
     const locale = useLocale();
-    const dateLocale = locale === "fa" ? faIR : enUS;
     const router = useRouter();
 
     // Format large numbers with K, M, B suffixes

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/auth/authStore";
 import { Loader2 } from "lucide-react";
 import TransparencyMainPage from "./TransparencyMainPage";
@@ -14,6 +14,7 @@ import TransparencyMainPage from "./TransparencyMainPage";
 export default function AuthenticatedTransparencyMainPage() {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("reports");
 
   // Stable selectors
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -49,7 +50,7 @@ export default function AuthenticatedTransparencyMainPage() {
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-[#FF4135]" />
           <p className="text-gray-600 font-iransans">
-            Loading transparency dashboard...
+            {t("loadingTransparencyDashboard")}
           </p>
         </div>
       </div>
@@ -65,7 +66,7 @@ export default function AuthenticatedTransparencyMainPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
       <div className="text-center">
-        <p className="text-gray-600 font-iransans">Redirecting to login...</p>
+        <p className="text-gray-600 font-iransans">{t("redirectingToLogin")}</p>
       </div>
     </div>
   );

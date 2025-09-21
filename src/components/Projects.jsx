@@ -77,7 +77,7 @@ const Projects = () => {
   };
 
   const formatPrice = (price) => {
-    return parseFloat(price).toLocaleString(locale, {
+    return parseFloat(price).toLocaleString("en", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 6
     });
@@ -220,8 +220,9 @@ const Projects = () => {
                         {/* Price - Highlighted */}
                         <div className="mb-4">
                           <p className="text-sm text-gray-500 mb-1">{t("card.price")}</p>
-                          <p className="text-2xl font-bold text-[#FF5D1B]">
-                            {isRTL ? `${presale.payment_token.token_symbol} ${formatPrice(presale.price_per_token)}` : `${formatPrice(presale.price_per_token)} ${presale.payment_token.token_symbol}`}
+                          <p className="text-2xl font-bold text-[#FF5D1B]" dir="ltr">
+                            {`${formatPrice(presale.price_per_token)} ${presale.payment_token.token_symbol}`}
+
                           </p>
                         </div>
 
