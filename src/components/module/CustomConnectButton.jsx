@@ -43,6 +43,19 @@ export default function CustomConnectButton({ className, isMobile = false }) {
     if (isConnected) {
       setIsDropdownOpen(!isDropdownOpen);
     } else {
+      // Clear force-disconnected flag when user manually tries to connect
+      try {
+        localStorage.removeItem('force-disconnected');
+        localStorage.removeItem('wagmi.rabby.disconnected');
+        localStorage.removeItem('wagmi.metaMask.disconnected');
+        localStorage.removeItem('wagmi.walletConnect.disconnected');
+        localStorage.removeItem('wagmi.coinbaseWallet.disconnected');
+        localStorage.removeItem('wagmi.trustWallet.disconnected');
+        localStorage.removeItem('wagmi.injected.disconnected');
+      } catch (error) {
+        console.warn("Error clearing disconnection flags:", error);
+      }
+
       openConnectModal?.();
     }
   };
@@ -55,10 +68,35 @@ export default function CustomConnectButton({ className, isMobile = false }) {
   const handleDisconnect = () => {
     setIsDropdownOpen(false);
     setHasAuthenticated(false);
+
     // Clear authentication tracking when manually disconnecting
     if (address) {
       walletAuthManager.removeWallet(address);
     }
+
+    // Enhanced cleanup for manual disconnect as well
+    try {
+      // Clear wagmi store to prevent reconnection
+      localStorage.removeItem('wagmi.store');
+
+      // Clear RainbowKit recent connections
+      localStorage.removeItem('rk-recent');
+      localStorage.removeItem('rk-latest-id');
+
+      // Clear all disconnection flags (don't set new ones)
+      localStorage.removeItem('wagmi.rabby.disconnected');
+      localStorage.removeItem('wagmi.metaMask.disconnected');
+      localStorage.removeItem('wagmi.walletConnect.disconnected');
+      localStorage.removeItem('wagmi.coinbaseWallet.disconnected');
+      localStorage.removeItem('wagmi.trustWallet.disconnected');
+      localStorage.removeItem('wagmi.injected.disconnected');
+
+      // Set flag to prevent auto-reconnection (same as force disconnect)
+      localStorage.setItem('force-disconnected', 'true');
+    } catch (error) {
+      console.warn("Error during manual disconnect cleanup:", error);
+    }
+
     disconnect();
   };
 
@@ -108,6 +146,20 @@ export default function CustomConnectButton({ className, isMobile = false }) {
       }
     };
   }, [isConnecting, isReconnecting]);
+
+  // Handle force-disconnected flag on page load/reconnection attempts
+  useEffect(() => {
+    const isForceDisconnected = localStorage.getItem('force-disconnected') === 'true';
+
+    if (isForceDisconnected && (isConnected || isConnecting || isReconnecting)) {
+      // Force disconnect if wagmi is trying to reconnect
+      try {
+        disconnect();
+      } catch (error) {
+        console.warn("Error force disconnecting on page load:", error);
+      }
+    }
+  }, [isConnected, isConnecting, isReconnecting, disconnect]);
 
   // Handle wallet authentication when connected
   useEffect(() => {
@@ -163,38 +215,204 @@ export default function CustomConnectButton({ className, isMobile = false }) {
 
   // Force disconnect function for stuck connections
   const handleForceDisconnect = () => {
-    // Clear all React states
-    setIsDropdownOpen(false);
-    setHasAuthenticated(false);
+    setShowForceDisconnect(false);
 
     // Clear authentication tracking
     if (address) {
       walletAuthManager.removeWallet(address);
     }
 
-    // COMPLETE LOCALSTORAGE CLEANUP
-    localStorage.removeItem('wagmi.store'); // Clear wagmi connection state
+    // COMPLETE LOCALSTORAGE CLEANUP - Remove ALL wagmi and wallet related keys
+    const keysToRemove = [
+      // Core wagmi keys
+      'wagmi.store',
+      'wagmi.connected',
+      'wagmi.recentConnectorId',
+      'wagmi.cache',
+      'wagmi.config',
+      'wagmi.injected.shimDisconnect',
+      'wagmi.walletConnect.requestedChains',
 
-    // Set all disconnection flags to true (explicit disconnection)
-    localStorage.setItem('wagmi.rabby.disconnected', 'true');
-    localStorage.setItem('wagmi.metaMask.disconnected', 'true');
-    localStorage.setItem('wagmi.walletConnect.disconnected', 'true');
-    localStorage.setItem('wagmi.coinbaseWallet.disconnected', 'true');
+      // RainbowKit keys
+      'rainbowkit.recentConnectorId',
+      'rainbowkit.wallet',
+      'rainbowkit.connectionStatus',
+      'rainbowkit.walletconnect',
+      'rk-latest-id',
+      'rk-recent',
+      'rk-version',
 
-    // Clear other wagmi/RainbowKit keys
-    localStorage.removeItem('wagmi.connected');
-    localStorage.removeItem('wagmi.recentConnectorId');
-    localStorage.removeItem('rainbowkit.recentConnectorId');
-    localStorage.removeItem('rainbowkit.wallet');
+      // AppKit/WalletConnect v2 keys
+      '@appkit/active_caip_network_id',
+      '@appkit/active_namespace',
+      '@appkit/connection_status',
 
-    // Force disconnect
-    disconnect();
+      // Coinbase Wallet SDK keys
+      'cbwsdk.store',
 
-    console.log("✅ FORCE DISCONNECT COMPLETED - All states cleared");
+      // Wallet-specific keys
+      'wagmi.wallet',
+      'wagmi.walletconnect',
+      'wagmi.injected',
+      'wagmi.safe',
+      'wagmi.ledger',
+
+      // WalletConnect keys
+      'walletconnect',
+      'wc@2:core:0.3//keychain',
+      'wc@2:client:0.3//session',
+      'wc@2:core:0.3//messages',
+      'wc@2:core:0.3//subscription',
+      'wc@2:core:0.3//history',
+      'wc@2:core:0.3//expirer',
+      'wc@2:universal_provider:/optionalNamespaces',
+      'wc@2:universal_provider:/namespaces',
+
+      // MetaMask keys
+      'metamask-provider',
+      'metamask.selectedAddress',
+
+      // Coinbase keys
+      'coinbaseWallet.addresses',
+      'coinbaseWallet.walletUsername',
+
+      // Trust Wallet keys
+      'trustwallet',
+
+      // Other wallet keys
+      'ethereum-provider',
+      'walletlink',
+      '-walletlink:https://www.walletlink.org:version',
+      '-walletlink:https://www.walletlink.org:session:id',
+      '-walletlink:https://www.walletlink.org:session:secret',
+      '-walletlink:https://www.walletlink.org:session:linked'
+    ];
+
+    // Remove all identified keys
+    keysToRemove.forEach(key => {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.warn(`Failed to remove ${key}:`, error);
+      }
+    });
+
+
+    // Clear any remaining wagmi-related keys with pattern matching
+    try {
+      const allKeys = Object.keys(localStorage);
+      const wagmiKeys = allKeys.filter(key =>
+        key.includes('wagmi') ||
+        key.includes('rainbowkit') ||
+        key.includes('walletconnect') ||
+        key.includes('metamask') ||
+        key.includes('coinbase') ||
+        key.includes('wallet') ||
+        key.includes('wc@2')
+      );
+
+      // Remove all wagmi-related keys (no exceptions)
+      wagmiKeys.forEach(key => {
+        localStorage.removeItem(key);
+      });
+
+    } catch (error) {
+      console.warn("Error during pattern matching cleanup:", error);
+    }
+
+    // Clear sessionStorage as well (some wallets use it)
+    try {
+      const sessionKeys = Object.keys(sessionStorage);
+      const walletSessionKeys = sessionKeys.filter(key =>
+        key.includes('wagmi') ||
+        key.includes('rainbowkit') ||
+        key.includes('walletconnect') ||
+        key.includes('metamask') ||
+        key.includes('coinbase') ||
+        key.includes('wallet')
+      );
+
+      walletSessionKeys.forEach(key => {
+        sessionStorage.removeItem(key);
+      });
+
+    } catch (error) {
+      console.warn("Error clearing sessionStorage:", error);
+    }
+
+    // Force disconnect from wagmi
+    try {
+      disconnect();
+    } catch (error) {
+      console.warn("Error during wagmi disconnect:", error);
+    }
+
+    // Clear any cached provider instances (if accessible)
+    try {
+      if (window.ethereum) {
+        // Reset ethereum provider state if possible
+        if (typeof window.ethereum.removeAllListeners === 'function') {
+          window.ethereum.removeAllListeners();
+        }
+      }
+    } catch (error) {
+      console.warn("Error clearing ethereum provider:", error);
+    }
+
+    console.log("✅ FORCE DISCONNECT COMPLETED - ALL WALLET DATA CLEARED");
+
+    // Optional: Double-check cleanup after a short delay (no page reload)
+    setTimeout(() => {
+      // Double-check and clear any remaining wallet keys that might have been recreated
+      const finalKeys = Object.keys(localStorage);
+      const remainingWalletKeys = finalKeys.filter(key =>
+        key.includes('wagmi') ||
+        key.includes('rainbowkit') ||
+        key.includes('walletconnect') ||
+        key.includes('metamask') ||
+        key.includes('coinbase') ||
+        key.includes('@appkit') ||
+        key.includes('cbwsdk') ||
+        key.includes('rk-') ||
+        key.includes('wc@2')
+      );
+
+      // Remove ALL remaining wallet keys (no exceptions)
+      if (remainingWalletKeys.length > 0) {
+        remainingWalletKeys.forEach(key => {
+          localStorage.removeItem(key);
+        });
+      }
+    }, 1000); // Reduced delay to 1 second, no page reload
+
+    // Force disconnect from wagmi
+    try {
+      disconnect();
+    } catch (error) {
+      console.warn("Error during wagmi disconnect:", error);
+    }
+
+    // Clear any cached provider instances (if accessible)
+    try {
+      if (window.ethereum) {
+        // Reset ethereum provider state if possible
+        if (typeof window.ethereum.removeAllListeners === 'function') {
+          window.ethereum.removeAllListeners();
+        }
+      }
+    } catch (error) {
+      console.warn("Error clearing ethereum provider:", error);
+    }
+
+    // Set a simple flag to prevent auto-reconnection
+    localStorage.setItem('force-disconnected', 'true');
   };
 
+  // Check if user force disconnected - if so, don't show reconnecting state
+  const isForceDisconnected = localStorage.getItem('force-disconnected') === 'true';
+
   // Show loading state when connecting or reconnecting with force disconnect option
-  if (isConnecting || isReconnecting) {
+  if ((isConnecting || isReconnecting) && !isForceDisconnected) {
     return (
       <div className="flex items-center gap-2">
         <Button

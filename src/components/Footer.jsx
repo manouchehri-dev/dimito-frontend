@@ -15,6 +15,9 @@ const Footer = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
+  const [submitCount, setSubmitCount] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   // Reset subscription state after 3 seconds
   useEffect(() => {
@@ -27,6 +30,19 @@ const Footer = () => {
     }
   }, [isSubscribed]);
 
+  // Reset submission count and blocked state after 10 minutes
+  useEffect(() => {
+    if (submitCount > 0 || isBlocked) {
+      const resetTimer = setTimeout(() => {
+        setSubmitCount(0);
+        setIsBlocked(false);
+        setEmailError("");
+      }, 10 * 60 * 1000); // 10 minutes
+
+      return () => clearTimeout(resetTimer);
+    }
+  }, [submitCount, isBlocked]);
+
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -36,6 +52,33 @@ const Footer = () => {
     e.preventDefault();
     setEmailError("");
 
+    // 1. Rate Limiting - Prevent rapid submissions
+    const now = Date.now();
+    const timeSinceLastSubmit = now - lastSubmitTime;
+    const MIN_SUBMIT_INTERVAL = 3000; // 3 seconds between submissions
+
+    if (timeSinceLastSubmit < MIN_SUBMIT_INTERVAL) {
+      const remainingTime = Math.ceil((MIN_SUBMIT_INTERVAL - timeSinceLastSubmit) / 1000);
+      setEmailError(
+        isRtl 
+          ? `لطفاً ${remainingTime} ثانیه صبر کنید`
+          : `Please wait ${remainingTime} seconds before submitting again`
+      );
+      return;
+    }
+
+    // 2. Submission Count Limiting - Max 3 attempts per session
+    if (submitCount >= 3) {
+      setIsBlocked(true);
+      setEmailError(
+        isRtl
+          ? "حد مجاز تلاش‌ها به پایان رسیده. لطفاً صفحه را رفرش کنید"
+          : "Maximum attempts reached. Please refresh the page"
+      );
+      return;
+    }
+
+    // 3. Basic validation
     if (!email.trim()) {
       setEmailError(t("emailRequired"));
       return;
@@ -46,6 +89,25 @@ const Footer = () => {
       return;
     }
 
+    // 4. Honeypot check (if honeypot field exists and has value, it's likely a bot)
+    const honeypot = document.querySelector('input[name="website"]');
+    if (honeypot && honeypot.value) {
+      // Silently fail for bots
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        setEmailError(
+          isRtl
+            ? "خطا در ارسال. لطفاً دوباره تلاش کنید"
+            : "Submission error. Please try again"
+        );
+      }, 2000);
+      return;
+    }
+
+    // Update rate limiting counters
+    setLastSubmitTime(now);
+    setSubmitCount(prev => prev + 1);
     setIsLoading(true);
 
     try {
@@ -53,10 +115,12 @@ const Footer = () => {
         contact: email.trim()
       });
 
+      console.log(response)
       // httpClient returns response.data directly, so response should contain the API response
-      if (response.success) {
+      if (response.data.success == true) {
         setIsSubscribed(true);
         setEmail("");
+        console.log("here")
 
         // Show success toast
         toast.success(
@@ -117,6 +181,30 @@ const Footer = () => {
           isRtl
             ? "❌ لطفاً یک آدرس ایمیل معتبر وارد کنید"
             : "❌ Please enter a valid email address",
+          {
+            duration: 4000,
+            position: "top-center",
+            style: {
+              background: "#EF4444",
+              color: "#fff",
+              fontWeight: "600",
+              borderRadius: "12px",
+              padding: "16px",
+            },
+          }
+        );
+      } else if (error.response?.status === 409 && error.response?.data?.message) {
+        // Fallback for direct axios error structure
+        const errorMessage = Array.isArray(error.response.data.message)
+          ? error.response.data.message[0]
+          : error.response.data.message;
+
+        setEmailError(errorMessage);
+
+        toast.error(
+          isRtl
+            ? "❌ این ایمیل قبلاً ثبت شده است"
+            : "❌ This email has already been subscribed",
           {
             duration: 4000,
             position: "top-center",
@@ -354,14 +442,29 @@ const Footer = () => {
               aria-label={t("subscribe")}
             >
               <div className="flex flex-col gap-2 sm:gap-3">
-                {/* Input Field */}
-                <div className="relative">
-                  <label htmlFor="email" className="sr-only">
-                    {t("email")}
-                  </label>
+                {/* Honeypot field - Hidden from users, visible to bots */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex="-1"
+                  autoComplete="off"
+                  style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    width: '1px',
+                    height: '1px',
+                    opacity: 0,
+                    pointerEvents: 'none'
+                  }}
+                  aria-hidden="true"
+                />
+                
+                {/* Email Input */}
+                <div className="relative group">
                   <input
-                    id="email"
                     type="email"
+                    name="email"
+                    required
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
@@ -375,21 +478,20 @@ const Footer = () => {
                       placeholder:text-gray-400
                       focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-white focus:shadow-md
                       hover:shadow-md hover:ring-orange-300/50
-                      ${emailError ? "ring-red-400 ring-2" : "ring-gray-200"}
                       ${isRtl
                         ? "font-iransans text-right"
                         : "font-poppins text-left"
                       }
                     `}
                     dir={isRtl ? "rtl" : "ltr"}
-                    disabled={isLoading || isSubscribed}
+                    disabled={isLoading || isSubscribed || isBlocked}
                   />
                 </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isLoading || isSubscribed}
+                  disabled={isLoading || isSubscribed || isBlocked}
                   className={`
                     w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-bold text-[clamp(12px,3vw,14px)]
                     transition-all duration-300 transform
@@ -431,29 +533,6 @@ const Footer = () => {
                   </span>
                 </button>
               </div>
-
-              {/* Error/Success Messages */}
-              {emailError && (
-                <p
-                  className={`text-red-500 text-xs mt-2 animate-in slide-in-from-top-1 duration-200 ${isRtl
-                    ? "font-iransans text-right"
-                    : "font-poppins text-left"
-                    }`}
-                >
-                  {emailError}
-                </p>
-              )}
-              {isSubscribed && (
-                <p
-                  className={`text-green-600 text-xs mt-2 animate-in slide-in-from-bottom-2 duration-500 ${isRtl
-                    ? "font-iransans text-right"
-                    : "font-poppins text-left"
-                    }`}
-                >
-                  {isRtl ? "✓ " : "✓ "}
-                  {t("subscribeSuccess")}
-                </p>
-              )}
             </form>
           </div>
         </div>

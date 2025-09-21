@@ -101,7 +101,7 @@ export default async function PublicPresalesPage({ params }) {
       </section>
 
       {/* CTA Section - Website Style */}
-      <section className="py-20 bg-white">
+      {/* <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-12 lg:p-16 border border-gray-200">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
@@ -126,7 +126,7 @@ export default async function PublicPresalesPage({ params }) {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

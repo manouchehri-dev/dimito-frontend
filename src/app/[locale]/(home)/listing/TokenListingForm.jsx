@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useApiMutationFormData } from "@/lib/api";
@@ -70,6 +70,24 @@ export default function TokenListingForm() {
   const [showFileErrorToast, setShowFileErrorToast] = useState(false);
   const fileInputRef = useRef(null);
   const formRef = useRef(null);
+
+  // Spam prevention states
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
+  const [submitCount, setSubmitCount] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  // Reset submission count and blocked state after 10 minutes
+  useEffect(() => {
+    if (submitCount > 0 || isBlocked) {
+      const resetTimer = setTimeout(() => {
+        setSubmitCount(0);
+        setIsBlocked(false);
+        setErrors(prev => ({ ...prev, general: "" }));
+      }, 10 * 60 * 1000); // 10 minutes
+
+      return () => clearTimeout(resetTimer);
+    }
+  }, [submitCount, isBlocked]);
 
   const scrollToFirstError = (errors) => {
     const firstErrorField = Object.keys(errors)[0];
@@ -399,13 +417,54 @@ export default function TokenListingForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form
+    // 1. Rate Limiting - Prevent rapid submissions
+    const now = Date.now();
+    const timeSinceLastSubmit = now - lastSubmitTime;
+    const MIN_SUBMIT_INTERVAL = 5000; // 5 seconds between submissions (longer for complex forms)
+
+    if (timeSinceLastSubmit < MIN_SUBMIT_INTERVAL) {
+      const remainingTime = Math.ceil((MIN_SUBMIT_INTERVAL - timeSinceLastSubmit) / 1000);
+      setErrors(prev => ({
+        ...prev,
+        general: t("pleaseWait", { seconds: remainingTime }) || `Please wait ${remainingTime} seconds before submitting again`
+      }));
+      return;
+    }
+
+    // 2. Submission Count Limiting - Max 3 attempts per session
+    if (submitCount >= 3) {
+      setIsBlocked(true);
+      setErrors(prev => ({
+        ...prev,
+        general: t("maxAttemptsReached") || "Maximum attempts reached. Please refresh the page to try again."
+      }));
+      return;
+    }
+
+    // 3. Honeypot check (if honeypot field exists and has value, it's likely a bot)
+    const honeypot = document.querySelector('input[name="website"]');
+    if (honeypot && honeypot.value) {
+      // Silently fail for bots
+      setTimeout(() => {
+        setErrors(prev => ({
+          ...prev,
+          general: t("submissionError") || "Submission error. Please try again."
+        }));
+      }, 2000);
+      return;
+    }
+
+    // 4. Validate form
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       scrollToFirstError(validationErrors);
       return;
     }
+
+    // Update rate limiting counters
+    setLastSubmitTime(now);
+    setSubmitCount(prev => prev + 1);
 
     // Create ZIP file if there are selected files
     let zipFile = null;
@@ -556,6 +615,23 @@ export default function TokenListingForm() {
             </div>
           </div>
           <form ref={formRef} onSubmit={handleSubmit} className="px-6 pb-6 lg:px-9 lg:pb-9">
+            {/* Honeypot field - Hidden from users, visible to bots */}
+            <input
+              type="text"
+              name="website"
+              tabIndex="-1"
+              autoComplete="off"
+              style={{
+                position: 'absolute',
+                left: '-9999px',
+                width: '1px',
+                height: '1px',
+                opacity: 0,
+                pointerEvents: 'none'
+              }}
+              aria-hidden="true"
+            />
+
             {/* Personal Information Section */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
@@ -830,7 +906,19 @@ export default function TokenListingForm() {
               </div>
             </div>
 
-            {/* Error Display */}
+            {/* General Error Display (Spam Prevention) */}
+            {errors.general && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center">
+                  <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                  <span className="text-red-700">
+                    {errors.general}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* API Error Display */}
             {createListingMutation.isError && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <div className="flex items-center">
@@ -847,8 +935,8 @@ export default function TokenListingForm() {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                disabled={createListingMutation.isPending}
-                className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] hover:from-[#FF4135] hover:to-[#FF2A32] text-white px-8 py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={createListingMutation.isPending || isBlocked}
+                className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] hover:from-[#FF4135] hover:to-[#FF2A32] text-white px-8 py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {createListingMutation.isPending ? (
                   <>
