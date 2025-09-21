@@ -164,5 +164,62 @@ export function usePresaleDetails(presaleId, options = {}) {
   });
 }
 
+// Dashboard Summary Hook - New API structure
+export function useDashboardSummary(walletAddress, options = {}) {
+  return useApiQuery(
+    ["dashboardSummary", walletAddress], 
+    `/dashboard/?wallet_address=${walletAddress}`, 
+    {
+      enabled: !!walletAddress,
+      staleTime: 2 * 60 * 1000, // 2 minutes for real-time data
+      cacheTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: true,
+      ...options,
+    }
+  );
+}
+
+// Paginated Purchases Hook
+export function usePaginatedPurchases(walletAddress, page = 1, options = {}) {
+  return useApiQuery(
+    ["paginatedPurchases", walletAddress, page], 
+    `/dashboard/purchases/?wallet_address=${walletAddress}&page=${page}`, 
+    {
+      enabled: !!walletAddress,
+      staleTime: 1 * 60 * 1000, // 1 minute for recent data
+      cacheTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+      keepPreviousData: true, // Keep previous page data while loading new page
+      ...options,
+    }
+  );
+}
+
+// Paginated Presales Hook
+export function usePaginatedPresales(walletAddress, page = 1, options = {}) {
+  return useApiQuery(
+    ["paginatedPresales", walletAddress, page], 
+    `/dashboard/presales/?wallet_address=${walletAddress}&page=${page}`, 
+    {
+      enabled: !!walletAddress,
+      staleTime: 2 * 60 * 1000, // 2 minutes
+      cacheTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+      keepPreviousData: true, // Keep previous page data while loading new page
+      ...options,
+    }
+  );
+}
+
+// Platform Tokens Hook
+export function usePlatformTokens(options = {}) {
+  return useApiQuery(["platformTokens"], "/presale/tokens/", {
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+}
+
 // Export the api instance for direct use
 export default api;
