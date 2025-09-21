@@ -25,6 +25,7 @@ export default function CustomConnectButton({ className, isMobile = false }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hasAuthenticated, setHasAuthenticated] = useState(false);
+  const [showForceDisconnect, setShowForceDisconnect] = useState(false);
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { address, isConnected, isConnecting, isReconnecting } = useAccount();
@@ -85,6 +86,29 @@ export default function CustomConnectButton({ className, isMobile = false }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Show force disconnect button after 5-8 seconds of connecting/reconnecting
+  useEffect(() => {
+    let timer;
+
+    if (isConnecting || isReconnecting) {
+      // Random delay between 5-8 seconds (5000-8000ms)
+      const delay = Math.floor(Math.random() * 3000) + 5000;
+
+      timer = setTimeout(() => {
+        setShowForceDisconnect(true);
+      }, delay);
+    } else {
+      // Reset when not connecting/reconnecting
+      setShowForceDisconnect(false);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [isConnecting, isReconnecting]);
+
   // Handle wallet authentication when connected
   useEffect(() => {
     if (
@@ -137,29 +161,79 @@ export default function CustomConnectButton({ className, isMobile = false }) {
     ? "w-full justify-center py-3 text-sm font-medium"
     : "px-4 lg:px-4 xl:px-6 py-1.5 lg:py-2 xl:py-2.5 text-xs lg:text-xs xl:text-sm font-medium";
 
-  // Show loading state when connecting or reconnecting
+  // Force disconnect function for stuck connections
+  const handleForceDisconnect = () => {
+    // Clear all React states
+    setIsDropdownOpen(false);
+    setHasAuthenticated(false);
+
+    // Clear authentication tracking
+    if (address) {
+      walletAuthManager.removeWallet(address);
+    }
+
+    // COMPLETE LOCALSTORAGE CLEANUP
+    localStorage.removeItem('wagmi.store'); // Clear wagmi connection state
+
+    // Set all disconnection flags to true (explicit disconnection)
+    localStorage.setItem('wagmi.rabby.disconnected', 'true');
+    localStorage.setItem('wagmi.metaMask.disconnected', 'true');
+    localStorage.setItem('wagmi.walletConnect.disconnected', 'true');
+    localStorage.setItem('wagmi.coinbaseWallet.disconnected', 'true');
+
+    // Clear other wagmi/RainbowKit keys
+    localStorage.removeItem('wagmi.connected');
+    localStorage.removeItem('wagmi.recentConnectorId');
+    localStorage.removeItem('rainbowkit.recentConnectorId');
+    localStorage.removeItem('rainbowkit.wallet');
+
+    // Force disconnect
+    disconnect();
+
+    console.log("✅ FORCE DISCONNECT COMPLETED - All states cleared");
+  };
+
+  // Show loading state when connecting or reconnecting with force disconnect option
   if (isConnecting || isReconnecting) {
     return (
-      <Button
-        className={`${className} ${buttonBaseClass} whitespace-nowrap flex items-center gap-2 opacity-75 cursor-not-allowed`}
-        disabled
-        title={isConnecting ? t("connecting") : t("reconnecting")}
-      >
-        {/* Loading spinner */}
-        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+      <div className="flex items-center gap-2">
+        <Button
+          className={`${className} ${buttonBaseClass} whitespace-nowrap flex items-center gap-2 opacity-75`}
+          onClick={handleConnectClick}
+          title={isConnecting ? t("connecting") : t("reconnecting")}
+        >
+          {/* Loading spinner */}
+          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
 
-        <span className={`${isMobile ? "inline" : "hidden xl:inline"}`}>
-          {isConnecting ? t("connecting") : t("reconnecting")}
-        </span>
-        {!isMobile && (
-          <span className="xl:hidden">
-            {isConnecting 
-              ? (isRTL ? "اتصال..." : "Connecting...") 
-              : (isRTL ? "اتصال مجدد..." : "Reconnecting...")
-            }
+          <span className={`${isMobile ? "inline" : "hidden xl:inline"}`}>
+            {isConnecting ? t("connecting") : t("reconnecting")}
           </span>
+          {!isMobile && (
+            <span className="xl:hidden">
+              {isConnecting
+                ? (isRTL ? "اتصال..." : "Connecting...")
+                : (isRTL ? "اتصال مجدد..." : "Reconnecting...")
+              }
+            </span>
+          )}
+        </Button>
+
+        {/* Force Disconnect Button - Only show after delay */}
+        {showForceDisconnect && (
+          <Button
+            onClick={handleForceDisconnect}
+            className="px-2 py-1.5 lg:px-3 lg:py-2 text-xs bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 hover:scale-105 flex items-center gap-1 animate-in fade-in slide-in-from-right-2"
+            title={isRTL ? "قطع اتصال اجباری" : "Force Disconnect"}
+          >
+            <LogOut className="w-3 h-3 lg:w-4 lg:h-4" />
+            {!isMobile && (
+              <span className="hidden lg:inline">
+                {isRTL ? "قطع" : "Stop"}
+              </span>
+            )}
+          </Button>
         )}
-      </Button>
+      </div>
     );
   }
 
@@ -195,9 +269,8 @@ export default function CustomConnectButton({ className, isMobile = false }) {
           <span className="flex items-center gap-1.5 xl:gap-2">
             <Wallet className="w-4 xl:w-5 h-4 xl:h-5" />
             <ChevronDown
-              className={`w-3 xl:w-3.5 h-3 xl:h-3.5 transition-transform duration-200 ${
-                isDropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`w-3 xl:w-3.5 h-3 xl:h-3.5 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
+                }`}
             />
           </span>
         )}
@@ -207,9 +280,8 @@ export default function CustomConnectButton({ className, isMobile = false }) {
           <span className="flex items-center justify-center gap-2">
             <Wallet className="w-5 h-5" />
             <ChevronDown
-              className={`w-4 h-4 transition-transform duration-200 ${
-                isDropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
+                }`}
             />
           </span>
         )}
@@ -218,9 +290,8 @@ export default function CustomConnectButton({ className, isMobile = false }) {
       {/* Dropdown Menu */}
       {isDropdownOpen && (
         <div
-          className={`absolute ${isRTL ? "left-0" : "right-0"} ${
-            isMobile ? "bottom-full mb-2" : "mt-2"
-          } w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-[70] overflow-hidden backdrop-blur-sm`}
+          className={`absolute ${isRTL ? "left-0" : "right-0"} ${isMobile ? "bottom-full mb-2" : "mt-2"
+            } w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-[70] overflow-hidden backdrop-blur-sm`}
         >
           {/* Address Display */}
           <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
@@ -232,18 +303,18 @@ export default function CustomConnectButton({ className, isMobile = false }) {
               {/* Authentication status indicator */}
               {(walletAuthMutation.isPending ||
                 (address && walletAuthManager.isPending(address))) && (
-                <div
-                  className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"
-                  title="Authenticating..."
-                />
-              )}
+                  <div
+                    className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"
+                    title="Authenticating..."
+                  />
+                )}
               {(hasAuthenticated ||
                 (address && walletAuthManager.isAuthenticated(address))) && (
-                <div
-                  className="w-2 h-2 bg-green-500 rounded-full"
-                  title="Authenticated"
-                />
-              )}
+                  <div
+                    className="w-2 h-2 bg-green-500 rounded-full"
+                    title="Authenticated"
+                  />
+                )}
               {walletAuthMutation.isError &&
                 address &&
                 !walletAuthManager.isAuthenticated(address) && (
