@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations, useLocale } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { DollarSign, Users, Calendar, TrendingUp, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { enUS, faIR } from "date-fns/locale";
@@ -296,13 +296,13 @@ const Projects = () => {
             {/* Enhanced View More Button */}
             <div className="text-center mt-10">
 
-              <button
-                onClick={() => router.push('/dashboard/presales')}
+              <Link
+                href={"/presales"}
                 className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white rounded-2xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 font-semibold text-lg cursor-pointer"
               >
                 <span>{t("viewMorePresales")}</span>
                 {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-              </button>
+              </Link>
 
             </div>
           </>
