@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { CheckCircle, Circle, Clock, Code, Rocket, Target, TrendingUp, Zap, Globe } from "lucide-react";
+import { CheckCircle, Circle, Clock, Code, Rocket, Target, TrendingUp, Zap, Globe, Eye } from "lucide-react";
 
 const Roadmap = () => {
   const t = useTranslations("roadmap");
@@ -26,6 +26,14 @@ const Roadmap = () => {
     },
     {
       id: 3,
+      title: t("items.transparency"),
+      description: t("items.transparencyDesc"),
+      status: "completed",
+      icon: Eye,
+      color: "from-emerald-500 to-emerald-600"
+    },
+    {
+      id: 4,
       title: t("items.market"),
       description: t("items.marketDesc"),
       status: "completed",
@@ -33,7 +41,7 @@ const Roadmap = () => {
       color: "from-blue-500 to-blue-600"
     },
     {
-      id: 4,
+      id: 5,
       title: t("items.mining"),
       description: t("items.miningDesc"),
       status: "completed",
@@ -41,7 +49,7 @@ const Roadmap = () => {
       color: "from-blue-500 to-blue-600"
     },
     {
-      id: 5,
+      id: 6,
       title: t("items.expansion"),
       description: t("items.expansionDesc"),
       status: "upcoming",
