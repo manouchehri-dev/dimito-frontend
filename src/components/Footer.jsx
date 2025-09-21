@@ -57,10 +57,10 @@ const Footer = () => {
       if (response.success) {
         setIsSubscribed(true);
         setEmail("");
-        
+
         // Show success toast
         toast.success(
-          isRtl 
+          isRtl
             ? "✅ با موفقیت در خبرنامه عضو شدید!"
             : "✅ Successfully subscribed to newsletter!",
           {
@@ -78,19 +78,19 @@ const Footer = () => {
       }
     } catch (error) {
       console.error("Newsletter subscription error:", error);
-      
+
       // Handle validation errors from API
       // The httpClient transforms errors, so check both patterns
       if (error.status === 400 && error.data?.contact) {
-        const errorMessage = Array.isArray(error.data.contact) 
-          ? error.data.contact[0] 
+        const errorMessage = Array.isArray(error.data.contact)
+          ? error.data.contact[0]
           : error.data.contact;
-        
+
         setEmailError(errorMessage);
-        
+
         // Show error toast
         toast.error(
-          isRtl 
+          isRtl
             ? "❌ لطفاً یک آدرس ایمیل معتبر وارد کنید"
             : "❌ Please enter a valid email address",
           {
@@ -107,14 +107,14 @@ const Footer = () => {
         );
       } else if (error.response?.status === 400 && error.response?.data?.contact) {
         // Fallback for direct axios error structure
-        const errorMessage = Array.isArray(error.response.data.contact) 
-          ? error.response.data.contact[0] 
+        const errorMessage = Array.isArray(error.response.data.contact)
+          ? error.response.data.contact[0]
           : error.response.data.contact;
-        
+
         setEmailError(errorMessage);
-        
+
         toast.error(
-          isRtl 
+          isRtl
             ? "❌ لطفاً یک آدرس ایمیل معتبر وارد کنید"
             : "❌ Please enter a valid email address",
           {
@@ -131,14 +131,14 @@ const Footer = () => {
         );
       } else {
         // Handle other errors
-        const errorMessage = isRtl 
+        const errorMessage = isRtl
           ? "خطا در عضویت در خبرنامه. لطفاً دوباره تلاش کنید."
           : "Error subscribing to newsletter. Please try again.";
-        
+
         setEmailError(errorMessage);
-        
+
         toast.error(
-          isRtl 
+          isRtl
             ? "❌ خطا در عضویت. لطفاً دوباره تلاش کنید"
             : "❌ Subscription failed. Please try again",
           {
@@ -162,7 +162,7 @@ const Footer = () => {
   return (
     <footer
       dir={isRtl ? "rtl" : "ltr"}
-      className="relative z-50 text-primary overflow-hidden"
+      className="relative z-10 text-primary overflow-hidden"
       aria-labelledby="footer-heading"
     >
       {/* Enhanced Background with Gradient Overlay */}
