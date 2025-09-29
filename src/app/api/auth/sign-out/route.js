@@ -28,8 +28,8 @@ export async function GET(request) {
       return response;
     }
     
-    // Successful logout - redirect to login page with success message
-    const response = NextResponse.redirect(new URL('/auth/login?logout=success', request.url));
+    // Successful logout - redirect to login page with cleanup flag
+    const response = NextResponse.redirect(new URL('/auth/login?logout=success&cleanup=true', request.url));
     
     // Clear all authentication-related cookies
     clearAuthCookies(response);

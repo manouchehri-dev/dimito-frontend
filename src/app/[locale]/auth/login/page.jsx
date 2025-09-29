@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import ModernLoginPage from '@/components/auth/ModernLoginPage';
+import LogoutCleanup from '@/components/auth/LogoutCleanup';
 
 export async function generateMetadata({ params }) {
     const { locale } = await params;

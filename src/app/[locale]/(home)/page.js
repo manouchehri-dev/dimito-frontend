@@ -6,7 +6,6 @@ import WhyBlockchain from "@/components/WhyBlockchain";
 import FAQ from "@/components/FAQ";
 import Tokenomics from "@/components/Tokenomics";
 import MarketSection from "@/components/MarketSection";
-import LogoutHandler from "@/components/auth/LogoutHandler";
 import { setRequestLocale } from "next-intl/server";
 
 import { Separator } from "@/components/ui/separator";
@@ -50,7 +49,6 @@ export default async function Home({ params }) {
   setRequestLocale(locale);
   return (
     <div className="min-h-full text-primary lg:px-[72px] relative">
-      <LogoutHandler />
       <Hero />
       <Separator className="border-[#FFB30F] border-1 my-5 lg:my-15" />
       <About />
