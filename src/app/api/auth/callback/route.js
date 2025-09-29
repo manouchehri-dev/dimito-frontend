@@ -40,6 +40,30 @@ export async function GET(request) {
       );
     }
 
+    // Get the correct redirect URI for production
+    const getRedirectUri = () => {
+      // Use environment variable for production
+      if (process.env.DOT_REDIRECT_URI) {
+        return process.env.DOT_REDIRECT_URI;
+      }
+      
+      // Use public URL for production deployment
+      if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}/api/auth/callback`;
+      }
+      
+      // Use custom domain if set
+      if (process.env.NEXT_PUBLIC_APP_URL) {
+        return `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`;
+      }
+      
+      // Fallback to request origin (development)
+      return `${new URL(request.url).origin}/api/auth/callback`;
+    };
+
+    const redirectUri = getRedirectUri();
+    console.log('Using redirect URI:', redirectUri);
+
     // Forward to Django backend for processing
     const djangoResponse = await fetch(`${DJANGO_API_BASE}/auth/oidc-callback/`, {
       method: 'POST',
@@ -49,7 +73,7 @@ export async function GET(request) {
       body: JSON.stringify({
         code,
         state,
-        redirect_uri: `${new URL(request.url).origin}/api/auth/callback`,
+        redirect_uri: redirectUri,
         code_verifier: codeVerifier  // Send PKCE code_verifier to Django
       })
     });
