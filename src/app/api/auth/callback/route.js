@@ -34,9 +34,11 @@ export async function GET(request) {
     const codeVerifier = request.cookies.get('pkce_code_verifier')?.value;
     
     // Debug: Log all cookies to help troubleshoot
-    console.log('Available cookies:', Object.fromEntries(
-      Array.from(request.cookies.entries()).map(([key, cookie]) => [key, cookie.value])
-    ));
+    const cookieEntries = {};
+    request.cookies.getAll().forEach(cookie => {
+      cookieEntries[cookie.name] = cookie.value;
+    });
+    console.log('Available cookies:', cookieEntries);
     
     if (!codeVerifier) {
       console.error('No PKCE code_verifier found in cookies');
