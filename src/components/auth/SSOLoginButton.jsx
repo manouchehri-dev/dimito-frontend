@@ -23,7 +23,16 @@ export default function SSOLoginButton({
       const { codeVerifier, codeChallenge } = await generatePKCE();
 
       // Store code verifier in cookie (accessible to API route)
-      document.cookie = `pkce_code_verifier=${codeVerifier}; path=/; max-age=600; secure; samesite=strict`;
+      const isProduction = process.env.NODE_ENV === 'production';
+      const cookieOptions = [
+        `pkce_code_verifier=${codeVerifier}`,
+        'path=/',
+        'max-age=1800', // 30 minutes
+        'samesite=lax', // Less restrictive than strict
+        ...(isProduction ? ['secure'] : []) // Only secure in production
+      ].join('; ');
+      
+      document.cookie = cookieOptions;
 
       // Generate state for CSRF protection
       const state = generateRandomString(32);

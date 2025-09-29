@@ -9,6 +9,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import SSOLoginButton from './SSOLoginButton';
 import useAuthStore from '@/stores/useAuthStore';
+import LogoutCleanup from './LogoutCleanup';
 
 export default function ModernLoginPage({ redirectTo }) {
     const router = useRouter();
@@ -163,6 +164,9 @@ export default function ModernLoginPage({ redirectTo }) {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center p-4">
+            {/* Logout Cleanup Component */}
+            <LogoutCleanup />
+            
             <div className="w-full max-w-md">
                 {/* Header */}
                 <div className="text-center mb-8">

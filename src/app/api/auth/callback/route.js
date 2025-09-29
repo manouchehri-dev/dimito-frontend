@@ -33,12 +33,25 @@ export async function GET(request) {
     // Get PKCE code_verifier from cookie
     const codeVerifier = request.cookies.get('pkce_code_verifier')?.value;
     
+    // Debug: Log all cookies to help troubleshoot
+    console.log('Available cookies:', Object.fromEntries(
+      Array.from(request.cookies.entries()).map(([key, cookie]) => [key, cookie.value])
+    ));
+    
     if (!codeVerifier) {
       console.error('No PKCE code_verifier found in cookies');
+      console.error('This usually means:');
+      console.error('1. Cookie was not set during authorization (check browser dev tools)');
+      console.error('2. Cookie expired (max-age too short)');
+      console.error('3. Cookie security settings prevent it from being sent');
+      console.error('4. User cleared cookies between authorization and callback');
+      
       return NextResponse.redirect(
-        new URL('/auth/login?error=no_code_verifier&error_description=PKCE code verifier not found', request.url)
+        new URL('/auth/login?error=no_code_verifier&error_description=PKCE code verifier not found. Please try logging in again.', request.url)
       );
     }
+    
+    console.log('PKCE code_verifier found:', codeVerifier.substring(0, 10) + '...');
 
     // Get the correct redirect URI for production
     const getRedirectUri = () => {

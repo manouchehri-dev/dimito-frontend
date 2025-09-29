@@ -293,7 +293,16 @@ export default function UserIconDropdown({ className = "", isMobile = false, sho
                   try {
                     const { generateAuthorizationUrl, generatePKCE, generateRandomString } = await import('@/lib/auth/oidcConfig');
                     const { codeVerifier, codeChallenge } = await generatePKCE();
-                    document.cookie = `pkce_code_verifier=${codeVerifier}; path=/; max-age=600; secure; samesite=strict`;
+                    const isProduction = process.env.NODE_ENV === 'production';
+                    const cookieOptions = [
+                      `pkce_code_verifier=${codeVerifier}`,
+                      'path=/',
+                      'max-age=1800', // 30 minutes
+                      'samesite=lax', // Less restrictive than strict
+                      ...(isProduction ? ['secure'] : []) // Only secure in production
+                    ].join('; ');
+                    
+                    document.cookie = cookieOptions;
                     const state = generateRandomString(32);
                     sessionStorage.setItem('oauth_state', state);
                     const authUrl = generateAuthorizationUrl({
