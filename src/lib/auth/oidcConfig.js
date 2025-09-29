@@ -3,6 +3,62 @@
  * This configuration is derived from: https://lenoauth.com/o/.well-known/openid_configuration
  */
 
+/**
+ * Get the correct redirect URI for different environments
+ */
+function getRedirectUri() {
+  // Use environment variable for production (highest priority)
+  if (process.env.DOT_REDIRECT_URI) {
+    return process.env.DOT_REDIRECT_URI;
+  }
+  
+  // Use public URL for Vercel deployment
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/auth/callback`;
+  }
+  
+  // Use custom domain if set
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`;
+  }
+  
+  // Client-side fallback (browser)
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.host}/api/auth/callback`;
+  }
+  
+  // Server-side fallback (development)
+  return 'http://localhost:3000/api/auth/callback';
+}
+
+/**
+ * Get the correct post-logout redirect URI for different environments
+ */
+function getPostLogoutRedirectUri() {
+  // Use environment variable for production (highest priority)
+  if (process.env.DOT_POST_LOGOUT_REDIRECT_URI) {
+    return process.env.DOT_POST_LOGOUT_REDIRECT_URI;
+  }
+  
+  // Use public URL for Vercel deployment
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/auth/sign-out`;
+  }
+  
+  // Use custom domain if set
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/sign-out`;
+  }
+  
+  // Client-side fallback (browser)
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.host}/api/auth/sign-out`;
+  }
+  
+  // Server-side fallback (development)
+  return 'http://localhost:3000/api/auth/sign-out';
+}
+
 export const OIDC_CONFIG = {
   // Core endpoints
   issuer: 'https://lenoauth.com/o',
@@ -14,10 +70,7 @@ export const OIDC_CONFIG = {
   
   // Client configuration
   clientId: process.env.DOT_CLIENT_ID || 'dimito-public',
-  redirectUri: process.env.DOT_REDIRECT_URI || 
-    (typeof window !== 'undefined' 
-      ? `${window.location.protocol}//${window.location.host}/api/auth/callback`
-      : 'http://localhost:3000/api/auth/callback'), // Dynamic for local/production, no locale prefix
+  redirectUri: getRedirectUri(),
   
   // Supported scopes
   scopes: ['openid', 'profile', 'email'],
@@ -79,9 +132,7 @@ export function generateAuthorizationUrl(options = {}) {
  */
 export function generateLogoutUrl(options = {}) {
   const {
-    postLogoutRedirectUri = typeof window !== 'undefined' 
-      ? `${window.location.protocol}//${window.location.host}/api/auth/sign-out`
-      : 'http://localhost:3000/api/auth/sign-out', // Dynamic for local/production, no locale prefix
+    postLogoutRedirectUri = getPostLogoutRedirectUri(),
     idTokenHint
   } = options;
 
