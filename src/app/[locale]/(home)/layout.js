@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingPresaleButton from "@/components/FloatingPresaleButton";
-import { Toaster } from "react-hot-toast";
+import GlobeLanguageToggle from "@/components/GlobeLanguageToggle";
 
 export function generateViewport() {
   return {
@@ -138,6 +138,7 @@ export default async function Layout({ children }) {
       {children}
       <Footer />
       <FloatingPresaleButton />
+      <GlobeLanguageToggle position="floating" />
     </>
   );
 }

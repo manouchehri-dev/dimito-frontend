@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 
 import Provider from "@/providers/WagmiProvider";
 import QueryProvider from "@/providers/QueryProvider";
+import AuthInitializer from "@/components/auth/AuthInitializer";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -92,6 +93,7 @@ export default async function RootLayout({ children, params }) {
         <QueryProvider>
           <NextIntlClientProvider locale={locale || "fa"} messages={messages}>
             <Provider key={`provider-${locale || "fa"}`}>
+              <AuthInitializer />
               <main className="flex-1">{children}</main>
               <Toaster
                 position="top-center"
