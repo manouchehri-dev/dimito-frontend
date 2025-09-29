@@ -152,6 +152,7 @@ body {
     @apply border-border outline-ring/50;
   }
 
+
   body {
     @apply bg-background text-foreground;
 
@@ -170,6 +171,19 @@ body {
   html[dir="rtl"] [data-rk][role="document"] {
     direction: ltr !important;
     text-align: left;
+  }
+
+  button:not(:disabled),
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  [role="button"]:not([aria-disabled="true"]) {
+    @apply cursor-pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    @apply cursor-not-allowed;
   }
 }
 

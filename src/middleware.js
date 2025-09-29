@@ -7,6 +7,11 @@ export default function middleware(req) {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
 
+  // --- Skip API routes from locale handling ---
+  if (url.pathname.startsWith("/api/")) {
+    return; // Let API routes pass through without locale handling
+  }
+
   // --- Skip health probes (kubelet requests via pod IP, not domain) ---
   // Only skip for production health checks (IP addresses without domain names)
   const isHealthProbe = /^\d+\.\d+\.\d+\.\d+/.test(hostname) && 
@@ -39,6 +44,6 @@ export const config = {
   matcher: [
     "/",
     "/(fa|en)/:path*",
-    "/((?!_next|_vercel|.*\\..*).*)",
+    "/((?!api|_next|_vercel|.*\\..*).*)", // Exclude /api/ routes from middleware
   ],
 };

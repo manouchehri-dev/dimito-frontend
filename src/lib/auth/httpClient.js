@@ -18,15 +18,29 @@ export const createHttpClient = () => {
   // Request interceptor to attach authentication token
   client.interceptors.request.use(
     (config) => {
-      // Get token from Zustand store
+      // Get token from multiple sources
       if (typeof window !== "undefined") {
-        const { useAuthStore } = require("./authStore");
-        const token = useAuthStore.getState().accessToken;
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-          console.log("Adding Authorization header to request:", config.url);
-        } else {
-          console.log("No token available for request:", config.url);
+        // Try SSO token first
+        const ssoToken = localStorage.getItem('auth_token');
+        if (ssoToken) {
+          config.headers.Authorization = `Bearer ${ssoToken}`;
+          console.log("Adding SSO Authorization header to request:", config.url);
+          return config;
+        }
+
+        // Fallback to existing auth store for transparency login
+        try {
+          const { useAuthStore } = require("./authStore");
+          const token = useAuthStore.getState().accessToken;
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log("Adding Transparency Authorization header to request:", config.url);
+          } else {
+            console.log("No token available for request:", config.url);
+          }
+        } catch (error) {
+          // Auth store might not exist yet, that's okay
+          console.log("Auth store not available, continuing without token");
         }
       }
       return config;
