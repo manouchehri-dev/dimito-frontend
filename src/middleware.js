@@ -1,5 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
+import { LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS } from "./lib/locale-cookie-server";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -28,16 +29,54 @@ export default function middleware(req) {
   if (!url.pathname.startsWith("/fa") && !url.pathname.startsWith("/en")) {
     if (hostname.endsWith("dimito.ir")) {
       url.pathname = `/fa${url.pathname}`;
-      return Response.redirect(url);
+      const redirectResponse = Response.redirect(url);
+      // Set locale cookie for Farsi domain
+      redirectResponse.cookies.set(LOCALE_COOKIE_NAME, "fa", {
+        ...LOCALE_COOKIE_OPTIONS,
+        httpOnly: false,
+      });
+      console.log(`🍪 Middleware: Setting locale cookie to "fa" for dimito.ir domain redirect`);
+      return redirectResponse;
     } else if (hostname.endsWith("dimito.io")) {
       url.pathname = `/en${url.pathname}`;
-      return Response.redirect(url);
+      const redirectResponse = Response.redirect(url);
+      // Set locale cookie for English domain
+      redirectResponse.cookies.set(LOCALE_COOKIE_NAME, "en", {
+        ...LOCALE_COOKIE_OPTIONS,
+        httpOnly: false,
+      });
+      console.log(`🍪 Middleware: Setting locale cookie to "en" for dimito.io domain redirect`);
+      return redirectResponse;
     }
     // For development (localhost) or other domains, let intl middleware handle default locale
   }
 
   // --- Fallback to intl middleware ---
-  return intlMiddleware(req);
+  const response = intlMiddleware(req);
+  
+  // --- Update locale cookie based on current request locale ---
+  if (response) {
+    // Extract locale from URL path
+    const pathSegments = url.pathname.split('/');
+    const localeFromPath = pathSegments[1]; // First segment after /
+    
+    // Validate and set locale cookie if it's a valid locale
+    if (routing.locales.includes(localeFromPath)) {
+      const currentCookie = req.cookies.get(LOCALE_COOKIE_NAME);
+      
+      // Only update cookie if it's different from current value
+      if (!currentCookie || currentCookie.value !== localeFromPath) {
+        console.log(`🍪 Middleware: Updating locale cookie from "${currentCookie?.value || 'none'}" to "${localeFromPath}"`);
+        
+        response.cookies.set(LOCALE_COOKIE_NAME, localeFromPath, {
+          ...LOCALE_COOKIE_OPTIONS,
+          httpOnly: false, // Allow client-side access
+        });
+      }
+    }
+  }
+  
+  return response;
 }
 
 export const config = {

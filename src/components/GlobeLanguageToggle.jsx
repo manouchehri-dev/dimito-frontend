@@ -5,6 +5,7 @@ import { Globe } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { setClientLocaleCookie } from '@/lib/locale-cookie-client';
 
 export default function GlobeLanguageToggle({ className = "", position = "floating" }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,8 +16,6 @@ export default function GlobeLanguageToggle({ className = "", position = "floati
     const pathname = usePathname();
     const dropdownRef = useRef(null);
     const isRTL = locale === "fa";
-
-    console.log
 
     const languages = {
         en: { flag: "🇺🇸", name: "English", code: "EN" },
@@ -30,6 +29,10 @@ export default function GlobeLanguageToggle({ className = "", position = "floati
         setIsOpen(false);
 
         try {
+            // Set locale cookie before navigation
+            setClientLocaleCookie(newLocale);
+            console.log(`🍪 Locale cookie set to: ${newLocale}`);
+            
             router.push(pathname, { locale: newLocale });
         } catch (error) {
             console.error("Error switching language:", error);
