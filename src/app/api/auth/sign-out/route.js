@@ -6,30 +6,45 @@
  * 
  * GET /api/auth/sign-out
  */
-
 import { NextResponse } from 'next/server';
+import { getLocaleFromCookies } from '@/lib/locale-cookie-server';
+import { createRedirectUrl } from '@/lib/url-utils';
 
 export async function GET(request) {
+  
   try {
     console.log('Post-logout callback received from OIDC provider');
-
+    
+    // Get user's preferred locale from cookie for redirect
+    const userLocale = await getLocaleFromCookies();
+    console.log(`🍪 User locale from cookie: ${userLocale}`);
+    
     // Get any error parameters from OIDC provider
+    console.log(request.url);
     const { searchParams } = new URL(request.url);
     const error = searchParams.get('error');
     const errorDescription = searchParams.get('error_description');
-
+    
     if (error) {
       console.error('OIDC logout error:', error, errorDescription);
-      // Redirect to login with error
+      // Redirect to login with error (preserve user's locale)
       const response = NextResponse.redirect(
-        new URL(`/auth/login?error=${error}&error_description=${encodeURIComponent(errorDescription || 'Logout failed')}`, request.url)
+        createRedirectUrl(request, '/auth/login', userLocale, {
+          error,
+          error_description: errorDescription || 'Logout failed'
+        })
       );
       clearAuthCookies(response);
       return response;
     }
     
-    // Successful logout - redirect to login page with cleanup flag
-    const response = NextResponse.redirect(new URL('/auth/login?logout=success&cleanup=true', request.url));
+    // Successful logout - redirect to login page with cleanup flag (preserve user's locale)
+    const response = NextResponse.redirect(
+      createRedirectUrl(request, '/auth/login', userLocale, {
+        logout: 'success',
+        cleanup: 'true'
+      })
+    );
     
     // Clear all authentication-related cookies
     clearAuthCookies(response);
@@ -41,12 +56,16 @@ export async function GET(request) {
     
     console.log('User successfully logged out by provider, redirecting to login');
     return response;
-
   } catch (error) {
     console.error('Sign-out callback error:', error);
     
-    // Fallback: redirect to login page with error
-    const response = NextResponse.redirect(new URL('/auth/login?error=sign_out_error', request.url));
+    // Fallback: redirect to login page with error (preserve user's locale)
+    const userLocale = await getLocaleFromCookies();
+    const response = NextResponse.redirect(
+      createRedirectUrl(request, '/auth/login', userLocale, {
+        error: 'sign_out_error'
+      })
+    );
     clearAuthCookies(response);
     return response;
   }
@@ -64,7 +83,7 @@ function clearAuthCookies(response) {
     'pkce_code_verifier',
     'oauth_state'
   ];
-
+  
   cookiesToClear.forEach(cookieName => {
     // Delete method
     response.cookies.delete(cookieName);
