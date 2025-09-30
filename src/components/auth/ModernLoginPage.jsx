@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Wallet, Shield } from 'lucide-react';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -10,6 +11,7 @@ import { useAccount } from 'wagmi';
 import SSOLoginButton from './SSOLoginButton';
 import useAuthStore from '@/stores/useAuthStore';
 import LogoutCleanup from './LogoutCleanup';
+
 
 export default function ModernLoginPage({ redirectTo }) {
     const router = useRouter();
@@ -32,15 +34,14 @@ export default function ModernLoginPage({ redirectTo }) {
     // Check if both methods are available
     const hasSSO = isAuthenticated;
     const hasWallet = isConnected;
-    const bothConnected = hasSSO && hasWallet;
 
     // Define redirect destinations
     const getRedirectPath = (redirectParam) => {
         const redirectMap = {
-            'transparency': `/${locale}/transparency/dashboard`,
-            'dashboard': `/${locale}/dashboard`,
-            'home': `/${locale}`,
-            'create-dmt': `/${locale}/create-dmt`,
+            'transparency': `/transparency/dashboard`,
+            'dashboard': `/dashboard`,
+            'home': `/`,
+            'create-dmt': `/create-dmt`,
         };
 
         // If redirectParam is a full path, use it directly
@@ -49,7 +50,7 @@ export default function ModernLoginPage({ redirectTo }) {
         }
 
         // Otherwise, use the mapped path or default to home
-        return redirectMap[redirectParam] || `/${locale}`;
+        return redirectMap[redirectParam] || ``;
     };
 
 
@@ -58,7 +59,7 @@ export default function ModernLoginPage({ redirectTo }) {
         // Only redirect if there's a NEW connection (state changed from initial)
         const walletJustConnected = !initialWalletState && isConnected;
         const ssoJustConnected = !initialSSOState && isAuthenticated;
-        
+
         if (walletJustConnected && !isAuthenticated) {
             // Wallet just connected but no SSO, redirect to intended destination
             setIsRedirecting(true);
@@ -118,7 +119,7 @@ export default function ModernLoginPage({ redirectTo }) {
     if (isRedirecting) {
         const walletJustConnected = !initialWalletState && isConnected;
         const ssoJustConnected = !initialSSOState && isAuthenticated;
-        
+
         return (
             <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center">
                 <div className="text-center">
@@ -127,8 +128,8 @@ export default function ModernLoginPage({ redirectTo }) {
                         {walletJustConnected && !ssoJustConnected
                             ? (t('walletConnectedRedirecting') || 'Wallet connected! Redirecting...')
                             : ssoJustConnected && !walletJustConnected
-                            ? (t('ssoConnectedRedirecting') || 'Login successful! Redirecting...')
-                            : (t('redirecting') || 'Redirecting...')
+                                ? (t('ssoConnectedRedirecting') || 'Login successful! Redirecting...')
+                                : (t('redirecting') || 'Redirecting...')
                         }
                     </p>
                 </div>
@@ -166,16 +167,22 @@ export default function ModernLoginPage({ redirectTo }) {
         <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center p-4">
             {/* Logout Cleanup Component */}
             <LogoutCleanup />
-            
+
             <div className="w-full max-w-md">
                 {/* Header */}
                 <div className="text-center mb-8">
                     <div className="mx-auto h-16 w-auto mb-6 flex items-center justify-center">
-                        <img
-                            src="/logo-header.png"
-                            alt="DiMiTo Logo"
-                            className="h-12 w-auto object-contain"
-                        />
+                        <button
+                            onClick={() => router.push(`/`)}
+                            className="transition-opacity hover:opacity-80"
+                            title={t('backToHome')}
+                        >
+                            <img
+                                src="/logo-header.png"
+                                alt="DiMiTo Logo"
+                                className="h-12 w-auto object-contain hover:scale-110 transition-transform duration-200"
+                            />
+                        </button>
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 mb-2">
                         {pageContent.title}

@@ -1153,7 +1153,8 @@
     "enterPassword": "رمز عبور خود را وارد کنید",
     "showPassword": "نمایش رمز عبور",
     "hidePassword": "مخفی کردن رمز عبور",
-    "loginWithEmail": "ورود با ایمیل"
+    "loginWithEmail": "ورود با ایمیل",
+    "backToHome": "بازگشت به خانه"
   },
   "auth": {
     "login": "ورود",
@@ -1178,6 +1179,13 @@
     "userMenu": "منوی کاربر",
     "notLoggedIn": "شما وارد نشده‌اید",
     "dashboard": "داشبورد",
+    "processingAuth": "پردازش احراز هویت",
+    "processingAuthDesc": "لطفاً صبر کنید تا اعتبارنامه‌های شما تأیید شده و حساب کاربری‌تان راه‌اندازی شود.",
+    "authSuccessDesc": "احراز هویت شما با موفقیت انجام شد! به زودی به داشبورد هدایت خواهید شد.",
+    "authFailedDesc": "در طول احراز هویت مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
+    "redirectingToDashboard": "در حال هدایت به داشبورد...",
+    "redirectingToLogin": "در حال هدایت به صفحه ورود...",
+    "secureAuth": "با رمزگذاری استاندارد صنعتی محافظت شده",
     "ssoDashboard": "داشبورد SSO",
     "walletDashboard": "داشبورد کیف پول",
     "walletConnected": "کیف پول متصل شد",

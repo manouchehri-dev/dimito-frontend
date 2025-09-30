@@ -1393,7 +1393,8 @@
     "enterPassword": "Enter your password",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "loginWithEmail": "Login with Email"
+    "loginWithEmail": "Login with Email",
+    "backToHome": "Back to Home"
   },
   "auth": {
     "login": "Login",
@@ -1418,6 +1419,13 @@
     "userMenu": "User Menu",
     "notLoggedIn": "You are not logged in",
     "dashboard": "Dashboard",
+    "processingAuth": "Processing Authentication",
+    "processingAuthDesc": "Please wait while we verify your credentials and set up your account.",
+    "authSuccessDesc": "Your authentication was successful! You will be redirected to your dashboard shortly.",
+    "authFailedDesc": "We encountered an issue during authentication. Please try logging in again.",
+    "redirectingToDashboard": "Redirecting to Dashboard...",
+    "redirectingToLogin": "Redirecting to Login...",
+    "secureAuth": "Secured with industry-standard encryption",
     "ssoDashboard": "SSO Dashboard",
     "walletDashboard": "Wallet Dashboard",
     "walletConnected": "Wallet Connected",

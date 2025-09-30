@@ -20,6 +20,7 @@ export function getClientLocaleFromCookies() {
   }
   
   try {
+    // Try cookie first
     const cookies = document.cookie.split(';');
     const localeCookie = cookies.find(cookie => 
       cookie.trim().startsWith(`${LOCALE_COOKIE_NAME}=`)
@@ -31,8 +32,14 @@ export function getClientLocaleFromCookies() {
         return locale;
       }
     }
+    
+    // Fallback to localStorage
+    const localStorageLocale = localStorage.getItem(LOCALE_COOKIE_NAME);
+    if (localStorageLocale && routing.locales.includes(localStorageLocale)) {
+      return localStorageLocale;
+    }
   } catch (error) {
-    console.warn('Failed to read client locale cookie:', error);
+    console.warn('Failed to read client locale:', error);
   }
   
   return routing.defaultLocale;
@@ -55,9 +62,17 @@ export function setClientLocaleCookie(locale) {
   const expires = new Date();
   expires.setFullYear(expires.getFullYear() + 1); // 1 year
   
+  // Set cookie
   document.cookie = `${LOCALE_COOKIE_NAME}=${locale}; expires=${expires.toUTCString()}; path=/; SameSite=Strict${
     process.env.NODE_ENV === 'production' ? '; Secure' : ''
   }`;
+  
+  // Also set in localStorage as backup
+  try {
+    localStorage.setItem(LOCALE_COOKIE_NAME, locale);
+  } catch (error) {
+    console.warn('Failed to set locale in localStorage:', error);
+  }
 }
 
 /**

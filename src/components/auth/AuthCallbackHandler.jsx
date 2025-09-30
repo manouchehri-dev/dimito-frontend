@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import useAuthStore from '@/stores/useAuthStore';
@@ -21,7 +22,7 @@ export default function AuthCallbackHandler() {
         const token = searchParams.get('token');
         const error = searchParams.get('error');
         const errorDescription = searchParams.get('error_description');
-        
+
         // Check for user data in URL parameters
         const userDataParam = searchParams.get('user');
         console.log('URL parameters:', { token, error, userDataParam });
@@ -30,7 +31,7 @@ export default function AuthCallbackHandler() {
           // Handle authentication error
           setStatus('error');
           setMessage(errorDescription || t('authenticationFailed'));
-          
+
           // Redirect to login page after 3 seconds
           setTimeout(() => {
             router.push('/auth/login');
@@ -42,14 +43,14 @@ export default function AuthCallbackHandler() {
           try {
             // Decode JWT token to check expiration
             const payload = JSON.parse(atob(token.split('.')[1]));
-            
+
             // Check if token is expired
             if (payload.exp * 1000 <= Date.now()) {
               throw new Error('Token expired');
             }
-            
+
             let userData;
-            
+
             // Try to get user data from URL parameters first
             if (userDataParam) {
               try {
@@ -60,7 +61,7 @@ export default function AuthCallbackHandler() {
                 userData = null;
               }
             }
-            
+
             // Fallback to JWT payload if no URL user data
             if (!userData) {
               userData = {
@@ -73,13 +74,13 @@ export default function AuthCallbackHandler() {
               };
               console.log('User data from JWT payload:', userData);
             }
-            
+
             // Update authentication state with complete user data
             loginWithSSO(token, userData);
-            
+
             setStatus('success');
             setMessage(t('authenticationSuccess'));
-            
+
             // Redirect to dashboard after 2 seconds
             setTimeout(() => {
               router.push('/dashboard');
@@ -88,7 +89,7 @@ export default function AuthCallbackHandler() {
             console.error('Error processing token:', tokenError);
             setStatus('error');
             setMessage(t('authenticationFailed'));
-            
+
             setTimeout(() => {
               router.push('/auth/login');
             }, 3000);
@@ -97,7 +98,7 @@ export default function AuthCallbackHandler() {
           // No token received
           setStatus('error');
           setMessage(t('authenticationFailed'));
-          
+
           setTimeout(() => {
             router.push('/auth/login');
           }, 3000);
@@ -106,7 +107,7 @@ export default function AuthCallbackHandler() {
         console.error('Auth callback error:', error);
         setStatus('error');
         setMessage(t('authenticationFailed'));
-        
+
         setTimeout(() => {
           router.push('/auth/login');
         }, 3000);
@@ -118,55 +119,91 @@ export default function AuthCallbackHandler() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-          {status === 'processing' && (
-            <>
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mb-6">
-                <Loader2 className="w-8 h-8 text-white animate-spin" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900 mb-2">
-                {t('loggingIn')}
-              </h1>
-              <p className="text-gray-600">
-                Processing your authentication...
-              </p>
-            </>
-          )}
+      <div className="max-w-lg w-full">
+        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
 
-          {status === 'success' && (
-            <>
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900 mb-2">
-                {t('authenticationSuccess')}
-              </h1>
-              <p className="text-gray-600 mb-4">
-                {message}
-              </p>
-              <div className="text-sm text-gray-500">
-                Redirecting to dashboard...
-              </div>
-            </>
-          )}
+          {/* Header with Logo */}
+          <div className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] px-8 py-6 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-4 p-1">
+              <img
+                src="/logo-header.png"
+                alt="DiMiTo Logo"
+                className="h-10 w-auto object-contain"
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-white">
+              DiMiTo
+            </h1>
+          </div>
 
-          {status === 'error' && (
-            <>
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-6">
-                <XCircle className="w-8 h-8 text-red-600" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900 mb-2">
-                {t('authenticationFailed')}
-              </h1>
-              <p className="text-gray-600 mb-4">
-                {message}
-              </p>
-              <div className="text-sm text-gray-500">
-                Redirecting to login page...
-              </div>
-            </>
-          )}
+          {/* Content */}
+          <div className="px-8 py-10 text-center">
+            {status === 'processing' && (
+              <>
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-orange-100 to-red-100 rounded-full mb-6">
+                  <Loader2 className="w-10 h-10 text-orange-600 animate-spin" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  {t('processingAuth')}
+                </h2>
+                <p className="text-gray-600 text-lg mb-6">
+                  {t('processingAuthDesc')}
+                </p>
+                <div className="flex items-center justify-center space-x-1">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+              </>
+            )}
+
+            {status === 'success' && (
+              <>
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+                  <CheckCircle className="w-12 h-12 text-green-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  {t('authenticationSuccess')}
+                </h2>
+                <p className="text-gray-600 text-lg mb-6">
+                  {t('authSuccessDesc')}
+                </p>
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                  <div className="flex items-center justify-center text-green-700">
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    <span className="font-medium">{t('redirectingToDashboard')}</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {status === 'error' && (
+              <>
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-6">
+                  <XCircle className="w-12 h-12 text-red-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  {t('authenticationFailed')}
+                </h2>
+                <p className="text-gray-600 text-lg mb-6">
+                  {message || t('authFailedDesc')}
+                </p>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                  <div className="flex items-center justify-center text-red-700">
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    <span className="font-medium">{t('redirectingToLogin')}</span>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-8 py-4 text-center border-t border-gray-100">
+            <p className="text-sm text-gray-500">
+              {t('secureAuth')}
+            </p>
+          </div>
         </div>
       </div>
     </div>
