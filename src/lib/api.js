@@ -164,51 +164,111 @@ export function usePresaleDetails(presaleId, options = {}) {
   });
 }
 
-// Dashboard Summary Hook - New API structure
-export function useDashboardSummary(walletAddress, options = {}) {
-  return useApiQuery(
-    ["dashboardSummary", walletAddress], 
-    `/dashboard/?wallet_address=${walletAddress}`, 
-    {
-      enabled: !!walletAddress,
-      staleTime: 2 * 60 * 1000, // 2 minutes for real-time data
-      cacheTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: true,
-      ...options,
+// Dashboard Summary Hook - Tab-based API structure
+export function useDashboardSummary(walletAddress, tab = 'wallet', authToken = null, options = {}) {
+  const fetchData = async () => {
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      
+      // Add auth header for SSO tab
+      if (tab === 'sso' && authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+      
+      const response = await api.get(
+        `/dashboard/?wallet_address=${walletAddress}&tab=${tab}`,
+        { headers }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching dashboard data:`, error);
+      throw error;
     }
-  );
+  };
+
+  return useQuery({
+    queryKey: ["dashboardSummary", walletAddress, tab],
+    queryFn: fetchData,
+    enabled: !!walletAddress,
+    staleTime: 2 * 60 * 1000, // 2 minutes for real-time data
+    cacheTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
+    ...options,
+  });
 }
 
-// Paginated Purchases Hook
-export function usePaginatedPurchases(walletAddress, page = 1, options = {}) {
-  return useApiQuery(
-    ["paginatedPurchases", walletAddress, page], 
-    `/dashboard/purchases/?wallet_address=${walletAddress}&page=${page}`, 
-    {
-      enabled: !!walletAddress,
-      staleTime: 1 * 60 * 1000, // 1 minute for recent data
-      cacheTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
-      keepPreviousData: true, // Keep previous page data while loading new page
-      ...options,
+// Paginated Purchases Hook - Tab-based
+export function usePaginatedPurchases(walletAddress, page = 1, tab = 'wallet', authToken = null, options = {}) {
+  const fetchData = async () => {
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      
+      // Add auth header for SSO tab
+      if (tab === 'sso' && authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+      
+      const response = await api.get(
+        `/dashboard/purchases/?wallet_address=${walletAddress}&page=${page}&tab=${tab}`,
+        { headers }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching purchases:`, error);
+      throw error;
     }
-  );
+  };
+
+  return useQuery({
+    queryKey: ["paginatedPurchases", walletAddress, page, tab],
+    queryFn: fetchData,
+    enabled: !!walletAddress,
+    staleTime: 1 * 60 * 1000, // 1 minute for recent data
+    cacheTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    keepPreviousData: true, // Keep previous page data while loading new page
+    ...options,
+  });
 }
 
-// Paginated Presales Hook
-export function usePaginatedPresales(walletAddress, page = 1, options = {}) {
-  return useApiQuery(
-    ["paginatedPresales", walletAddress, page], 
-    `/dashboard/presales/?wallet_address=${walletAddress}&page=${page}`, 
-    {
-      enabled: !!walletAddress,
-      staleTime: 2 * 60 * 1000, // 2 minutes
-      cacheTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
-      keepPreviousData: true, // Keep previous page data while loading new page
-      ...options,
+// Paginated Presales Hook - Tab-based
+export function usePaginatedPresales(walletAddress, page = 1, tab = 'wallet', authToken = null, options = {}) {
+  const fetchData = async () => {
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      
+      // Add auth header for SSO tab
+      if (tab === 'sso' && authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+      
+      const response = await api.get(
+        `/dashboard/presales/?wallet_address=${walletAddress}&page=${page}&tab=${tab}`,
+        { headers }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching presales:`, error);
+      throw error;
     }
-  );
+  };
+
+  return useQuery({
+    queryKey: ["paginatedPresales", walletAddress, page, tab],
+    queryFn: fetchData,
+    enabled: !!walletAddress,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    cacheTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    keepPreviousData: true, // Keep previous page data while loading new page
+    ...options,
+  });
 }
 
 // Platform Tokens Hook

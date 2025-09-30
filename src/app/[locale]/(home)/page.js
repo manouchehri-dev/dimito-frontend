@@ -50,7 +50,7 @@ export default async function Home({ params }) {
   return (
     <div className="min-h-full text-primary lg:px-[72px] relative">
       <Hero />
-      <Separator className="border-[#FFB30F] border-1 my-5 lg:my-15" />
+      <Separator className="border-[#FFB30F] border-1 my-5 -mt-10 lg:my-12 lg:-mt-6" />
       <About />
       <Projects />
       <WhyBlockchain />

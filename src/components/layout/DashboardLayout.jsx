@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useAccount } from "wagmi";
+import useAuthStore from "@/stores/useAuthStore";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardHeader from "./DashboardHeader";
 import WalletConnectionModal from "@/components/modals/WalletConnectionModal";
@@ -16,6 +17,7 @@ export default function DashboardLayout({ children }) {
   const isRTL = locale === "fa";
   const t = useTranslations("dashboard");
   const { isConnected, isConnecting, isReconnecting } = useAccount();
+  const { isAuthenticated, authMethod } = useAuthStore();
 
   // Wait for wallet connection state to be determined
   useEffect(() => {
@@ -81,14 +83,14 @@ export default function DashboardLayout({ children }) {
                 <p className="text-gray-600 text-sm">{t("checkingWalletConnection")}</p>
               </div>
             </div>
-          ) : !isConnected ? (
-            // Show modal only when wallet is definitely not connected and not trying to connect
+          ) : !isConnected && !isAuthenticated ? (
+            // Show modal only when neither wallet nor SSO is authenticated
             <WalletConnectionModal
-              isOpen={!isConnected && !isWalletLoading && !isConnecting && !isReconnecting}
+              isOpen={!isConnected && !isAuthenticated && !isWalletLoading && !isConnecting && !isReconnecting}
               onClose={() => setShowWalletModal(false)}
             />
           ) : (
-            // Show dashboard content when wallet is connected
+            // Show dashboard content when wallet is connected OR user is authenticated via SSO
             children
           )}
         </main>

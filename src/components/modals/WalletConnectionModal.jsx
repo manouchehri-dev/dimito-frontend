@@ -2,10 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { X, Wallet, Shield, Zap, Globe, ChevronRight, ChevronLeft, ArrowLeft, Home, ArrowRight } from "lucide-react";
+import { X, Wallet, Shield, Zap, Globe, ChevronRight, ChevronLeft, ArrowLeft, Home, ArrowRight, User } from "lucide-react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { useRouter } from "@/i18n/navigation";
+import useAuthStore from "@/stores/useAuthStore";
 
 export default function WalletConnectionModal({ isOpen, onClose }) {
     const t = useTranslations("walletModal");
@@ -14,14 +15,15 @@ export default function WalletConnectionModal({ isOpen, onClose }) {
     const modalRef = useRef(null);
     const { openConnectModal } = useConnectModal();
     const { isConnected } = useAccount();
+    const { isAuthenticated } = useAuthStore();
     const router = useRouter();
 
-    // Close modal when wallet is connected
+    // Close modal when wallet is connected OR user is authenticated via SSO
     useEffect(() => {
-        if (isConnected && isOpen) {
+        if ((isConnected || isAuthenticated) && isOpen) {
             onClose();
         }
-    }, [isConnected, isOpen, onClose]);
+    }, [isConnected, isAuthenticated, isOpen, onClose]);
 
     // Lock body scroll when modal is open (no escape or click outside)
     useEffect(() => {
@@ -36,6 +38,10 @@ export default function WalletConnectionModal({ isOpen, onClose }) {
 
     const handleConnectWallet = () => {
         openConnectModal?.();
+    };
+
+    const handleSSOLogin = () => {
+        router.push("/auth/login");
     };
 
     const handleGoHome = () => {
@@ -94,14 +100,27 @@ export default function WalletConnectionModal({ isOpen, onClose }) {
 
                 {/* Content */}
                 <div className="p-4 sm:p-6">
-                    {/* Primary Action - Connect Wallet at Top */}
-                    <div className="mb-6 sm:mb-8">
+                    {/* Primary Actions - Connect Wallet or SSO Login */}
+                    <div className="mb-6 sm:mb-8 space-y-3">
                         <button
                             onClick={handleConnectWallet}
                             className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] hover:from-[#FF4A0F] hover:to-[#FF2A2A] text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl sm:rounded-2xl transition-all duration-200 hover:scale-[1.02] hover:shadow-xl flex items-center justify-center gap-3 group text-base sm:text-lg cursor-pointer shadow-lg"
                         >
                             <Wallet className="w-5 h-5 sm:w-6 sm:h-6" />
                             <span>{t("connectWallet")}</span>
+                            {isRTL ? <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-200" /> : <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-200" />}
+                        </button>
+                        
+                        <div className="text-center text-gray-500 text-sm">
+                            {t("orLoginWith")}
+                        </div>
+                        
+                        <button
+                            onClick={handleSSOLogin}
+                            className="w-full bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 font-semibold py-4 sm:py-5 px-4 sm:px-6 rounded-xl sm:rounded-2xl transition-all duration-200 hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-3 group text-base sm:text-lg cursor-pointer shadow-md border-2 border-gray-200 hover:border-gray-300"
+                        >
+                            <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                            <span>{t("ssoLogin")}</span>
                             {isRTL ? <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-200" /> : <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-200" />}
                         </button>
                     </div>

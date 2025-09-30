@@ -64,8 +64,8 @@ const Hero = () => {
       <div className="relative">
         {/* <TokenPriceDashboard /> */}
         <img
-          src="/hero/blockchain_mining.png"
-          alt="blockchain_mining"
+          src="/hero/dimito_hero_image.png"
+          alt="dimito_hero_image"
           className="w-full h-full object-cover"
         />
       </div>

@@ -1,12 +1,18 @@
 import { useDashboardSummary } from "@/lib/api";
+import useAuthStore from "@/stores/useAuthStore";
 
-export function useDashboardData(walletAddress) {
+export function useDashboardData(walletAddress, tab = 'wallet') {
+  const { token, authMethod } = useAuthStore();
+  
+  // Get auth token for SSO requests
+  const authToken = (tab === 'sso' && authMethod === 'sso') ? token : null;
+  
   const {
     data: dashboardData,
     isLoading: loading,
     error,
     refetch,
-  } = useDashboardSummary(walletAddress, {
+  } = useDashboardSummary(walletAddress, tab, authToken, {
     retry: (failureCount, error) => {
       // Don't retry on 4xx errors, but retry on 5xx and network errors
       if (error?.response?.status >= 400 && error?.response?.status < 500) {
@@ -15,21 +21,25 @@ export function useDashboardData(walletAddress) {
       return failureCount < 3;
     },
     select: (data) => {
-      // Transform the API response if needed
+      // Handle new tab-based API response structure
+      if (data?.mode === 'tab_based') {
+        return data;
+      }
+      // Legacy support for old API response
       if (data?.success) {
         return data.data;
       }
       // For development, return mock data on API failure
       if (process.env.NODE_ENV === "development") {
         console.warn("API response failed, using mock data:", data);
-        return getMockDashboardData();
+        return getMockDashboardData(tab);
       }
       throw new Error(data?.message || "Failed to fetch dashboard data");
     },
     // Fallback to mock data in development when query fails
     placeholderData:
       process.env.NODE_ENV === "development"
-        ? getMockDashboardData()
+        ? getMockDashboardData(tab)
         : undefined,
   });
 
@@ -41,21 +51,52 @@ export function useDashboardData(walletAddress) {
   };
 }
 
-// Mock data for development/demo purposes matching new API structure
-function getMockDashboardData() {
+// Mock data for development/demo purposes matching new tab-based API structure
+function getMockDashboardData(tab = 'wallet') {
+  if (tab === 'sso') {
+    return {
+      sso_authenticated: true,
+      wallet_connected: true,
+      mode: "tab_based",
+      active_tab: "sso",
+      sso_data: {
+        user_info: {
+          id: 23,
+          username: "94b697f3-b787-48c1-a250-922aa3",
+          phone_number: "+989353098300",
+          email: "989353098300@phone.dimito.ir",
+          first_name: "+989353098300",
+          last_name: ""
+        },
+        auth_method: "sso",
+        display_name: "+989353098300",
+        message: "SSO data - presale data will be added later"
+      },
+      wallet_data: null
+    };
+  }
+  
+  // Default wallet tab data
   return {
-    user_info: {
-      id: 18,
-      address: "0xF0CAdd1b3aEb569d4A4bDe9056FD8CA4826041FE",
-      first_name: "John",
-      last_name: "Crypto",
-      email: "john.crypto@example.com",
-      is_verified: true,
-      is_active: true,
-      country: "United States",
-      city: "New York"
-    },
-    recent_purchases: [
+    sso_authenticated: true,
+    wallet_connected: true,
+    mode: "tab_based",
+    active_tab: "wallet",
+    wallet_data: {
+      user_info: {
+        id: 80,
+        address: "0xf0cadd1b3aeb569d4a4bde9056fd8ca4826041fe",
+        first_name: "John",
+        last_name: "Crypto",
+        email: "john.crypto@example.com",
+        phone: null,
+        is_verified: true,
+        is_active: true,
+        country: "United States",
+        city: "New York"
+      },
+      auth_method: "wallet",
+      recent_purchases: [
       {
         id: 161,
         purchase_id: 1012,
@@ -170,5 +211,7 @@ function getMockDashboardData() {
         registration_date: "2025-09-21T09:19:14.106706Z"
       }
     }
+    },
+    sso_data: null
   };
 }
