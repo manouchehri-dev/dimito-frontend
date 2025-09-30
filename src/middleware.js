@@ -28,25 +28,35 @@ export default function middleware(req) {
 
   // --- Domain-based locale redirect, only if no locale prefix ---
   if (!url.pathname.startsWith("/fa") && !url.pathname.startsWith("/en")) {
-    if (hostname.endsWith("dimito.ir")) {
-      url.pathname = `/fa${url.pathname}`;
-      const redirectResponse = NextResponse.redirect(url);
-      // Set locale cookie for Farsi domain
-      redirectResponse.cookies.set(LOCALE_COOKIE_NAME, "fa", {
-        ...LOCALE_COOKIE_OPTIONS,
-        httpOnly: false,
-      });
-      console.log(`🍪 Middleware: Setting locale cookie to "fa" for dimito.ir domain redirect`);
-      return redirectResponse;
+    // Check existing locale cookie first
+    const existingLocale = req.cookies.get(LOCALE_COOKIE_NAME)?.value;
+    let targetLocale = null;
+    
+    if (existingLocale && routing.locales.includes(existingLocale)) {
+      // Respect user's existing locale preference
+      targetLocale = existingLocale;
+      console.log(`🍪 Middleware: Using existing locale cookie: ${existingLocale}`);
+    } else if (hostname.endsWith("dimito.ir")) {
+      // Default to Farsi for .ir domain only if no existing preference
+      targetLocale = "fa";
+      console.log(`🌐 Middleware: No locale cookie, defaulting to "fa" for dimito.ir domain`);
     } else if (hostname.endsWith("dimito.io")) {
-      url.pathname = `/en${url.pathname}`;
+      // Default to English for .io domain only if no existing preference
+      targetLocale = "en";
+      console.log(`🌐 Middleware: No locale cookie, defaulting to "en" for dimito.io domain`);
+    }
+    
+    if (targetLocale) {
+      url.pathname = `/${targetLocale}${url.pathname}`;
       const redirectResponse = NextResponse.redirect(url);
-      // Set locale cookie for English domain
-      redirectResponse.cookies.set(LOCALE_COOKIE_NAME, "en", {
-        ...LOCALE_COOKIE_OPTIONS,
-        httpOnly: false,
-      });
-      console.log(`🍪 Middleware: Setting locale cookie to "en" for dimito.io domain redirect`);
+      // Only update cookie if it's different from existing
+      if (!existingLocale || existingLocale !== targetLocale) {
+        redirectResponse.cookies.set(LOCALE_COOKIE_NAME, targetLocale, {
+          ...LOCALE_COOKIE_OPTIONS,
+          httpOnly: false,
+        });
+        console.log(`🍪 Middleware: Setting locale cookie to "${targetLocale}"`);
+      }
       return redirectResponse;
     }
     // For development (localhost) or other domains, let intl middleware handle default locale
