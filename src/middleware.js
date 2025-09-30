@@ -1,4 +1,5 @@
 import createMiddleware from "next-intl/middleware";
+import { NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
 import { LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS } from "./lib/locale-cookie-server";
 
@@ -29,7 +30,7 @@ export default function middleware(req) {
   if (!url.pathname.startsWith("/fa") && !url.pathname.startsWith("/en")) {
     if (hostname.endsWith("dimito.ir")) {
       url.pathname = `/fa${url.pathname}`;
-      const redirectResponse = Response.redirect(url);
+      const redirectResponse = NextResponse.redirect(url);
       // Set locale cookie for Farsi domain
       redirectResponse.cookies.set(LOCALE_COOKIE_NAME, "fa", {
         ...LOCALE_COOKIE_OPTIONS,
@@ -39,7 +40,7 @@ export default function middleware(req) {
       return redirectResponse;
     } else if (hostname.endsWith("dimito.io")) {
       url.pathname = `/en${url.pathname}`;
-      const redirectResponse = Response.redirect(url);
+      const redirectResponse = NextResponse.redirect(url);
       // Set locale cookie for English domain
       redirectResponse.cookies.set(LOCALE_COOKIE_NAME, "en", {
         ...LOCALE_COOKIE_OPTIONS,
