@@ -12,6 +12,7 @@ import {
   ShoppingBag,
   Rocket,
   TrendingUp,
+  Headphones,
 } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
@@ -58,6 +59,12 @@ export default function DashboardSidebar({
       href: "/dashboard/participated-presales",
       icon: Rocket,
       current: pathname === "/dashboard/participated-presales",
+    },
+    {
+      name: t("support.title"),
+      href: "/dashboard/support",
+      icon: Headphones,
+      current: pathname === "/dashboard/support",
     },
   ];
 

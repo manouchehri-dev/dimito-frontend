@@ -149,6 +149,19 @@ export const tokenEndpoints = {
 };
 
 /**
+ * API endpoints for ticketing system
+ */
+export const ticketEndpoints = {
+  categories: "/tickets/categories/",
+  tickets: "/tickets/tickets/",
+  myTickets: "/tickets/my-tickets/",
+  ticketDetails: (id) => `/tickets/tickets/${id}/`,
+  ticketComments: (id) => `/tickets/tickets/${id}/comments/`,
+  ticketAttachments: (id) => `/tickets/tickets/${id}/attachments/`,
+  closeTicket: (id) => `/tickets/tickets/${id}/close/`,
+};
+
+/**
  * Generic API request function with error handling
  * @param {string} method - HTTP method
  * @param {string} url - API endpoint
