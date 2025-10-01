@@ -281,5 +281,259 @@ export function usePlatformTokens(options = {}) {
   });
 }
 
+// ========================================
+// TICKETING SYSTEM API HOOKS
+// ========================================
+
+// Add authentication header for SSO users
+const getAuthHeaders = () => {
+  if (typeof window !== "undefined") {
+    const authToken = localStorage.getItem('auth_token');
+    if (authToken) {
+      return {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      };
+    }
+  }
+  return { 'Content-Type': 'application/json' };
+};
+
+// Get ticket categories
+export function useTicketCategories(options = {}) {
+  const fetchData = async () => {
+    try {
+      const response = await api.get("/tickets/categories/", {
+        headers: getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching ticket categories:", error);
+      throw error;
+    }
+  };
+
+  return useQuery({
+    queryKey: ["ticketCategories"],
+    queryFn: fetchData,
+    staleTime: 30 * 60 * 1000, // 30 minutes (categories don't change often)
+    cacheTime: 60 * 60 * 1000, // 1 hour
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+}
+
+// Get user's tickets with filtering
+export function useMyTickets(filters = {}, options = {}) {
+  const fetchData = async () => {
+    try {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) params.append(key, value);
+      });
+      
+      const response = await api.get(`/tickets/my-tickets/?${params.toString()}`, {
+        headers: getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my tickets:", error);
+      throw error;
+    }
+  };
+
+  return useQuery({
+    queryKey: ["myTickets", filters],
+    queryFn: fetchData,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    cacheTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
+    ...options,
+  });
+}
+
+// Get ticket details
+export function useTicketDetails(ticketId, options = {}) {
+  const fetchData = async () => {
+    try {
+      const response = await api.get(`/tickets/tickets/${ticketId}/`, {
+        headers: getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching ticket ${ticketId}:`, error);
+      throw error;
+    }
+  };
+
+  return useQuery({
+    queryKey: ["ticketDetails", ticketId],
+    queryFn: fetchData,
+    enabled: !!ticketId,
+    staleTime: 1 * 60 * 1000, // 1 minute
+    cacheTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
+    ...options,
+  });
+}
+
+// Get ticket comments
+export function useTicketComments(ticketId, options = {}) {
+  const fetchData = async () => {
+    try {
+      const response = await api.get(`/tickets/tickets/${ticketId}/comments/`, {
+        headers: getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching comments for ticket ${ticketId}:`, error);
+      throw error;
+    }
+  };
+
+  return useQuery({
+    queryKey: ["ticketComments", ticketId],
+    queryFn: fetchData,
+    enabled: !!ticketId,
+    staleTime: 30 * 1000, // 30 seconds (comments need frequent updates)
+    cacheTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: true,
+    refetchInterval: 30 * 1000, // Auto-refresh every 30 seconds
+    ...options,
+  });
+}
+
+// Get ticket attachments
+export function useTicketAttachments(ticketId, options = {}) {
+  const fetchData = async () => {
+    try {
+      const response = await api.get(`/tickets/tickets/${ticketId}/attachments/`, {
+        headers: getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching attachments for ticket ${ticketId}:`, error);
+      throw error;
+    }
+  };
+
+  return useQuery({
+    queryKey: ["ticketAttachments", ticketId],
+    queryFn: fetchData,
+    enabled: !!ticketId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+}
+
+// Create new ticket
+export function useCreateTicket(options = {}) {
+  return useMutation({
+    mutationFn: async (ticketData) => {
+      try {
+        const response = await api.post("/tickets/tickets/", ticketData, {
+          headers: getAuthHeaders()
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error creating ticket:", error);
+        throw error;
+      }
+    },
+    ...options,
+  });
+}
+
+// Add comment to ticket
+export function useAddComment(options = {}) {
+  return useMutation({
+    mutationFn: async ({ ticketId, content }) => {
+      try {
+        const response = await api.post(`/tickets/tickets/${ticketId}/comments/`, 
+          { content }, 
+          { headers: getAuthHeaders() }
+        );
+        return response.data;
+      } catch (error) {
+        console.error(`Error adding comment to ticket ${ticketId}:`, error);
+        throw error;
+      }
+    },
+    ...options,
+  });
+}
+
+// Upload attachment to ticket
+export function useUploadAttachment(options = {}) {
+  return useMutation({
+    mutationFn: async ({ ticketId, formData }) => {
+      try {
+        // Try SSO token first, then fallback to auth_token
+        const ssoToken = localStorage.getItem('sso_access_token');
+        const authToken = localStorage.getItem('auth_token');
+        const token = ssoToken || authToken;
+        
+        console.log('Upload attachment - Token check:', {
+          hasSsoToken: !!ssoToken,
+          hasAuthToken: !!authToken,
+          usingToken: token ? 'found' : 'none'
+        });
+        
+        const headers = token ? 
+          { 'Authorization': `Bearer ${token}` } : 
+          {};
+        
+        // Use fetch instead of axios for FormData to avoid Content-Type conflicts
+        const response = await fetch(`${API_URL}/tickets/tickets/${ticketId}/attachments/`, {
+          method: 'POST',
+          headers: {
+            ...headers
+            // Don't set Content-Type - let browser set it for multipart/form-data
+          },
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          let errorData;
+          try {
+            errorData = JSON.parse(errorText);
+          } catch {
+            errorData = { message: errorText };
+          }
+          throw new Error(JSON.stringify(errorData));
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error(`Error uploading attachment to ticket ${ticketId}:`, error);
+        throw error;
+      }
+    },
+    ...options,
+  });
+}
+
+// Close ticket
+export function useCloseTicket(options = {}) {
+  return useMutation({
+    mutationFn: async ({ ticketId, comment }) => {
+      try {
+        const response = await api.post(`/tickets/tickets/${ticketId}/close/`, 
+          comment ? { comment } : {}, 
+          { headers: getAuthHeaders() }
+        );
+        return response.data;
+      } catch (error) {
+        console.error(`Error closing ticket ${ticketId}:`, error);
+        throw error;
+      }
+    },
+    ...options,
+  });
+}
+
 // Export the api instance for direct use
 export default api;
