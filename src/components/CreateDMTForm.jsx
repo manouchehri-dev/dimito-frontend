@@ -29,8 +29,8 @@ const CreateDMTForm = () => {
   const config = useConfig();
 
   // Smart contract configuration
-  const CONTRACT_ADDRESS = "0xaeB19290C236653BA17Bf829D4416d9b0d4eDC71";
-  const PRESALE_CONTRACT_ADDRESS = "0x4c64cbe581cd251cf7ab42f68f7aea15ae2f8faf";
+  const FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_FACTORY_ADDRESS;
+  const PRESALE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PRESALE_ADDRESS;
 
   // Mock mode for testing (set to true to avoid gas fees)
   const MOCK_MODE = process.env.NEXT_PUBLIC_MOCK_MODE === 'true';
@@ -334,7 +334,7 @@ const CreateDMTForm = () => {
 
           // Call the smart contract
           writeContract({
-            address: CONTRACT_ADDRESS,
+            address: FACTORY_CONTRACT_ADDRESS,
             abi: DimitoFactoryAbi,
             functionName: 'createDMT',
             args: [
