@@ -4,7 +4,7 @@ import { parseUnits } from 'viem';
 import { toast } from 'react-hot-toast';
 import DimitoPreSaleAbi from '@/abi/DimitoPreSaleAbi.json';
 
-const PRESALE_CONTRACT_ADDRESS = '0x4c64cbe581cd251cf7ab42f68f7aea15ae2f8faf';
+const PRESALE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PRESALE_ADDRESS;
 
 export function usePresalePurchase() {
   const [isPurchasing, setIsPurchasing] = useState(false);
