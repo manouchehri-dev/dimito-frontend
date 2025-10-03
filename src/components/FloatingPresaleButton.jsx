@@ -50,12 +50,12 @@ export default function FloatingPresaleButton() {
     }
 
     return (
-        <div className={`fixed bottom-4 sm:bottom-6 ${isRTL ? 'left-3 sm:left-6' : 'right-3 sm:right-6'} z-50 animate-bounce`}>
+        <div className="fixed bottom-20 left-6 z-50 animate-bounce">
             <div className="relative">
                 {/* Dismiss button */}
                 <button
                     onClick={handleDismiss}
-                    className={`absolute -top-1 sm:-top-2 ${isRTL ? '-right-1 sm:-right-2' : '-left-1 sm:-left-2'} w-5 h-5 sm:w-6 sm:h-6 bg-gray-600 hover:bg-gray-700 text-white rounded-full flex items-center justify-center text-xs transition-colors duration-200 z-10 cursor-pointer`}
+                    className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-gray-600 hover:bg-gray-700 text-white rounded-full flex items-center justify-center text-xs transition-colors duration-200 z-10 cursor-pointer"
                 >
                     <X className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 </button>
@@ -111,7 +111,7 @@ export default function FloatingPresaleButton() {
                 </button>
 
                 {/* Tooltip */}
-                <div className={`absolute bottom-full mb-2 ${isRTL ? 'right-0' : 'left-0'} bg-black text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none`}>
+                <div className="absolute bottom-full mb-2 left-0 bg-black text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
                     {t("tooltip")}
                 </div>
             </div>

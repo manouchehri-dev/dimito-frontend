@@ -19,7 +19,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { locale } = await params;
 
-  
+
   const metadata = {
     en: {
       title: "DMT Token - Real-World Mining Meets Web3",
@@ -138,7 +138,6 @@ export default async function Layout({ children }) {
       {children}
       <Footer />
       <FloatingPresaleButton />
-      <FloatingActionStack />
     </>
   );
 }

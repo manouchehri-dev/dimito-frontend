@@ -11,6 +11,7 @@ import AuthInitializer from "@/components/auth/AuthInitializer";
 import GoftinoChat from "@/components/support/GoftinoChat";
 import GoftinoCustomButton from "@/components/support/GoftinoCustomButton";
 import Script from "next/script";
+import FloatingActionStack from "@/components/FloatingActionStack";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -143,11 +144,8 @@ export default async function RootLayout({ children, params }) {
                   },
                 }}
               />
-              {/* Goftino Chat Integration */}
-              <GoftinoChat />
-              <GoftinoCustomButton />
-              
-              {/* Goftino Widget Script */}
+              {/* Goftino Widget Script - Simple Integration */}
+              <FloatingActionStack />
               <Script
                 id="goftino-widget"
                 strategy="afterInteractive"
