@@ -623,11 +623,15 @@ export default function TokenListingForm() {
               autoComplete="off"
               style={{
                 position: 'absolute',
-                left: '-9999px',
-                width: '1px',
-                height: '1px',
+                width: '0',
+                height: '0',
                 opacity: 0,
-                pointerEvents: 'none'
+                pointerEvents: 'none',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                border: 0,
+                margin: 0,
+                padding: 0
               }}
               aria-hidden="true"
             />
