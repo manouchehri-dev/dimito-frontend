@@ -22,7 +22,7 @@ export default function TabbedDashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const urlTab = searchParams.get('tab');
     if (urlTab) return urlTab;
-    
+
     // Smart default: prefer wallet if connected, otherwise SSO if authenticated
     if (isConnected && address) return 'wallet';
     if (isAuthenticated && authMethod === 'sso') return 'sso';
@@ -34,7 +34,7 @@ export default function TabbedDashboard() {
     setActiveTab(newTab);
     const params = new URLSearchParams(searchParams);
     params.set('tab', newTab);
-    
+
     // Add wallet address if connected and switching to wallet tab
     if (address && isConnected && newTab === 'wallet') {
       params.set('wallet_address', address);
@@ -46,7 +46,7 @@ export default function TabbedDashboard() {
         params.delete('wallet_address');
       }
     }
-    
+
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
@@ -60,7 +60,7 @@ export default function TabbedDashboard() {
 
   // Determine available tabs based on authentication status
   const availableTabs = [];
-  
+
   // Wallet tab - available if wallet is connected
   if (isConnected && address) {
     availableTabs.push({
@@ -115,7 +115,7 @@ export default function TabbedDashboard() {
             {availableTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
-              
+
               return (
                 <button
                   key={tab.id}

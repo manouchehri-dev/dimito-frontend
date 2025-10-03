@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { User, LogOut, Phone, Mail, ChevronDown, LayoutDashboard, Wallet, Shield } from 'lucide-react';
+import { User, LogOut, Phone, Mail, ChevronDown, LayoutDashboard, Wallet, Shield, ArrowLeft } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { useAccount, useDisconnect } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -95,21 +95,133 @@ export default function UserIconDropdown({ className = "", isMobile = false, sho
       );
     }
 
-    // If something is connected, show status
+    // If something is connected, show status and options in mobile-optimized layout
     return (
       <div className="w-full">
-        <div className="w-full p-3 bg-green-100 rounded-lg border border-green-200">
-          <div className="flex items-center gap-2 text-green-700">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-sm font-medium">
-              {isConnected && isAuthenticated
-                ? t('walletAndSSOConnected')
-                : isConnected
-                  ? t('walletConnected')
-                  : t('ssoAuthenticated')
-              }
-            </span>
+        {/* Status Card */}
+        <div className="w-full p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 mb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-green-700">
+                {isConnected && isAuthenticated
+                  ? t('walletAndSSOConnected')
+                  : isConnected
+                    ? t('walletConnected')
+                    : t('ssoAuthenticated')
+                }
+              </span>
+            </div>
+            {/* Connection indicators */}
+            <div className="flex items-center gap-1">
+              {isConnected && (
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                  <Wallet className="w-3 h-3 text-white" />
+                </div>
+              )}
+              {isAuthenticated && (
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <Shield className="w-3 h-3 text-white" />
+                </div>
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* Action Buttons Grid */}
+        <div className="grid grid-cols-1 gap-2">
+          {/* Dashboard Button - Always show when connected */}
+          <button
+            onClick={() => {
+              router.push('/dashboard');
+            }}
+            className="flex items-center justify-between px-4 py-3 bg-white border-2 border-blue-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 group active:scale-[0.98]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                <LayoutDashboard className="w-4 h-4 text-blue-600" />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-medium text-gray-900">{t('dashboard')}</div>
+                <div className="text-xs text-gray-500">{isRTL ? 'مشاهده داشبورد' : 'View your dashboard'}</div>
+              </div>
+            </div>
+            <svg
+              className={`w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors ${isRTL ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {/* Connect SSO Button - Show when wallet connected but SSO not */}
+          {isConnected && !isAuthenticated && (
+            <button
+              onClick={async () => {
+                try {
+                  const { generateAuthorizationUrl, generatePKCE, generateRandomString } = await import('@/lib/auth/oidcConfig');
+                  const { codeVerifier, codeChallenge } = await generatePKCE();
+                  const isProduction = process.env.NODE_ENV === 'production';
+                  const cookieOptions = [
+                    `pkce_code_verifier=${codeVerifier}`,
+                    'path=/',
+                    'max-age=1800',
+                    'samesite=lax',
+                    ...(isProduction ? ['secure'] : [])
+                  ].join('; ');
+
+                  document.cookie = cookieOptions;
+                  const state = generateRandomString(32);
+                  sessionStorage.setItem('oauth_state', state);
+                  const authUrl = generateAuthorizationUrl({
+                    state,
+                    codeChallenge,
+                    codeChallengeMethod: 'S256'
+                  });
+                  window.location.href = authUrl;
+                } catch (error) {
+                  console.error('Error initiating SSO login:', error);
+                }
+              }}
+              className="flex items-center justify-between px-4 py-3 bg-white border-2 border-purple-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 group active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                  <Shield className="w-4 h-4 text-purple-600" />
+                </div>
+                <div className="text-left">
+                  <div className="text-sm font-medium text-gray-900">{isRTL ? 'ورود یکپارچه' : 'Connect SSO'}</div>
+                  <div className="text-xs text-gray-500">{isRTL ? 'اتصال حساب کاربری' : 'Link your account'}</div>
+                </div>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </button>
+          )}
+
+          {/* Connect Wallet Button - Show when SSO connected but wallet not */}
+          {!isConnected && isAuthenticated && (
+            <button
+              onClick={handleWalletConnect}
+              className="flex items-center justify-between px-4 py-3 bg-white border-2 border-orange-200 rounded-xl hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                  <Wallet className="w-4 h-4 text-orange-600" />
+                </div>
+                <div className="text-left">
+                  <div className="text-sm font-medium text-gray-900">{isRTL ? 'اتصال کیف پول' : 'Connect Wallet'}</div>
+                  <div className="text-xs text-gray-500">{isRTL ? 'اتصال کیف پول رمزارز' : 'Link your crypto wallet'}</div>
+                </div>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-orange-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     );
