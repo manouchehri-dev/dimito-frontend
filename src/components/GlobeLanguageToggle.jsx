@@ -86,7 +86,7 @@ export default function GlobeLanguageToggle({ className = "", position = "floati
                 return {
                     container: "",
                     button: "w-9 h-9 shadow-sm hover:shadow-md",
-                    dropdown: `bottom-full mb-2 ${isRTL ? "right-0" : "left-0"}`
+                    dropdown: `bottom-full mb-2 ${isRTL ? "left-0" : "left-0"}`
                 };
             default:
                 return {
