@@ -20,7 +20,7 @@ export const transparencyService = {
         console.log("Token available for token options:", !!token);
       }
 
-      const response = await httpClient.get("/presale/tokens/");
+      const response = await httpClient.get("/transparency/reports/token-options/");
 
       // Return the results array from the paginated response
       return response.data.results || response.data;
