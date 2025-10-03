@@ -55,7 +55,7 @@ export default function FloatingPresaleButton() {
                 {/* Dismiss button */}
                 <button
                     onClick={handleDismiss}
-                    className={`absolute -top-1 sm:-top-2 ${isRTL ? '-left-1 sm:-left-2' : '-right-1 sm:-right-2'} w-5 h-5 sm:w-6 sm:h-6 bg-gray-600 hover:bg-gray-700 text-white rounded-full flex items-center justify-center text-xs transition-colors duration-200 z-10 cursor-pointer`}
+                    className={`absolute -top-1 sm:-top-2 ${isRTL ? '-right-1 sm:-right-2' : '-left-1 sm:-left-2'} w-5 h-5 sm:w-6 sm:h-6 bg-gray-600 hover:bg-gray-700 text-white rounded-full flex items-center justify-center text-xs transition-colors duration-200 z-10 cursor-pointer`}
                 >
                     <X className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 </button>
@@ -88,12 +88,12 @@ export default function FloatingPresaleButton() {
                                 <div className="flex items-center gap-1">
                                     <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                     <span className="hidden sm:inline">{t("highReturns")}</span>
-                                    <span className="sm:hidden">High</span>
+                                    <span className="sm:hidden">{t("highReturnsShort")}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                     <span className="hidden sm:inline">{t("limitedTime")}</span>
-                                    <span className="sm:hidden">Limited</span>
+                                    <span className="sm:hidden">{t("limitedTimeShort")}</span>
                                 </div>
                             </div>
                         </div>

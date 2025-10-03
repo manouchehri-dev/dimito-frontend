@@ -8,6 +8,9 @@ import { Toaster } from "react-hot-toast";
 import Provider from "@/providers/WagmiProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import AuthInitializer from "@/components/auth/AuthInitializer";
+import GoftinoChat from "@/components/support/GoftinoChat";
+import GoftinoCustomButton from "@/components/support/GoftinoCustomButton";
+import Script from "next/script";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -90,6 +93,7 @@ export default async function RootLayout({ children, params }) {
         />
       </head>
       <body className={`antialiased font-iransans`}>
+
         <QueryProvider>
           <NextIntlClientProvider locale={locale || "fa"} messages={messages}>
             <Provider key={`provider-${locale || "fa"}`}>
@@ -139,10 +143,20 @@ export default async function RootLayout({ children, params }) {
                   },
                 }}
               />
+              {/* Goftino Chat Integration */}
+              <GoftinoChat />
+              <GoftinoCustomButton />
             </Provider>
           </NextIntlClientProvider>
         </QueryProvider>
       </body>
+              <Script
+                id="goftino-widget"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                  __html: `!function(){var i="${process.env.GOFTINO_ID || 'LMjmN9'}",a=window,d=document;function g(){var g=d.createElement("script"),s="https://www.goftino.com/widget/"+i,l=localStorage.getItem("goftino_"+i);g.async=!0,g.src=l?s+"?o="+l:s;d.getElementsByTagName("head")[0].appendChild(g);}"complete"===d.readyState?g():a.attachEvent?a.attachEvent("onload",g):a.addEventListener("load",g,!1);}();`,
+                }}
+              />
     </html>
   );
 }

@@ -310,7 +310,9 @@
     "title": "🔥 HOT",
     "activePresales": "Active Presales",
     "highReturns": "High Returns",
+    "highReturnsShort": "High",
     "limitedTime": "Limited Time",
+    "limitedTimeShort": "Limited",
     "tooltip": "Click to view all active presales"
   },
   "presaleBanner": {
@@ -576,6 +578,12 @@
     "uploadingAttachments": "Uploading {count} attachments...",
     "attachmentsUploadedSuccess": "All attachments uploaded successfully!",
     "attachmentsUploadError": "Some attachments failed to upload. Please try again."
+  },
+  "goftino": {
+    "openChat": "Open live chat",
+    "closeChat": "Close Chat",
+    "liveSupport": "Live Support",
+    "needHelp": "Need help? Chat with our support team!"
   },
   "dashboard": {
     "email":"Email",

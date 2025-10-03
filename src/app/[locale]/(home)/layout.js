@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingPresaleButton from "@/components/FloatingPresaleButton";
-import GlobeLanguageToggle from "@/components/GlobeLanguageToggle";
+import FloatingActionStack from "@/components/FloatingActionStack";
 
 export function generateViewport() {
   return {
@@ -138,7 +138,7 @@ export default async function Layout({ children }) {
       {children}
       <Footer />
       <FloatingPresaleButton />
-      <GlobeLanguageToggle position="floating" />
+      <FloatingActionStack />
     </>
   );
 }
