@@ -30,6 +30,7 @@ export default function ModernLoginPage({ redirectTo }) {
     const [isRedirecting, setIsRedirecting] = useState(false);
     const [initialWalletState] = useState(isConnected);
     const [initialSSOState] = useState(isAuthenticated);
+    const [redirectTimeout, setRedirectTimeout] = useState(null);
 
     // Check if both methods are available
     const hasSSO = isAuthenticated;
@@ -43,14 +44,13 @@ export default function ModernLoginPage({ redirectTo }) {
             'home': `/`,
             'create-dmt': `/create-dmt`,
         };
-
         // If redirectParam is a full path, use it directly
         if (redirectParam && redirectParam.startsWith('/')) {
             return redirectParam;
         }
 
         // Otherwise, use the mapped path or default to home
-        return redirectMap[redirectParam] || ``;
+        return redirectMap[redirectParam] || `/`;
     };
 
 
@@ -60,27 +60,65 @@ export default function ModernLoginPage({ redirectTo }) {
         const walletJustConnected = !initialWalletState && isConnected;
         const ssoJustConnected = !initialSSOState && isAuthenticated;
 
+        console.log('🔄 Auth state check:', {
+            walletJustConnected,
+            ssoJustConnected,
+            isConnected,
+            isAuthenticated,
+            redirectTo,
+            isRedirecting
+        });
+
         if (walletJustConnected && !isAuthenticated) {
             // Wallet just connected but no SSO, redirect to intended destination
+            console.log('🚀 Wallet connected, redirecting...');
+
+            // Clear force-disconnected flag since user successfully connected
+            try {
+                localStorage.removeItem('force-disconnected');
+                console.log('✅ Cleared force-disconnected flag');
+            } catch (error) {
+                console.warn('Error clearing force-disconnected flag:', error);
+            }
+
             setIsRedirecting(true);
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 const redirectPath = getRedirectPath(redirectTo);
+                console.log('📍 Redirecting to:', redirectPath);
                 router.push(redirectPath);
             }, 1000);
+            setRedirectTimeout(timeout);
         } else if (ssoJustConnected && !isConnected) {
             // SSO just connected but no wallet, redirect to intended destination
+            console.log('🚀 SSO connected, redirecting...');
             setIsRedirecting(true);
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 const redirectPath = getRedirectPath(redirectTo);
+                console.log('📍 Redirecting to:', redirectPath);
                 router.push(redirectPath);
             }, 1000);
+            setRedirectTimeout(timeout);
         } else if ((walletJustConnected || ssoJustConnected) && isConnected && isAuthenticated) {
             // One method just connected and both are now available, redirect immediately
+            console.log('🚀 Both methods available, redirecting...');
+
+            // Clear force-disconnected flag since user successfully connected
+            if (walletJustConnected) {
+                try {
+                    localStorage.removeItem('force-disconnected');
+                    console.log('✅ Cleared force-disconnected flag (both methods)');
+                } catch (error) {
+                    console.warn('Error clearing force-disconnected flag:', error);
+                }
+            }
+
             setIsRedirecting(true);
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 const redirectPath = getRedirectPath(redirectTo);
+                console.log('📍 Redirecting to:', redirectPath);
                 router.push(redirectPath);
             }, 500);
+            setRedirectTimeout(timeout);
         }
     }, [isConnected, isAuthenticated, initialWalletState, initialSSOState, router, locale, redirectTo]);
 
@@ -93,6 +131,15 @@ export default function ModernLoginPage({ redirectTo }) {
         }
     }, [hasSSO, hasWallet, activeTab]);
 
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (redirectTimeout) {
+                clearTimeout(redirectTimeout);
+            }
+        };
+    }, [redirectTimeout]);
+
     const handleLoginSuccess = () => {
         // Redirect to intended destination after successful login
         const redirectPath = getRedirectPath(redirectTo);
@@ -103,6 +150,14 @@ export default function ModernLoginPage({ redirectTo }) {
     // Handle wallet connection
     const handleWalletConnect = () => {
         if (openConnectModal) {
+            // Clear force-disconnected flag when user manually tries to connect
+            try {
+                localStorage.removeItem('force-disconnected');
+                console.log('🔄 Cleared force-disconnected flag before connection');
+            } catch (error) {
+                console.warn('Error clearing force-disconnected flag:', error);
+            }
+
             setIsWalletConnecting(true);
             openConnectModal();
         }
@@ -114,6 +169,19 @@ export default function ModernLoginPage({ redirectTo }) {
             setIsWalletConnecting(false);
         }
     }, [isConnected, openConnectModal]);
+
+    // Fallback redirect if stuck
+    useEffect(() => {
+        if (isRedirecting) {
+            const fallbackTimeout = setTimeout(() => {
+                console.log('⚠️ Fallback redirect triggered');
+                const redirectPath = getRedirectPath(redirectTo);
+                router.push(redirectPath);
+            }, 3000); // 3 second fallback
+
+            return () => clearTimeout(fallbackTimeout);
+        }
+    }, [isRedirecting, redirectTo, router]);
 
     // Show loading state when redirecting (only for fresh connections)
     if (isRedirecting) {
@@ -192,38 +260,60 @@ export default function ModernLoginPage({ redirectTo }) {
                     </p>
                 </div>
 
+                {/* Show dashboard navigation if user has any connection */}
+                {(hasWallet || hasSSO) && (
+                    <div className="mb-4">
+                        <button
+                            onClick={() => {
+                                router.push("/dashboard");
+                            }}
+                            className="w-full bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white py-3 rounded-lg font-medium hover:from-[#FF4A0F] hover:to-[#FF2A2A] focus:outline-none focus:ring-2 focus:ring-[#FF4135] focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                            {locale === 'fa' ? 'ورود به داشبورد' : 'Go to Dashboard'}
+                        </button>
+                        <div className="text-center mt-3 text-sm text-gray-600">
+                            {locale === 'fa' ? 'یا روش دیگری را انتخاب کنید' : 'Or choose another method'}
+                        </div>
+                    </div>
+                )}
+
                 {/* Login Card */}
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                    {/* Tab Navigation - Only show available methods */}
+                    {/* Tab Navigation - Show both methods, highlight connected ones */}
                     <div className="flex border-b border-gray-100">
-                        {!hasSSO && (
-                            <button
-                                onClick={() => setActiveTab('sso')}
-                                className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'sso'
-                                    ? 'text-[#FF4135] border-b-2 border-[#FF4135] bg-orange-50/50'
-                                    : 'text-gray-600 hover:text-gray-900'
-                                    }`}
-                            >
-                                <div className="flex items-center justify-center gap-2">
-                                    <Shield className="w-4 h-4" />
-                                    {locale === 'fa' ? 'ورود یکپارچه' : (t('sso') || 'SSO')}
-                                </div>
-                            </button>
-                        )}
-                        {!hasWallet && (
-                            <button
-                                onClick={() => setActiveTab('wallet')}
-                                className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'wallet'
-                                    ? 'text-[#FF4135] border-b-2 border-[#FF4135] bg-orange-50/50'
-                                    : 'text-gray-600 hover:text-gray-900'
-                                    }`}
-                            >
-                                <div className="flex items-center justify-center gap-2">
-                                    <Wallet className="w-4 h-4" />
-                                    {t('wallet') || 'Wallet'}
-                                </div>
-                            </button>
-                        )}
+                        <button
+                            onClick={() => setActiveTab('sso')}
+                            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'sso'
+                                ? 'text-[#FF4135] border-b-2 border-[#FF4135] bg-orange-50/50'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            <div className="flex items-center justify-center gap-2">
+                                <Shield className="w-4 h-4" />
+                                {locale === 'fa' ? 'ورود یکپارچه' : (t('sso') || 'SSO')}
+                                {hasSSO && (
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                )}
+                            </div>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('wallet')}
+                            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'wallet'
+                                ? 'text-[#FF4135] border-b-2 border-[#FF4135] bg-orange-50/50'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            <div className="flex items-center justify-center gap-2">
+                                <Wallet className="w-4 h-4" />
+                                {t('wallet') || 'Wallet'}
+                                {hasWallet && (
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                )}
+                            </div>
+                        </button>
                     </div>
 
                     {/* Tab Content */}
