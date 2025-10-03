@@ -30,6 +30,7 @@ export default function ModernLoginPage({ redirectTo }) {
     const [isRedirecting, setIsRedirecting] = useState(false);
     const [initialWalletState] = useState(isConnected);
     const [initialSSOState] = useState(isAuthenticated);
+    const [redirectTimeout, setRedirectTimeout] = useState(null);
 
     // Check if both methods are available
     const hasSSO = isAuthenticated;
@@ -43,14 +44,13 @@ export default function ModernLoginPage({ redirectTo }) {
             'home': `/`,
             'create-dmt': `/create-dmt`,
         };
-
         // If redirectParam is a full path, use it directly
         if (redirectParam && redirectParam.startsWith('/')) {
             return redirectParam;
         }
 
         // Otherwise, use the mapped path or default to home
-        return redirectMap[redirectParam] || ``;
+        return redirectMap[redirectParam] || `/`;
     };
 
 
@@ -60,27 +60,45 @@ export default function ModernLoginPage({ redirectTo }) {
         const walletJustConnected = !initialWalletState && isConnected;
         const ssoJustConnected = !initialSSOState && isAuthenticated;
 
+        console.log('🔄 Auth state check:', {
+            walletJustConnected,
+            ssoJustConnected,
+            isConnected,
+            isAuthenticated,
+            redirectTo,
+            isRedirecting
+        });
+
         if (walletJustConnected && !isAuthenticated) {
             // Wallet just connected but no SSO, redirect to intended destination
+            console.log('🚀 Wallet connected, redirecting...');
             setIsRedirecting(true);
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 const redirectPath = getRedirectPath(redirectTo);
+                console.log('📍 Redirecting to:', redirectPath);
                 router.push(redirectPath);
             }, 1000);
+            setRedirectTimeout(timeout);
         } else if (ssoJustConnected && !isConnected) {
             // SSO just connected but no wallet, redirect to intended destination
+            console.log('🚀 SSO connected, redirecting...');
             setIsRedirecting(true);
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 const redirectPath = getRedirectPath(redirectTo);
+                console.log('📍 Redirecting to:', redirectPath);
                 router.push(redirectPath);
             }, 1000);
+            setRedirectTimeout(timeout);
         } else if ((walletJustConnected || ssoJustConnected) && isConnected && isAuthenticated) {
             // One method just connected and both are now available, redirect immediately
+            console.log('🚀 Both methods available, redirecting...');
             setIsRedirecting(true);
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 const redirectPath = getRedirectPath(redirectTo);
+                console.log('📍 Redirecting to:', redirectPath);
                 router.push(redirectPath);
             }, 500);
+            setRedirectTimeout(timeout);
         }
     }, [isConnected, isAuthenticated, initialWalletState, initialSSOState, router, locale, redirectTo]);
 
@@ -92,6 +110,15 @@ export default function ModernLoginPage({ redirectTo }) {
             setActiveTab('sso');
         }
     }, [hasSSO, hasWallet, activeTab]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (redirectTimeout) {
+                clearTimeout(redirectTimeout);
+            }
+        };
+    }, [redirectTimeout]);
 
     const handleLoginSuccess = () => {
         // Redirect to intended destination after successful login
@@ -114,6 +141,19 @@ export default function ModernLoginPage({ redirectTo }) {
             setIsWalletConnecting(false);
         }
     }, [isConnected, openConnectModal]);
+
+    // Fallback redirect if stuck
+    useEffect(() => {
+        if (isRedirecting) {
+            const fallbackTimeout = setTimeout(() => {
+                console.log('⚠️ Fallback redirect triggered');
+                const redirectPath = getRedirectPath(redirectTo);
+                router.push(redirectPath);
+            }, 3000); // 3 second fallback
+
+            return () => clearTimeout(fallbackTimeout);
+        }
+    }, [isRedirecting, redirectTo, router]);
 
     // Show loading state when redirecting (only for fresh connections)
     if (isRedirecting) {
