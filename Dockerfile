@@ -21,6 +21,9 @@ ENV NEXT_PUBLIC_GOFTINO_ID=${NEXT_PUBLIC_GOFTINO_ID}
 # Copy only package files first for better layer caching
 COPY package.json package-lock.json ./
 
+# Install dependencies (use clean install with lockfile)
+RUN npm ci
+
 # Copy source files and config files
 COPY jsconfig.json ./
 COPY next.config.mjs ./
