@@ -33,6 +33,16 @@ const CreateDMTForm = () => {
   const FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_FACTORY_ADDRESS;
   const PRESALE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PRESALE_ADDRESS;
 
+  // Debug environment variables
+  React.useEffect(() => {
+    console.log('Environment check:', {
+      NODE_ENV: process.env.NODE_ENV,
+      FACTORY_ADDRESS: FACTORY_CONTRACT_ADDRESS,
+      PRESALE_ADDRESS: PRESALE_CONTRACT_ADDRESS,
+      allEnvVars: Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC_'))
+    });
+  }, []);
+
 
   // Fetch payment tokens from API
   const { data: paymentTokensData, isLoading: isLoadingTokens, error: tokensError } = usePaymentTokens();
@@ -278,13 +288,25 @@ const CreateDMTForm = () => {
       // Step 1: Preparing
       updateLoadingStep(loadingSteps.PREPARING);
 
+      // Validate contract addresses
+      if (!FACTORY_CONTRACT_ADDRESS) {
+        throw new Error('Factory contract address not configured. Please check NEXT_PUBLIC_FACTORY_ADDRESS environment variable.');
+      }
+
+      if (!PRESALE_CONTRACT_ADDRESS) {
+        throw new Error('Presale contract address not configured. Please check NEXT_PUBLIC_PRESALE_ADDRESS environment variable.');
+      }
+
       try {
         // Step 2: Submitting
         updateLoadingStep(loadingSteps.SUBMITTING);
 
         // Call the smart contract
-        console.log(FACTORY_CONTRACT_ADDRESS)
-        console.log(PRESALE_CONTRACT_ADDRESS)
+        console.log('Contract addresses:', {
+          FACTORY_CONTRACT_ADDRESS,
+          PRESALE_CONTRACT_ADDRESS
+        });
+        
         writeContract({
           address: FACTORY_CONTRACT_ADDRESS,
           abi: DimitoFactoryAbi,
