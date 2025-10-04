@@ -71,6 +71,14 @@ export default function PresaleBuyPage({ preSaleId }) {
         process.env.NEXT_PUBLIC_PRESALE_ADDRESS // Presale contract address
     );
 
+    // Debug environment variables
+    useEffect(() => {
+        console.log('PresaleBuyPage - Contract address check:', {
+            PRESALE_ADDRESS: process.env.NEXT_PUBLIC_PRESALE_ADDRESS,
+            hasAddress: !!process.env.NEXT_PUBLIC_PRESALE_ADDRESS
+        });
+    }, []);
+
     const {
         purchasePresale,
         isPurchasing,
