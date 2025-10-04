@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  useAuthStore,
+  useAuthStore as useOldAuthStore,
   useAuthActions,
   useAuthStatus,
   useAuthUser,
 } from "./authStore";
+import useAuthStore from "@/stores/useAuthStore";
 
 // Query keys for React Query
 export const authKeys = {
