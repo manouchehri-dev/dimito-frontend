@@ -281,6 +281,16 @@ export function usePlatformTokens(options = {}) {
   });
 }
 
+// Payment Tokens Hook
+export function usePaymentTokens(options = {}) {
+  return useApiQuery(["paymentTokens"], "/presale/payment-tokens/", {
+    staleTime: 10 * 60 * 1000, // 10 minutes (payment tokens don't change often)
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+}
+
 // ========================================
 // TICKETING SYSTEM API HOOKS
 // ========================================
