@@ -7,6 +7,13 @@ import DimitoPreSaleAbi from '@/abi/DimitoPreSaleAbi.json';
 const PRESALE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PRESALE_ADDRESS;
 
 export function usePresalePurchase() {
+  // Debug environment variables
+  useEffect(() => {
+    console.log('usePresalePurchase - Contract address check:', {
+      PRESALE_CONTRACT_ADDRESS,
+      hasAddress: !!PRESALE_CONTRACT_ADDRESS
+    });
+  }, []);
   const [isPurchasing, setIsPurchasing] = useState(false);
 
   // Write contract for purchase
@@ -21,6 +28,12 @@ export function usePresalePurchase() {
   const purchasePresale = async (presaleId, paymentAmount, paymentTokenDecimals) => {
     if (presaleId === null || presaleId === undefined || !paymentAmount || !paymentTokenDecimals) {
       toast.error('Missing purchase information');
+      return false;
+    }
+
+    // Validate contract address
+    if (!PRESALE_CONTRACT_ADDRESS) {
+      toast.error('Presale contract address not configured. Please check NEXT_PUBLIC_PRESALE_ADDRESS environment variable.');
       return false;
     }
 
