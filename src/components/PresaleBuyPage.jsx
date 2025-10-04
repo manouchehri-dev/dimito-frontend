@@ -288,7 +288,8 @@ export default function PresaleBuyPage({ preSaleId }) {
             const success = await purchasePresale(
                 presale.presale_id,
                 rawPaymentAmount,
-                presale?.payment_token?.token_decimals || 18
+                presale?.payment_token?.token_decimals || 18,
+                address // Pass user address for simulation
             );
 
             if (success) {
@@ -298,7 +299,7 @@ export default function PresaleBuyPage({ preSaleId }) {
             console.error("Direct purchase error:", error);
             toast.error(t("messages.purchaseFailed"));
         }
-    }, [purchasePresale, presale?.presale_id, rawPaymentAmount, presale?.payment_token?.token_decimals, t]);
+    }, [purchasePresale, presale?.presale_id, rawPaymentAmount, presale?.payment_token?.token_decimals, address, t]);
 
     // Handle successful transactions with useEffect to prevent re-render loops
     useEffect(() => {

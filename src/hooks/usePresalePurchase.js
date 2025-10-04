@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useSimulateContract, usePublicClient } from 'wagmi';
 import { parseUnits } from 'viem';
 import { toast } from 'react-hot-toast';
 import DimitoPreSaleAbi from '@/abi/DimitoPreSaleAbi.json';
@@ -14,7 +14,10 @@ export function usePresalePurchase() {
       hasAddress: !!PRESALE_CONTRACT_ADDRESS
     });
   }, []);
+  
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [simulationArgs, setSimulationArgs] = useState(null);
+  const publicClient = usePublicClient();
 
   // Write contract for purchase
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
@@ -24,9 +27,73 @@ export function usePresalePurchase() {
     hash,
   });
 
+  // Simulate contract call to check if it will succeed
+  const simulateTransaction = async (presaleId, amountWei, userAddress) => {
+    try {
+      console.log('🔍 Simulating transaction before execution...');
+      
+      const result = await publicClient.simulateContract({
+        address: PRESALE_CONTRACT_ADDRESS,
+        abi: DimitoPreSaleAbi,
+        functionName: 'purchasePresale',
+        args: [BigInt(presaleId), amountWei],
+        account: userAddress,
+      });
+
+      console.log('✅ Simulation successful:', result);
+      return { success: true, result };
+    } catch (error) {
+      console.error('❌ Simulation failed:', error);
+      
+      // Parse common revert reasons
+      let userFriendlyMessage = 'Transaction will fail';
+      
+      if (error?.message?.includes('Presale not active')) {
+        userFriendlyMessage = 'Presale is not currently active';
+      } else if (error?.message?.includes('Insufficient allowance')) {
+        userFriendlyMessage = 'Token allowance is insufficient. Please approve tokens first';
+      } else if (error?.message?.includes('Exceeds remaining supply')) {
+        userFriendlyMessage = 'Purchase amount exceeds remaining presale supply';
+      } else if (error?.message?.includes('Minimum purchase')) {
+        userFriendlyMessage = 'Purchase amount is below minimum required';
+      } else if (error?.message?.includes('Maximum purchase')) {
+        userFriendlyMessage = 'Purchase amount exceeds maximum allowed';
+      } else if (error?.message?.includes('insufficient funds')) {
+        userFriendlyMessage = 'Insufficient balance to complete purchase';
+      } else if (error?.message?.includes('Presale ended')) {
+        userFriendlyMessage = 'Presale has already ended';
+      } else if (error?.message?.includes('Presale not started')) {
+        userFriendlyMessage = 'Presale has not started yet';
+      }
+
+      return { 
+        success: false, 
+        error: error.message, 
+        userMessage: userFriendlyMessage,
+        rawError: error 
+      };
+    }
+  };
+
   // Purchase function
-  const purchasePresale = async (presaleId, paymentAmount, paymentTokenDecimals) => {
+  const purchasePresale = async (presaleId, paymentAmount, paymentTokenDecimals, userAddress) => {
+    // Log function call parameters
+    console.log('📞 purchasePresale called with:', {
+      presaleId,
+      presaleIdType: typeof presaleId,
+      paymentAmount,
+      paymentAmountType: typeof paymentAmount,
+      paymentTokenDecimals,
+      paymentTokenDecimalsType: typeof paymentTokenDecimals,
+      timestamp: new Date().toISOString()
+    });
+
     if (presaleId === null || presaleId === undefined || !paymentAmount || !paymentTokenDecimals) {
+      console.error('❌ Missing purchase information:', {
+        hasPresaleId: presaleId !== null && presaleId !== undefined,
+        hasPaymentAmount: !!paymentAmount,
+        hasPaymentTokenDecimals: !!paymentTokenDecimals
+      });
       toast.error('Missing purchase information');
       return false;
     }
@@ -43,13 +110,55 @@ export function usePresalePurchase() {
       // Convert payment amount to wei using the payment token's decimals
       const amountWei = parseUnits(paymentAmount.toString(), paymentTokenDecimals);
 
-      // Call purchasePresale function
-      await writeContract({
+      // Simulate transaction first to check if it will succeed
+      if (userAddress) {
+        console.log('🔍 Running pre-transaction simulation...');
+        const simulationResult = await simulateTransaction(presaleId, amountWei, userAddress);
+        
+        if (!simulationResult.success) {
+          console.error('❌ Transaction simulation failed:', simulationResult);
+          toast.error(simulationResult.userMessage);
+          setIsPurchasing(false);
+          return false;
+        }
+        
+        console.log('✅ Simulation passed, proceeding with transaction');
+      } else {
+        console.warn('⚠️ No user address provided, skipping simulation');
+      }
+
+      // Prepare contract call data
+      const contractCallData = {
         address: PRESALE_CONTRACT_ADDRESS,
         abi: DimitoPreSaleAbi,
         functionName: 'purchasePresale',
         args: [BigInt(presaleId), amountWei],
-      }); 12
+      };
+
+      // Log everything being sent to writeContract
+      console.log('🚀 writeContract call data:', {
+        contractAddress: PRESALE_CONTRACT_ADDRESS,
+        functionName: 'purchasePresale',
+        args: {
+          presaleId: presaleId,
+          presaleIdBigInt: BigInt(presaleId),
+          paymentAmount: paymentAmount,
+          paymentTokenDecimals: paymentTokenDecimals,
+          amountWei: amountWei.toString(),
+          amountWeiFormatted: `${amountWei.toString()} wei`,
+        },
+        abiLength: DimitoPreSaleAbi.length,
+        fullContractCallData: contractCallData
+      });
+
+      // Call purchasePresale function
+      const result = await writeContract(contractCallData);
+      
+      console.log('✅ writeContract result:', {
+        result,
+        resultType: typeof result,
+        timestamp: new Date().toISOString()
+      });
 
       return true;
     } catch (error) {
@@ -82,22 +191,46 @@ export function usePresalePurchase() {
     }
   };
 
+  // Log transaction hash when available
+  useEffect(() => {
+    if (hash) {
+      console.log('📝 Transaction hash received:', {
+        hash,
+        bscscanUrl: `https://bscscan.com/tx/${hash}`,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [hash]);
+
   // Reset state when transaction is confirmed or failed
   useEffect(() => {
     if ((isSuccess || receiptError) && isPurchasing) {
+      console.log('🏁 Transaction completed:', {
+        isSuccess,
+        receiptError,
+        hash,
+        timestamp: new Date().toISOString()
+      });
       setIsPurchasing(false);
     }
-  }, [isSuccess, receiptError, isPurchasing]);
+  }, [isSuccess, receiptError, isPurchasing, hash]);
 
   // Reset state when write error occurs (user rejection, etc.)
   useEffect(() => {
     if (writeError && isPurchasing) {
+      console.log('❌ Write error occurred:', {
+        writeError,
+        errorMessage: writeError?.message,
+        errorCode: writeError?.code,
+        timestamp: new Date().toISOString()
+      });
       setIsPurchasing(false);
     }
   }, [writeError, isPurchasing]);
 
   return {
     purchasePresale,
+    simulateTransaction, // Export simulation function for external use
     isPurchasing: isPending || isConfirming || isPurchasing,
     isConfirming,
     isSuccess,
