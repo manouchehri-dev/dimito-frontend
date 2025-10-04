@@ -36,7 +36,7 @@ const CreateDMTForm = () => {
 
   // Fetch payment tokens from API
   const { data: paymentTokensData, isLoading: isLoadingTokens, error: tokensError } = usePaymentTokens();
-  
+
   // Transform API data to match expected format
   const paymentTokens = paymentTokensData?.results?.map(token => ({
     id: token.id,
@@ -47,7 +47,7 @@ const CreateDMTForm = () => {
     description: token.token_description,
     type: token.token_type
   })) || [];
-  
+
   // Use API tokens only - no fallback tokens with hardcoded addresses
   const availableTokens = paymentTokens || [];
 
@@ -57,15 +57,15 @@ const CreateDMTForm = () => {
     startDate: new DateObject(),
     endDate: new DateObject().add(7, "days"), // Default to 7 days from now
   });
-  
+
   // Set default payment token when tokens are loaded
   React.useEffect(() => {
     if (availableTokens.length > 0 && !formData.paymentToken) {
       // Default to first available token from API
       const defaultToken = availableTokens[0];
-      
+
       console.log("Setting default payment token:", defaultToken);
-      
+
       setFormData(prev => ({
         ...prev,
         paymentToken: defaultToken.address
@@ -283,6 +283,8 @@ const CreateDMTForm = () => {
         updateLoadingStep(loadingSteps.SUBMITTING);
 
         // Call the smart contract
+        console.log(FACTORY_CONTRACT_ADDRESS)
+        console.log(PRESALE_CONTRACT_ADDRESS)
         writeContract({
           address: FACTORY_CONTRACT_ADDRESS,
           abi: DimitoFactoryAbi,
@@ -388,7 +390,7 @@ const CreateDMTForm = () => {
 
       // Reset form after successful transaction
       const defaultToken = availableTokens[0];
-      
+
       setFormData({
         paymentToken: defaultToken?.address || "",
         pricePerToken: "",
@@ -521,11 +523,10 @@ const CreateDMTForm = () => {
 
               {/* API Loading/Error Status */}
               {(isLoadingTokens || tokensError || availableTokens.length === 0) && (
-                <div className={`mt-4 p-3 rounded-lg text-center ${
-                  isLoadingTokens ? 'bg-blue-100 text-blue-800' : 
-                  tokensError || availableTokens.length === 0 ? 'bg-red-100 text-red-800' : 
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
+                <div className={`mt-4 p-3 rounded-lg text-center ${isLoadingTokens ? 'bg-blue-100 text-blue-800' :
+                  tokensError || availableTokens.length === 0 ? 'bg-red-100 text-red-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
                   {isLoadingTokens && (
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -595,9 +596,9 @@ const CreateDMTForm = () => {
                       }`}
                   >
                     <SelectItem value="" disabled>
-                      {isLoadingTokens ? "Loading tokens..." : 
-                       availableTokens.length === 0 ? "No tokens available" :
-                       t("paymentTokenPlaceholder")}
+                      {isLoadingTokens ? "Loading tokens..." :
+                        availableTokens.length === 0 ? "No tokens available" :
+                          t("paymentTokenPlaceholder")}
                     </SelectItem>
                     {availableTokens.map((token) => (
                       <SelectItem key={token.address} value={token.address}>
