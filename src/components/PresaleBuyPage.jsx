@@ -68,7 +68,7 @@ export default function PresaleBuyPage({ preSaleId }) {
         isSuccess: approvalSuccess,
     } = useERC20Approval(
         presale?.payment_token?.token_address,
-        '0x4c64cbe581cd251cf7ab42f68f7aea15ae2f8faf' // Presale contract address
+        process.env.NEXT_PUBLIC_PRESALE_ADDRESS // Presale contract address
     );
 
     const {

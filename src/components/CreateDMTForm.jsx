@@ -17,6 +17,7 @@ import DimitoFactoryAbi from '@/abi/DimitoFactoryAbi.json';
 import toast, { Toaster } from 'react-hot-toast';
 import { useMutation } from '@tanstack/react-query';
 import { httpClient, presaleEndpoints } from '@/lib/auth/httpClient';
+import { usePaymentTokens } from '@/lib/api';
 
 const CreateDMTForm = () => {
   const t = useTranslations("createDMT");
@@ -32,26 +33,61 @@ const CreateDMTForm = () => {
   const FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_FACTORY_ADDRESS;
   const PRESALE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PRESALE_ADDRESS;
 
-  // Mock mode for testing (set to true to avoid gas fees)
-  const MOCK_MODE = process.env.NEXT_PUBLIC_MOCK_MODE === 'true';
 
-  // Predefined payment tokens
-  const paymentTokens = [
-    { name: "USDT_FAKE", address: "0x2adFDf2354116a09c7dA522070e47f66d7717C57", symbol: "USDTF" },
-    { name: "USDT", address: "0x55d398326f99059fF775485246999027B3197955", symbol: "USDT" },
-  ];
+  // Fetch payment tokens from API
+  const { data: paymentTokensData, isLoading: isLoadingTokens, error: tokensError } = usePaymentTokens();
+  
+  // Transform API data to match expected format
+  const paymentTokens = paymentTokensData?.results?.map(token => ({
+    id: token.id,
+    name: token.token_name,
+    address: token.token_address,
+    symbol: token.token_symbol,
+    decimals: token.token_decimals,
+    description: token.token_description,
+    type: token.token_type
+  })) || [];
+  
+  // Use API tokens only - no fallback tokens with hardcoded addresses
+  const availableTokens = paymentTokens || [];
 
   const [formData, setFormData] = useState({
-    paymentToken: "0x2adFDf2354116a09c7dA522070e47f66d7717C57", // Default to USDT_FAKE
+    paymentToken: "", // Will be set when tokens load
     pricePerToken: "",
     startDate: new DateObject(),
     endDate: new DateObject().add(7, "days"), // Default to 7 days from now
   });
+  
+  // Set default payment token when tokens are loaded
+  React.useEffect(() => {
+    if (availableTokens.length > 0 && !formData.paymentToken) {
+      // Default to first available token from API
+      const defaultToken = availableTokens[0];
+      
+      console.log("Setting default payment token:", defaultToken);
+      
+      setFormData(prev => ({
+        ...prev,
+        paymentToken: defaultToken.address
+      }));
+    }
+  }, [availableTokens, formData.paymentToken]);
+
+  // Debug logging for API data
+  React.useEffect(() => {
+    if (paymentTokensData) {
+      console.log("Payment tokens API response:", paymentTokensData);
+      console.log("Transformed tokens:", paymentTokens);
+      console.log("Available tokens:", availableTokens);
+    }
+    if (tokensError) {
+      console.error("Payment tokens API error:", tokensError);
+    }
+  }, [paymentTokensData, paymentTokens, availableTokens, tokensError]);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transactionStatus, setTransactionStatus] = useState(null); // 'pending', 'success', 'error'
-  const [mockHash, setMockHash] = useState(null); // For mock transactions
   const [createdTokenAddress, setCreatedTokenAddress] = useState(null); // Store created token address
   const [loadingStep, setLoadingStep] = useState(null); // Track current loading step
   const [progress, setProgress] = useState(0); // Progress percentage
@@ -186,69 +222,6 @@ const CreateDMTForm = () => {
     },
   });
 
-  // Mock function to simulate smart contract interaction
-  const mockCreateDMT = async (submissionData) => {
-    // Generate a fake transaction hash and token address
-    const fakeHash = '0x' + Math.random().toString(16).substr(2, 64);
-    const fakeTokenAddress = '0x' + Math.random().toString(16).substr(2, 40);
-    setMockHash(fakeHash);
-    setCreatedTokenAddress(fakeTokenAddress);
-
-    try {
-      // Step 1: Preparing
-      updateLoadingStep(loadingSteps.PREPARING);
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      // Step 2: Submitting
-      updateLoadingStep(loadingSteps.SUBMITTING);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Step 3: Confirming
-      updateLoadingStep(loadingSteps.CONFIRMING);
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      // Step 4: Extracting token address
-      updateLoadingStep(loadingSteps.EXTRACTING);
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      // Step 5: Creating presale
-      updateLoadingStep(loadingSteps.CREATING_PRESALE);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Step 6: Completed
-      updateLoadingStep(loadingSteps.COMPLETED);
-
-      const mockPresaleData = {
-        message: "Presale created successfully from token address",
-        tokenAddress: fakeTokenAddress,
-        presaleContractAddress: PRESALE_CONTRACT_ADDRESS,
-        tokenInfo: {
-          name: "Mock Digital Mine Token",
-          symbol: "MDMT",
-          decimals: 18,
-          address: fakeTokenAddress
-        }
-      };
-
-      console.log('🧪 Mock: Presale created successfully:', mockPresaleData);
-      toast.success(
-        `🧪 ${t("mockPresaleCreatedSuccess") || "Mock: Presale created successfully!"}\n${mockPresaleData.tokenInfo.name} (${mockPresaleData.tokenInfo.symbol})`,
-        {
-          duration: 6000,
-          position: 'top-center',
-          icon: '🎉',
-        }
-      );
-
-      return { success: true, hash: fakeHash, tokenAddress: fakeTokenAddress };
-    } catch (error) {
-      console.error('Mock API error:', error);
-      toast.error(`🧪 ${t("mockBackendFailed") || "Mock: Backend simulation failed"}`, {
-        duration: 4000,
-      });
-      throw error;
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -286,7 +259,7 @@ const CreateDMTForm = () => {
     }
 
     // Get selected token details
-    const selectedToken = paymentTokens.find(token => token.address === formData.paymentToken);
+    const selectedToken = availableTokens.find(token => token.address === formData.paymentToken);
 
     // Convert dates to Unix timestamps and price to 18 decimals
     const submissionData = {
@@ -302,58 +275,34 @@ const CreateDMTForm = () => {
       setIsSubmitting(true);
       setTransactionStatus('pending');
 
-      if (MOCK_MODE) {
-        // Mock mode - simulate transaction without gas fees
-        console.log('🧪 Mock mode: Simulating transaction...');
-        const result = await mockCreateDMT(submissionData);
+      // Step 1: Preparing
+      updateLoadingStep(loadingSteps.PREPARING);
 
-        // Reset loading state and form
-        setTimeout(() => {
-          setTransactionStatus('success');
-          setIsSubmitting(false);
-          setLoadingStep(null);
-          setProgress(0);
+      try {
+        // Step 2: Submitting
+        updateLoadingStep(loadingSteps.SUBMITTING);
 
-          // Reset form after successful transaction
-          setFormData({
-            paymentToken: "0x2adFDf2354116a09c7dA522070e47f66d7717C57", // Reset to USDT_FAKE
-            pricePerToken: "",
-            startDate: new DateObject(),
-            endDate: new DateObject().add(7, "days"),
-          });
-        }, 1500);
+        // Call the smart contract
+        writeContract({
+          address: FACTORY_CONTRACT_ADDRESS,
+          abi: DimitoFactoryAbi,
+          functionName: 'createDMT',
+          args: [
+            submissionData.paymentToken, // _paymentToken (address)
+            submissionData.pricePerToken, // _pricePerToken (already in 18 decimals)
+            BigInt(submissionData.startDate), // _startTime
+            BigInt(submissionData.endDate), // _endTime
+          ],
+        });
 
-      } else {
-        // Real blockchain transaction
-        // Step 1: Preparing
-        updateLoadingStep(loadingSteps.PREPARING);
-
-        try {
-          // Step 2: Submitting
-          updateLoadingStep(loadingSteps.SUBMITTING);
-
-          // Call the smart contract
-          writeContract({
-            address: FACTORY_CONTRACT_ADDRESS,
-            abi: DimitoFactoryAbi,
-            functionName: 'createDMT',
-            args: [
-              submissionData.paymentToken, // _paymentToken (address)
-              submissionData.pricePerToken, // _pricePerToken (already in 18 decimals)
-              BigInt(submissionData.startDate), // _startTime
-              BigInt(submissionData.endDate), // _endTime
-            ],
-          });
-
-        } catch (contractError) {
-          console.error('Smart contract error:', contractError);
-          setLoadingStep(null);
-          setProgress(0);
-          toast.error(t("failedToSubmitTransaction") || 'Failed to submit transaction. Please try again.', {
-            duration: 4000,
-          });
-          throw contractError;
-        }
+      } catch (contractError) {
+        console.error('Smart contract error:', contractError);
+        setLoadingStep(null);
+        setProgress(0);
+        toast.error(t("failedToSubmitTransaction") || 'Failed to submit transaction. Please try again.', {
+          duration: 4000,
+        });
+        throw contractError;
       }
     } catch (err) {
       console.error('Transaction failed:', err);
@@ -438,8 +387,10 @@ const CreateDMTForm = () => {
       }
 
       // Reset form after successful transaction
+      const defaultToken = availableTokens[0];
+      
       setFormData({
-        paymentToken: "0x2adFDf2354116a09c7dA522070e47f66d7717C57", // Reset to USDT_FAKE
+        paymentToken: defaultToken?.address || "",
         pricePerToken: "",
         startDate: new DateObject(),
         endDate: new DateObject().add(7, "days"),
@@ -515,11 +466,6 @@ const CreateDMTForm = () => {
             <CardHeader>
               <CardTitle className="text-xl lg:text-2xl font-bold text-center text-primary">
                 {t("title")}
-                {MOCK_MODE && (
-                  <span className="ml-2 px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
-                    🧪 Mock Mode
-                  </span>
-                )}
               </CardTitle>
               <p className="text-sm text-gray-500 text-center mt-2">
                 {t("required")}
@@ -573,6 +519,34 @@ const CreateDMTForm = () => {
                 </div>
               )}
 
+              {/* API Loading/Error Status */}
+              {(isLoadingTokens || tokensError || availableTokens.length === 0) && (
+                <div className={`mt-4 p-3 rounded-lg text-center ${
+                  isLoadingTokens ? 'bg-blue-100 text-blue-800' : 
+                  tokensError || availableTokens.length === 0 ? 'bg-red-100 text-red-800' : 
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {isLoadingTokens && (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      Loading payment tokens...
+                    </div>
+                  )}
+                  {tokensError && !isLoadingTokens && (
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-red-600">❌</span>
+                      Failed to load payment tokens from API. Please try refreshing the page.
+                    </div>
+                  )}
+                  {!isLoadingTokens && !tokensError && availableTokens.length === 0 && (
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-red-600">❌</span>
+                      No payment tokens available. Please contact support.
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Transaction Status */}
               {transactionStatus && !loadingStep && (
                 <div className={`mt-4 p-3 rounded-lg text-center ${transactionStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -586,16 +560,15 @@ const CreateDMTForm = () => {
               )}
 
               {/* Transaction Hash */}
-              {(hash || mockHash) && (
+              {hash && (
                 <div className="mt-2 text-center">
                   <a
-                    href={MOCK_MODE ? '#' : `https://bscscan.com/tx/${hash || mockHash}`}
-                    target={MOCK_MODE ? '_self' : '_blank'}
+                    href={`https://bscscan.com/tx/${hash}`}
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className={`text-sm ${MOCK_MODE ? 'text-gray-500 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'} underline`}
-                    onClick={MOCK_MODE ? (e) => e.preventDefault() : undefined}
+                    className="text-sm text-blue-600 hover:text-blue-800 underline"
                   >
-                    {MOCK_MODE ? `${t("mockTransaction") || "Mock TX"}: ${mockHash?.substring(0, 10)}...` : t("viewOnBSCScan") || 'View on BSCScan'}
+                    {t("viewOnBSCScan") || 'View on BSCScan'}
                   </a>
                 </div>
               )}
@@ -621,10 +594,12 @@ const CreateDMTForm = () => {
                       : "border-gray-200 focus:border-[#FF4135] focus:ring-[#FF4135]/20"
                       }`}
                   >
-                    <SelectItem value="USDT_FAKE_PLACEHOLDER" disabled>
-                      {t("paymentTokenPlaceholder")}
+                    <SelectItem value="" disabled>
+                      {isLoadingTokens ? "Loading tokens..." : 
+                       availableTokens.length === 0 ? "No tokens available" :
+                       t("paymentTokenPlaceholder")}
                     </SelectItem>
-                    {paymentTokens.map((token) => (
+                    {availableTokens.map((token) => (
                       <SelectItem key={token.address} value={token.address}>
                         {token.name} ({token.symbol})
                       </SelectItem>

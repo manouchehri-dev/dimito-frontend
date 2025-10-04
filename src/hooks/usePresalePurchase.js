@@ -19,31 +19,30 @@ export function usePresalePurchase() {
 
   // Purchase function
   const purchasePresale = async (presaleId, paymentAmount, paymentTokenDecimals) => {
-    if (!presaleId || !paymentAmount || !paymentTokenDecimals) {
+    if (presaleId === null || presaleId === undefined || !paymentAmount || !paymentTokenDecimals) {
       toast.error('Missing purchase information');
       return false;
     }
 
     try {
       setIsPurchasing(true);
-      
+
       // Convert payment amount to wei using the payment token's decimals
       const amountWei = parseUnits(paymentAmount.toString(), paymentTokenDecimals);
-      
+
       // Call purchasePresale function
-      console.log(amountWei)
       await writeContract({
         address: PRESALE_CONTRACT_ADDRESS,
         abi: DimitoPreSaleAbi,
         functionName: 'purchasePresale',
         args: [BigInt(presaleId), amountWei],
-      });
+      }); 12
 
       return true;
     } catch (error) {
       console.error('Purchase error:', error);
       setIsPurchasing(false);
-      
+
       // Handle specific error types
       if (error?.code === 4001 || error?.message?.includes('User rejected')) {
         toast.error('Transaction cancelled by user');
@@ -65,7 +64,7 @@ export function usePresalePurchase() {
       } else {
         toast.error('Failed to purchase presale tokens');
       }
-      
+
       return false;
     }
   };

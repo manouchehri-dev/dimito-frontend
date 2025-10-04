@@ -9,7 +9,7 @@
  * @returns {string} Login URL with redirect parameter
  */
 export const getLoginUrl = (redirectTo, locale = "") => {
-  const baseUrl = locale ? `/${locale}/login` : "/login";
+  const baseUrl = locale ? `/${locale}/auth/login` : "/auth/login";
 
   if (!redirectTo) {
     return baseUrl;
