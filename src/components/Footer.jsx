@@ -60,7 +60,7 @@ const Footer = () => {
     if (timeSinceLastSubmit < MIN_SUBMIT_INTERVAL) {
       const remainingTime = Math.ceil((MIN_SUBMIT_INTERVAL - timeSinceLastSubmit) / 1000);
       setEmailError(
-        isRtl 
+        isRtl
           ? `لطفاً ${remainingTime} ثانیه صبر کنید`
           : `Please wait ${remainingTime} seconds before submitting again`
       );
@@ -377,7 +377,7 @@ const Footer = () => {
                 {t("navigation.dashboard")}
               </Link>
               <Link
-                href={`/login?redirect=transparency`}
+                href={`/transparency/dashboard`}
                 className={`text-[clamp(12px,3vw,14px)] text-gray-600 hover:text-orange-500 transition-all duration-200 transform ${isRtl
                   ? "hover:-translate-x-1 font-iransans"
                   : "hover:translate-x-1 font-poppins"
@@ -458,7 +458,7 @@ const Footer = () => {
                   }}
                   aria-hidden="true"
                 />
-                
+
                 {/* Email Input */}
                 <div className="relative group">
                   <input

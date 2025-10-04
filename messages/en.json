@@ -1285,7 +1285,10 @@
     "enterMineName": "Enter mine name",
     "locationFilter": "Location",
     "enterOrSelectLocation": "Enter or select location",
-    "allLocations": "All Locations"
+    "allLocations": "All Locations",
+    "accessDenied": "Access Denied",
+    "reporterAccessDenied": "You don't have permission to access the transparency dashboard. Please contact an administrator if you believe this is an error.",
+    "goHome": "Go Home"
   },
   "validation": {
     "required": "This field is required",

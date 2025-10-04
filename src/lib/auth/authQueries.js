@@ -13,6 +13,7 @@ export const authKeys = {
   user: () => [...authKeys.all, "user"],
   verify: () => [...authKeys.all, "verify"],
   dmtAccess: () => [...authKeys.all, "dmt-access"],
+  reporterAccess: () => [...authKeys.all, "reporter-access"],
 };
 
 /**
@@ -164,6 +165,39 @@ export function useDMTAccess() {
     select: (data) => {
       // Return boolean based on API response
       return data?.allowed === true;
+    },
+  });
+}
+
+/**
+ * Hook to check if user has reporter/transparency dashboard access
+ * @returns {Object} Query object with access status and role information
+ */
+export function useReporterAccess() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  return useQuery({
+    queryKey: authKeys.reporterAccess(),
+    queryFn: async () => {
+      const { apiRequest } = await import("./httpClient");
+      return apiRequest("GET", "/auth/has_report_access/");
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on 403 (access denied) or 401 (unauthorized)
+      if (error?.status === 403 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    select: (data) => {
+      // Return structured data based on API response
+      return {
+        hasAccess: data?.allowed === true,
+        role: data?.role || null,
+        permissions: data?.permissions || {}
+      };
     },
   });
 }
