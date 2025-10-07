@@ -33,15 +33,6 @@ const CreateDMTForm = () => {
   const FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_FACTORY_ADDRESS;
   const PRESALE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PRESALE_ADDRESS;
 
-  // Debug environment variables
-  React.useEffect(() => {
-    console.log('Environment check:', {
-      NODE_ENV: process.env.NODE_ENV,
-      FACTORY_ADDRESS: FACTORY_CONTRACT_ADDRESS,
-      PRESALE_ADDRESS: PRESALE_CONTRACT_ADDRESS,
-      allEnvVars: Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC_'))
-    });
-  }, []);
 
 
   // Fetch payment tokens from API
@@ -74,26 +65,12 @@ const CreateDMTForm = () => {
       // Default to first available token from API
       const defaultToken = availableTokens[0];
 
-      console.log("Setting default payment token:", defaultToken);
 
       setFormData(prev => ({
-        ...prev,
         paymentToken: defaultToken.address
       }));
     }
   }, [availableTokens, formData.paymentToken]);
-
-  // Debug logging for API data
-  React.useEffect(() => {
-    if (paymentTokensData) {
-      console.log("Payment tokens API response:", paymentTokensData);
-      console.log("Transformed tokens:", paymentTokens);
-      console.log("Available tokens:", availableTokens);
-    }
-    if (tokensError) {
-      console.error("Payment tokens API error:", tokensError);
-    }
-  }, [paymentTokensData, paymentTokens, availableTokens, tokensError]);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -191,8 +168,6 @@ const CreateDMTForm = () => {
       }
     },
     onSuccess: (data) => {
-      console.log('✅ Presale created successfully:', data);
-
       // Step 6: Completed
       updateLoadingStep(loadingSteps.COMPLETED);
 
@@ -279,7 +254,6 @@ const CreateDMTForm = () => {
       endDate: formData.endDate.toUnix(),
     };
 
-    console.log("Form submitted with data:", submissionData);
 
     try {
       setIsSubmitting(true);
@@ -302,10 +276,6 @@ const CreateDMTForm = () => {
         updateLoadingStep(loadingSteps.SUBMITTING);
 
         // Call the smart contract
-        console.log('Contract addresses:', {
-          FACTORY_CONTRACT_ADDRESS,
-          PRESALE_CONTRACT_ADDRESS
-        });
         
         writeContract({
           address: FACTORY_CONTRACT_ADDRESS,

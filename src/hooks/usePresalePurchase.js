@@ -7,14 +7,6 @@ import DimitoPreSaleAbi from '@/abi/DimitoPreSaleAbi.json';
 const PRESALE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PRESALE_ADDRESS;
 
 export function usePresalePurchase() {
-  // Debug environment variables
-  useEffect(() => {
-    console.log('usePresalePurchase - Contract address check:', {
-      PRESALE_CONTRACT_ADDRESS,
-      hasAddress: !!PRESALE_CONTRACT_ADDRESS
-    });
-  }, []);
-  
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [simulationArgs, setSimulationArgs] = useState(null);
   const publicClient = usePublicClient();
@@ -30,8 +22,6 @@ export function usePresalePurchase() {
   // Simulate contract call to check if it will succeed
   const simulateTransaction = async (presaleId, amountWei, userAddress) => {
     try {
-      console.log('🔍 Simulating transaction before execution...');
-      
       const result = await publicClient.simulateContract({
         address: PRESALE_CONTRACT_ADDRESS,
         abi: DimitoPreSaleAbi,
@@ -40,10 +30,8 @@ export function usePresalePurchase() {
         account: userAddress,
       });
 
-      console.log('✅ Simulation successful:', result);
       return { success: true, result };
     } catch (error) {
-      console.error('❌ Simulation failed:', error);
       
       // Parse common revert reasons
       let userFriendlyMessage = 'Transaction will fail';
@@ -77,23 +65,7 @@ export function usePresalePurchase() {
 
   // Purchase function
   const purchasePresale = async (presaleId, paymentAmount, paymentTokenDecimals, userAddress) => {
-    // Log function call parameters
-    console.log('📞 purchasePresale called with:', {
-      presaleId,
-      presaleIdType: typeof presaleId,
-      paymentAmount,
-      paymentAmountType: typeof paymentAmount,
-      paymentTokenDecimals,
-      paymentTokenDecimalsType: typeof paymentTokenDecimals,
-      timestamp: new Date().toISOString()
-    });
-
     if (presaleId === null || presaleId === undefined || !paymentAmount || !paymentTokenDecimals) {
-      console.error('❌ Missing purchase information:', {
-        hasPresaleId: presaleId !== null && presaleId !== undefined,
-        hasPaymentAmount: !!paymentAmount,
-        hasPaymentTokenDecimals: !!paymentTokenDecimals
-      });
       toast.error('Missing purchase information');
       return false;
     }
@@ -112,19 +84,13 @@ export function usePresalePurchase() {
 
       // Simulate transaction first to check if it will succeed
       if (userAddress) {
-        console.log('🔍 Running pre-transaction simulation...');
         const simulationResult = await simulateTransaction(presaleId, amountWei, userAddress);
         
         if (!simulationResult.success) {
-          console.error('❌ Transaction simulation failed:', simulationResult);
           toast.error(simulationResult.userMessage);
           setIsPurchasing(false);
           return false;
         }
-        
-        console.log('✅ Simulation passed, proceeding with transaction');
-      } else {
-        console.warn('⚠️ No user address provided, skipping simulation');
       }
 
       // Prepare contract call data
@@ -135,30 +101,8 @@ export function usePresalePurchase() {
         args: [BigInt(presaleId), amountWei],
       };
 
-      // Log everything being sent to writeContract
-      console.log('🚀 writeContract call data:', {
-        contractAddress: PRESALE_CONTRACT_ADDRESS,
-        functionName: 'purchasePresale',
-        args: {
-          presaleId: presaleId,
-          presaleIdBigInt: BigInt(presaleId),
-          paymentAmount: paymentAmount,
-          paymentTokenDecimals: paymentTokenDecimals,
-          amountWei: amountWei.toString(),
-          amountWeiFormatted: `${amountWei.toString()} wei`,
-        },
-        abiLength: DimitoPreSaleAbi.length,
-        fullContractCallData: contractCallData
-      });
-
       // Call purchasePresale function
-      const result = await writeContract(contractCallData);
-      
-      console.log('✅ writeContract result:', {
-        result,
-        resultType: typeof result,
-        timestamp: new Date().toISOString()
-      });
+      await writeContract(contractCallData);
 
       return true;
     } catch (error) {
@@ -191,39 +135,16 @@ export function usePresalePurchase() {
     }
   };
 
-  // Log transaction hash when available
-  useEffect(() => {
-    if (hash) {
-      console.log('📝 Transaction hash received:', {
-        hash,
-        bscscanUrl: `https://bscscan.com/tx/${hash}`,
-        timestamp: new Date().toISOString()
-      });
-    }
-  }, [hash]);
-
   // Reset state when transaction is confirmed or failed
   useEffect(() => {
     if ((isSuccess || receiptError) && isPurchasing) {
-      console.log('🏁 Transaction completed:', {
-        isSuccess,
-        receiptError,
-        hash,
-        timestamp: new Date().toISOString()
-      });
       setIsPurchasing(false);
     }
-  }, [isSuccess, receiptError, isPurchasing, hash]);
+  }, [isSuccess, receiptError, isPurchasing]);
 
   // Reset state when write error occurs (user rejection, etc.)
   useEffect(() => {
     if (writeError && isPurchasing) {
-      console.log('❌ Write error occurred:', {
-        writeError,
-        errorMessage: writeError?.message,
-        errorCode: writeError?.code,
-        timestamp: new Date().toISOString()
-      });
       setIsPurchasing(false);
     }
   }, [writeError, isPurchasing]);
