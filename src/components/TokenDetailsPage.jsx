@@ -96,7 +96,7 @@ export default function TokenDetailsPage({ tokenId }) {
 
   const handleBuyClick = (presale) => {
     // Navigate to buy page - since each token has 1 presale, use token ID
-    router.push(`/presales/${tokenId}/buy`);
+    router.push(`/presales/${presale.id}/buy`);
   };
 
   const formatDate = (timestamp) => {
