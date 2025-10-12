@@ -19,10 +19,18 @@ export default function SSOLoginButton({
       // Import OIDC configuration
       const { generateAuthorizationUrl, generatePKCE, generateRandomString } = await import('@/lib/auth/oidcConfig');
 
+      // Get the original domain and locale to encode in state parameter
+      const originalDomain = window.location.host;
+      const currentLocale = window.location.pathname.split('/')[1]; // Extract locale from URL (e.g., '/fa/...')
+      const locale = (currentLocale === 'fa' || currentLocale === 'en') ? currentLocale : 'en';
+      
+      console.log('🌐 Original domain:', originalDomain);
+      console.log('🗣️  Current locale:', locale);
+
       // Generate PKCE for enhanced security (required for public clients)
       const { codeVerifier, codeChallenge } = await generatePKCE();
 
-      // Store code verifier in cookie (accessible to API route)
+      // Store code verifier in cookie (accessible to API route on .ir domain)
       const isProduction = process.env.NODE_ENV === 'production';
       const cookieOptions = [
         `pkce_code_verifier=${codeVerifier}`,
@@ -34,11 +42,23 @@ export default function SSOLoginButton({
       
       document.cookie = cookieOptions;
 
-      // Generate state for CSRF protection
-      const state = generateRandomString(32);
-      sessionStorage.setItem('oauth_state', state);
+      // Generate state for CSRF protection and encode original domain + locale
+      // Format: randomString.base64(domain|locale)
+      // Using pipe separator because domain may contain colon (localhost:3000)
+      const stateRandom = generateRandomString(32);
+      const stateData = `${originalDomain}|${locale}`; // Combine domain and locale with pipe
+      const stateDataEncoded = btoa(stateData); // Base64 encode "domain|locale"
+      const state = `${stateRandom}.${stateDataEncoded}`;
+      
+      console.log('🔐 State with encoded domain and locale:', { 
+        stateRandom, 
+        stateDataEncoded, 
+        originalDomain, 
+        locale,
+        decoded: stateData 
+      });
 
-      // Generate authorization URL with PKCE
+      // Generate authorization URL with PKCE and state containing domain
       const authUrl = generateAuthorizationUrl({
         state,
         codeChallenge,

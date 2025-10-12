@@ -5,6 +5,7 @@
 
 /**
  * Get the correct redirect URI for different environments
+ * Always uses .ir domain for SSO callbacks since that's registered with the provider
  */
 function getRedirectUri() {
   // Use environment variable for production (highest priority)
@@ -24,7 +25,14 @@ function getRedirectUri() {
   
   // Client-side fallback (browser)
   if (typeof window !== 'undefined') {
-    return `${window.location.protocol}//${window.location.host}/api/auth/callback`;
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    
+    // Force .ir domain for SSO callbacks (registered with provider)
+    // Replace .io with .ir if user is accessing from .io domain
+    const irHost = host.replace('.io', '.ir');
+    
+    return `${protocol}//${irHost}/api/auth/callback`;
   }
   
   // Server-side fallback (development)
@@ -33,6 +41,7 @@ function getRedirectUri() {
 
 /**
  * Get the correct post-logout redirect URI for different environments
+ * Always uses .ir domain for SSO callbacks since that's registered with the provider
  */
 function getPostLogoutRedirectUri() {
   // Use environment variable for production (highest priority)
@@ -52,7 +61,14 @@ function getPostLogoutRedirectUri() {
   
   // Client-side fallback (browser)
   if (typeof window !== 'undefined') {
-    return `${window.location.protocol}//${window.location.host}/api/auth/sign-out`;
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    
+    // Force .ir domain for SSO callbacks (registered with provider)
+    // Replace .io with .ir if user is accessing from .io domain
+    const irHost = host.replace('.io', '.ir');
+    
+    return `${protocol}//${irHost}/api/auth/sign-out`;
   }
   
   // Server-side fallback (development)

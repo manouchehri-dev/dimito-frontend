@@ -45,9 +45,10 @@ export default function UserIconDropdown({ className = "", isMobile = false, sho
       // Import OIDC configuration
       const { generateLogoutUrl } = await import('@/lib/auth/oidcConfig');
 
+
       // Generate logout URL - DON'T clear state yet, let provider handle it
       const logoutUrl = generateLogoutUrl({
-        postLogoutRedirectUri: `${window.location.origin}/api/auth/sign-out`,
+        postLogoutRedirectUri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/sign-out`,
       });
 
       console.log('Redirecting to OIDC provider logout:', logoutUrl);

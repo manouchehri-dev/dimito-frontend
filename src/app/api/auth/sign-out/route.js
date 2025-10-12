@@ -19,6 +19,13 @@ export async function GET(request) {
     const userLocale = await getLocaleFromCookies();
     console.log(`🍪 User locale from cookie: ${userLocale}`);
     
+    // Get original domain to redirect back to (stored during login on .ir domain)
+    // This cookie was set during successful authentication in callback route
+    const originalDomain = request.cookies.get('sso_original_domain')?.value;
+    if (originalDomain) {
+      console.log(`🌐 Original domain from cookie: ${originalDomain}`);
+    }
+    
     // Get any error parameters from OIDC provider
     console.log(request.url);
     const { searchParams } = new URL(request.url);
@@ -27,23 +34,24 @@ export async function GET(request) {
     
     if (error) {
       console.error('OIDC logout error:', error, errorDescription);
-      // Redirect to login with error (preserve user's locale)
+      // Redirect to login with error (preserve user's locale and domain)
       const response = NextResponse.redirect(
         createRedirectUrl(request, '/auth/login', userLocale, {
           error,
           error_description: errorDescription || 'Logout failed'
-        })
+        }, originalDomain)
       );
       clearAuthCookies(response);
       return response;
     }
     
-    // Successful logout - redirect to login page with cleanup flag (preserve user's locale)
+    // Successful logout - redirect to login page with cleanup flag (preserve user's locale and domain)
+    console.log(`🎯 Redirecting to original domain: ${originalDomain || 'current domain'}`);
     const response = NextResponse.redirect(
       createRedirectUrl(request, '/auth/login', userLocale, {
         logout: 'success',
         cleanup: 'true'
-      })
+      }, originalDomain)
     );
     
     // Clear all authentication-related cookies
@@ -59,12 +67,13 @@ export async function GET(request) {
   } catch (error) {
     console.error('Sign-out callback error:', error);
     
-    // Fallback: redirect to login page with error (preserve user's locale)
+    // Fallback: redirect to login page with error (preserve user's locale and domain)
     const userLocale = await getLocaleFromCookies();
+    const originalDomain = request.cookies.get('sso_original_domain')?.value;
     const response = NextResponse.redirect(
       createRedirectUrl(request, '/auth/login', userLocale, {
         error: 'sign_out_error'
-      })
+      }, originalDomain)
     );
     clearAuthCookies(response);
     return response;
@@ -81,7 +90,8 @@ function clearAuthCookies(response) {
     'id_token',
     'auth_token',
     'pkce_code_verifier',
-    'oauth_state'
+    'oauth_state',
+    'sso_original_domain'
   ];
   
   cookiesToClear.forEach(cookieName => {
