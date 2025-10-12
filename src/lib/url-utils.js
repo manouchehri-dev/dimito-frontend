@@ -70,10 +70,21 @@ export function getBaseUrl(request) {
  * @param {string} path - The path to redirect to (e.g., '/auth/login')
  * @param {string} locale - The user's locale (e.g., 'en', 'fa')
  * @param {URLSearchParams|Object} params - Optional query parameters
+ * @param {string} customDomain - Optional custom domain override (e.g., 'dimito.io')
  * @returns {URL} Complete URL object for redirect
  */
-export function createRedirectUrl(request, path, locale, params = {}) {
-  const baseUrl = getBaseUrl(request);
+export function createRedirectUrl(request, path, locale, params = {}, customDomain = null) {
+  let baseUrl;
+  
+  // Use custom domain if provided (for returning to original domain after SSO)
+  if (customDomain) {
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    baseUrl = `${protocol}://${customDomain}`;
+    console.log(`🌐 Using custom domain override: ${baseUrl}`);
+  } else {
+    baseUrl = getBaseUrl(request);
+  }
+  
   const fullPath = `/${locale}${path}`;
   const url = new URL(fullPath, baseUrl);
   
