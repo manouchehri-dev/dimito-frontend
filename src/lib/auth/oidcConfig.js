@@ -28,11 +28,9 @@ function getRedirectUri() {
     const protocol = window.location.protocol;
     const host = window.location.host;
     
-    // Force .ir domain for SSO callbacks (registered with provider)
-    // Replace .io with .ir if user is accessing from .io domain
-    const irHost = host.replace('.io', '.ir');
-    
-    return `${protocol}//${irHost}/api/auth/callback`;
+    // Keep callback on same domain to preserve cookies
+    // Both dimito.io and dimito.ir should be registered with SSO provider
+    return `${protocol}//${host}/api/auth/callback`;
   }
   
   // Server-side fallback (development)
@@ -64,11 +62,9 @@ function getPostLogoutRedirectUri() {
     const protocol = window.location.protocol;
     const host = window.location.host;
     
-    // Force .ir domain for SSO callbacks (registered with provider)
-    // Replace .io with .ir if user is accessing from .io domain
-    const irHost = host.replace('.io', '.ir');
-    
-    return `${protocol}//${irHost}/api/auth/sign-out`;
+    // Keep callback on same domain to preserve cookies
+    // Both dimito.io and dimito.ir should be registered with SSO provider
+    return `${protocol}//${host}/api/auth/sign-out`;
   }
   
   // Server-side fallback (development)

@@ -17,6 +17,65 @@ const api = axios.create({
   },
 });
 
+// Request interceptor for proactive token refresh (BEST PRACTICE)
+api.interceptors.request.use(
+  async (config) => {
+    // Only check for SSO tokens (not transparency auth)
+    const ssoToken =
+      typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+
+    if (ssoToken) {
+      // Import JWT utilities dynamically to avoid circular dependencies
+      const { shouldRefreshToken, refreshJWTToken } = await import(
+        "@/lib/auth/jwtUtils"
+      );
+
+      // PROACTIVE REFRESH: Check if token should be refreshed BEFORE making the request
+      if (shouldRefreshToken(5)) {
+        console.log("🔄 Token expires soon, refreshing before request...");
+
+        try {
+          const newTokenData = await refreshJWTToken();
+
+          if (newTokenData) {
+            console.log("✅ Proactive token refresh successful");
+            // Update auth store with new token
+            const useAuthStore = (await import("@/stores/useAuthStore"))
+              .default;
+            const store = useAuthStore.getState();
+
+            if (store.loginWithSSO && newTokenData.user) {
+              store.loginWithSSO(
+                newTokenData.token,
+                newTokenData.user,
+                newTokenData.expiry
+              );
+            }
+
+            // Use the new token for this request
+            config.headers.Authorization = `Bearer ${newTokenData.token}`;
+          } else {
+            // Refresh failed, but continue with old token (will handle 401 in response interceptor)
+            config.headers.Authorization = `Bearer ${ssoToken}`;
+          }
+        } catch (refreshError) {
+          console.error("⚠️ Proactive refresh failed:", refreshError);
+          // Continue with existing token
+          config.headers.Authorization = `Bearer ${ssoToken}`;
+        }
+      } else {
+        // Token is still valid, use it
+        config.headers.Authorization = `Bearer ${ssoToken}`;
+      }
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Generic API query hook
 export function useApiQuery(queryKey, endpoint, options = {}) {
   const fetchData = async () => {
@@ -155,28 +214,37 @@ export function useTokenDetails(tokenId, options = {}) {
 
 // Presale Details Hook
 export function usePresaleDetails(presaleId, options = {}) {
-  return useApiQuery(["presaleDetails", presaleId], `/presale/presales/${presaleId}/`, {
-    enabled: !!presaleId,
-    staleTime: 2 * 60 * 1000, // 2 minutes (more frequent updates for buy page)
-    cacheTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-    ...options,
-  });
+  return useApiQuery(
+    ["presaleDetails", presaleId],
+    `/presale/presales/${presaleId}/`,
+    {
+      enabled: !!presaleId,
+      staleTime: 2 * 60 * 1000, // 2 minutes (more frequent updates for buy page)
+      cacheTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: true, // Refetch when user returns to tab
+      ...options,
+    }
+  );
 }
 
 // Dashboard Summary Hook - Tab-based API structure
-export function useDashboardSummary(walletAddress, tab = 'wallet', authToken = null, options = {}) {
+export function useDashboardSummary(
+  walletAddress,
+  tab = "wallet",
+  authToken = null,
+  options = {}
+) {
   const fetchData = async () => {
     try {
       const headers = {
         "Content-Type": "application/json",
       };
-      
+
       // Add auth header for SSO tab
-      if (tab === 'sso' && authToken) {
+      if (tab === "sso" && authToken) {
         headers.Authorization = `Bearer ${authToken}`;
       }
-      
+
       const response = await api.get(
         `/dashboard/?wallet_address=${walletAddress}&tab=${tab}`,
         { headers }
@@ -200,18 +268,24 @@ export function useDashboardSummary(walletAddress, tab = 'wallet', authToken = n
 }
 
 // Paginated Purchases Hook - Tab-based
-export function usePaginatedPurchases(walletAddress, page = 1, tab = 'wallet', authToken = null, options = {}) {
+export function usePaginatedPurchases(
+  walletAddress,
+  page = 1,
+  tab = "wallet",
+  authToken = null,
+  options = {}
+) {
   const fetchData = async () => {
     try {
       const headers = {
         "Content-Type": "application/json",
       };
-      
+
       // Add auth header for SSO tab
-      if (tab === 'sso' && authToken) {
+      if (tab === "sso" && authToken) {
         headers.Authorization = `Bearer ${authToken}`;
       }
-      
+
       const response = await api.get(
         `/dashboard/purchases/?wallet_address=${walletAddress}&page=${page}&tab=${tab}`,
         { headers }
@@ -236,18 +310,24 @@ export function usePaginatedPurchases(walletAddress, page = 1, tab = 'wallet', a
 }
 
 // Paginated Presales Hook - Tab-based
-export function usePaginatedPresales(walletAddress, page = 1, tab = 'wallet', authToken = null, options = {}) {
+export function usePaginatedPresales(
+  walletAddress,
+  page = 1,
+  tab = "wallet",
+  authToken = null,
+  options = {}
+) {
   const fetchData = async () => {
     try {
       const headers = {
         "Content-Type": "application/json",
       };
-      
+
       // Add auth header for SSO tab
-      if (tab === 'sso' && authToken) {
+      if (tab === "sso" && authToken) {
         headers.Authorization = `Bearer ${authToken}`;
       }
-      
+
       const response = await api.get(
         `/dashboard/presales/?wallet_address=${walletAddress}&page=${page}&tab=${tab}`,
         { headers }
@@ -298,15 +378,15 @@ export function usePaymentTokens(options = {}) {
 // Add authentication header for SSO users
 const getAuthHeaders = () => {
   if (typeof window !== "undefined") {
-    const authToken = localStorage.getItem('auth_token');
+    const authToken = localStorage.getItem("auth_token");
     if (authToken) {
       return {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
       };
     }
   }
-  return { 'Content-Type': 'application/json' };
+  return { "Content-Type": "application/json" };
 };
 
 // Get ticket categories
@@ -314,7 +394,7 @@ export function useTicketCategories(options = {}) {
   const fetchData = async () => {
     try {
       const response = await api.get("/tickets/categories/", {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       return response.data;
     } catch (error) {
@@ -341,10 +421,13 @@ export function useMyTickets(filters = {}, options = {}) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value) params.append(key, value);
       });
-      
-      const response = await api.get(`/tickets/my-tickets/?${params.toString()}`, {
-        headers: getAuthHeaders()
-      });
+
+      const response = await api.get(
+        `/tickets/my-tickets/?${params.toString()}`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching my tickets:", error);
@@ -367,7 +450,7 @@ export function useTicketDetails(ticketId, options = {}) {
   const fetchData = async () => {
     try {
       const response = await api.get(`/tickets/tickets/${ticketId}/`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       return response.data;
     } catch (error) {
@@ -392,7 +475,7 @@ export function useTicketComments(ticketId, options = {}) {
   const fetchData = async () => {
     try {
       const response = await api.get(`/tickets/tickets/${ticketId}/comments/`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       return response.data;
     } catch (error) {
@@ -417,12 +500,18 @@ export function useTicketComments(ticketId, options = {}) {
 export function useTicketAttachments(ticketId, options = {}) {
   const fetchData = async () => {
     try {
-      const response = await api.get(`/tickets/tickets/${ticketId}/attachments/`, {
-        headers: getAuthHeaders()
-      });
+      const response = await api.get(
+        `/tickets/tickets/${ticketId}/attachments/`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
       return response.data;
     } catch (error) {
-      console.error(`Error fetching attachments for ticket ${ticketId}:`, error);
+      console.error(
+        `Error fetching attachments for ticket ${ticketId}:`,
+        error
+      );
       throw error;
     }
   };
@@ -444,7 +533,7 @@ export function useCreateTicket(options = {}) {
     mutationFn: async (ticketData) => {
       try {
         const response = await api.post("/tickets/tickets/", ticketData, {
-          headers: getAuthHeaders()
+          headers: getAuthHeaders(),
         });
         return response.data;
       } catch (error) {
@@ -461,8 +550,9 @@ export function useAddComment(options = {}) {
   return useMutation({
     mutationFn: async ({ ticketId, content }) => {
       try {
-        const response = await api.post(`/tickets/tickets/${ticketId}/comments/`, 
-          { content }, 
+        const response = await api.post(
+          `/tickets/tickets/${ticketId}/comments/`,
+          { content },
           { headers: getAuthHeaders() }
         );
         return response.data;
@@ -481,29 +571,30 @@ export function useUploadAttachment(options = {}) {
     mutationFn: async ({ ticketId, formData }) => {
       try {
         // Try SSO token first, then fallback to auth_token
-        const ssoToken = localStorage.getItem('sso_access_token');
-        const authToken = localStorage.getItem('auth_token');
+        const ssoToken = localStorage.getItem("sso_access_token");
+        const authToken = localStorage.getItem("auth_token");
         const token = ssoToken || authToken;
-        
-        console.log('Upload attachment - Token check:', {
+
+        console.log("Upload attachment - Token check:", {
           hasSsoToken: !!ssoToken,
           hasAuthToken: !!authToken,
-          usingToken: token ? 'found' : 'none'
+          usingToken: token ? "found" : "none",
         });
-        
-        const headers = token ? 
-          { 'Authorization': `Bearer ${token}` } : 
-          {};
-        
+
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
         // Use fetch instead of axios for FormData to avoid Content-Type conflicts
-        const response = await fetch(`${API_URL}/tickets/tickets/${ticketId}/attachments/`, {
-          method: 'POST',
-          headers: {
-            ...headers
-            // Don't set Content-Type - let browser set it for multipart/form-data
-          },
-          body: formData
-        });
+        const response = await fetch(
+          `${API_URL}/tickets/tickets/${ticketId}/attachments/`,
+          {
+            method: "POST",
+            headers: {
+              ...headers,
+              // Don't set Content-Type - let browser set it for multipart/form-data
+            },
+            body: formData,
+          }
+        );
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -518,7 +609,10 @@ export function useUploadAttachment(options = {}) {
 
         return await response.json();
       } catch (error) {
-        console.error(`Error uploading attachment to ticket ${ticketId}:`, error);
+        console.error(
+          `Error uploading attachment to ticket ${ticketId}:`,
+          error
+        );
         throw error;
       }
     },
@@ -531,8 +625,9 @@ export function useCloseTicket(options = {}) {
   return useMutation({
     mutationFn: async ({ ticketId, comment }) => {
       try {
-        const response = await api.post(`/tickets/tickets/${ticketId}/close/`, 
-          comment ? { comment } : {}, 
+        const response = await api.post(
+          `/tickets/tickets/${ticketId}/close/`,
+          comment ? { comment } : {},
           { headers: getAuthHeaders() }
         );
         return response.data;
