@@ -21,10 +21,13 @@ export const createHttpClient = () => {
       // Get token from multiple sources
       if (typeof window !== "undefined") {
         // Try SSO token first
-        const ssoToken = localStorage.getItem('auth_token');
+        const ssoToken = localStorage.getItem("auth_token");
         if (ssoToken) {
           config.headers.Authorization = `Bearer ${ssoToken}`;
-          console.log("Adding SSO Authorization header to request:", config.url);
+          console.log(
+            "Adding SSO Authorization header to request:",
+            config.url
+          );
           return config;
         }
 
@@ -34,7 +37,10 @@ export const createHttpClient = () => {
           const token = useAuthStore.getState().accessToken;
           if (token) {
             config.headers.Authorization = `Bearer ${token}`;
-            console.log("Adding Transparency Authorization header to request:", config.url);
+            console.log(
+              "Adding Transparency Authorization header to request:",
+              config.url
+            );
           } else {
             console.log("No token available for request:", config.url);
           }
@@ -61,14 +67,63 @@ export const createHttpClient = () => {
         originalRequest._retry = true;
 
         try {
-          // Get refresh token from Zustand store
+          // Check which auth method is being used
           if (typeof window !== "undefined") {
+            const ssoToken = localStorage.getItem("auth_token");
+
+            // SSO/OIDC authentication - use OIDC JWT refresh
+            if (ssoToken) {
+              console.log("🔄 401 error - attempting OIDC JWT refresh...");
+
+              const { refreshJWTToken } = require("./jwtUtils");
+              const newTokenData = await refreshJWTToken();
+
+              if (newTokenData) {
+                console.log("✅ OIDC JWT refresh successful, retrying request");
+
+                // Update auth store with new token
+                const useAuthStore = require("@/stores/useAuthStore").default;
+                const store = useAuthStore.getState();
+
+                // Update store with new token data
+                if (store.loginWithSSO && newTokenData.user) {
+                  store.loginWithSSO(
+                    newTokenData.token,
+                    newTokenData.user,
+                    newTokenData.expiry
+                  );
+                }
+
+                // Retry the original request with new token
+                originalRequest.headers.Authorization = `Bearer ${newTokenData.token}`;
+                return client(originalRequest);
+              } else {
+                console.error(
+                  "❌ OIDC JWT refresh failed - user needs to re-login"
+                );
+
+                // Clear auth state
+                const useAuthStore = require("@/stores/useAuthStore").default;
+                useAuthStore.getState().logout();
+
+                // Dispatch event for auth failure
+                window.dispatchEvent(new CustomEvent("auth:token-expired"));
+
+                return Promise.reject(new Error("Token refresh failed"));
+              }
+            }
+
+            // Transparency authentication - use old refresh method
             const { useAuthStore } = require("./authStore");
             const store = useAuthStore.getState();
             const refreshToken = store.refreshToken;
 
             if (refreshToken) {
-              // Attempt to refresh the token
+              console.log(
+                "🔄 401 error - attempting transparency token refresh..."
+              );
+
+              // Attempt to refresh the token (transparency auth)
               const refreshResponse = await axios.post(
                 `${API_BASE_URL}/auth/token/refresh/`,
                 {
@@ -89,12 +144,24 @@ export const createHttpClient = () => {
         } catch (refreshError) {
           // Refresh failed, clear tokens and redirect to login
           if (typeof window !== "undefined") {
+            console.error("❌ Token refresh failed:", refreshError);
+
+            // Clear SSO auth
+            const ssoToken = localStorage.getItem("auth_token");
+            if (ssoToken) {
+              const useAuthStore = require("@/stores/useAuthStore").default;
+              useAuthStore.getState().logout();
+            }
+
+            // Clear transparency auth
             const { useAuthStore } = require("./authStore");
             useAuthStore.getState().clearAuth();
           }
 
           // Dispatch custom event for auth failure
-          window.dispatchEvent(new CustomEvent("auth:token-expired"));
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("auth:token-expired"));
+          }
 
           return Promise.reject(refreshError);
         }

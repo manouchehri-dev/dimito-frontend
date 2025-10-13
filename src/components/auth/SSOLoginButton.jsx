@@ -30,24 +30,25 @@ export default function SSOLoginButton({
       // Generate PKCE for enhanced security (required for public clients)
       const { codeVerifier, codeChallenge } = await generatePKCE();
 
-      // Store code verifier in cookie (accessible to API route on .ir domain)
+      // Store code verifier in cookie (will work on same domain)
       const isProduction = process.env.NODE_ENV === 'production';
       const cookieOptions = [
         `pkce_code_verifier=${codeVerifier}`,
         'path=/',
         'max-age=1800', // 30 minutes
-        'samesite=lax', // Less restrictive than strict
-        ...(isProduction ? ['secure'] : []) // Only secure in production
+        'samesite=lax',
+        ...(isProduction ? ['secure'] : [])
       ].join('; ');
       
       document.cookie = cookieOptions;
+      console.log('🍪 Stored PKCE verifier in cookie');
 
-      // Generate state for CSRF protection and encode original domain + locale
+      // Generate state for CSRF protection and encode domain + locale
       // Format: randomString.base64(domain|locale)
       // Using pipe separator because domain may contain colon (localhost:3000)
       const stateRandom = generateRandomString(32);
-      const stateData = `${originalDomain}|${locale}`; // Combine domain and locale with pipe
-      const stateDataEncoded = btoa(stateData); // Base64 encode "domain|locale"
+      const stateData = `${originalDomain}|${locale}`;
+      const stateDataEncoded = btoa(stateData);
       const state = `${stateRandom}.${stateDataEncoded}`;
       
       console.log('🔐 State with encoded domain and locale:', { 
