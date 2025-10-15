@@ -322,15 +322,15 @@
     "cta": "Invest Now"
   },
   "footer": {
-    "navigation":{
-      "home":"Home",
-      "tokenomics":"About",
-      "whitepaper":"Services",
-      "transparency":"Contact",
-      "dashboard":"Dashboard",
-      "transparencyLogin":"Transparency Login"
+    "navigation": {
+      "home": "Home",
+      "tokenomics": "About",
+      "whitepaper": "Services",
+      "transparency": "Contact",
+      "dashboard": "Dashboard",
+      "transparencyLogin": "Transparency Login"
     },
-    "subscribe":"Subscribe",
+    "subscribe": "Subscribe",
     "email": "Email or Phone Number",
     "button": "Submit",
     "subscribing": "Subscribing...",
@@ -352,7 +352,7 @@
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
       "cookies": "Cookie Policy",
-      "disclaimer":"Disclaimer"
+      "disclaimer": "Disclaimer"
     },
     "social": {
       "title": "Follow Us",
@@ -465,7 +465,7 @@
     "maxAttemptsReached": "Maximum attempts reached. Please refresh the page to try again."
   },
   "support": {
-    "download":"Download",
+    "download": "Download",
     "title": "Support & Tickets",
     "subtitle": "Create and manage support tickets for assistance",
     "authRequired": "SSO Authentication Required",
@@ -475,7 +475,7 @@
     "createTicket": "Create Ticket",
     "totalTickets": "Total Tickets",
     "openTickets": "Open",
-    "inProgress": "In Progress", 
+    "inProgress": "In Progress",
     "resolved": "Resolved",
     "searchPlaceholder": "Search tickets by title, ID, or category...",
     "allStatuses": "All Statuses",
@@ -519,7 +519,7 @@
     "replyAttachmentsLabel": "Attachments:",
     "categories": {
       "Technical Support": "Technical Support",
-      "Billing & Payments": "Billing & Payments", 
+      "Billing & Payments": "Billing & Payments",
       "Feature Request": "Feature Request",
       "General Inquiry": "General Inquiry",
       "Account Management": "Account Management",
@@ -529,11 +529,11 @@
     "id": "ID",
     "status": {
       "open": "Open",
-      "in_progress": "In Progress", 
+      "in_progress": "In Progress",
       "pending": "Pending",
       "resolved": "Resolved",
       "closed": "Closed",
-      "inProgress":"In Progress"
+      "inProgress": "In Progress"
     },
     "priority": {
       "low": "Low",
@@ -586,18 +586,18 @@
     "needHelp": "Need help? Chat with our support team!"
   },
   "dashboard": {
-    "email":"Email",
-    "next":"Next",
-    "previous":"Previous",
-    "presale":"Presales",
+    "email": "Email",
+    "next": "Next",
+    "previous": "Previous",
+    "presale": "Presales",
     "title": "Dashboard",
     "subtitle": "Manage your DMT tokens and view your investment portfolio",
     "support": {
       "title": "Support",
       "status": "Status",
-      "priority":"Priority",
-      "download":"Download",
-      "inProgress":"In Progress"
+      "priority": "Priority",
+      "download": "Download",
+      "inProgress": "In Progress"
     },
     "transparencyTitle": "Transparency Dashboard",
     "transparencySubtitle": "Create and manage transparency reports for mining operations",
@@ -630,7 +630,7 @@
     "dashboardShowingResults": "Showing {start} to {end} of {total} results",
     "dashboardPrevious": "Previous",
     "dashboardNext": "Next",
-    "showingResults":"Showing {start} to {end} of {total} results",
+    "showingResults": "Showing {start} to {end} of {total} results",
     "welcome": "Welcome",
     "welcomeDescription": "Here's an overview of your DMT token investments and recent activity.",
     "ssoWelcomeDescription": "Here's your SSO account overview and available features.",
@@ -758,7 +758,7 @@
       "filters": {
         "all": "All Status",
         "active": "Active",
-        "upcoming": "Upcoming", 
+        "upcoming": "Upcoming",
         "ended": "Ended",
         "inactive": "Inactive"
       },
@@ -1906,8 +1906,12 @@
     }
   },
   "presaleBuy": {
-    "back":"Back",
+    "back": "Back",
     "title": "Buy Tokens",
+    "tabs": {
+      "wallet": "Buy with Wallet",
+      "fiat": "Buy with Rial"
+    },
     "header": {
       "buy": "Buy",
       "price": "Price",
@@ -2069,6 +2073,116 @@
         "network": "Network",
         "viewOnBSCScan": "View on BSCScan"
       }
+    },
+    "rialPurchase": {
+      "loading": "Loading Rial purchase options...",
+      "loginRequired": "Login Required",
+      "loginDescription": "Login with SSO to purchase tokens using Iranian Rial via iCart payment gateway.",
+      "loginButton": "Login to Continue",
+      "errorTitle": "Unable to load Rial prices",
+      "errorDescription": "Please try again later",
+      "retryButton": "Retry",
+      "confirmTitle": "Confirm Purchase",
+      "confirmSubtitle": "Please review the details before proceeding to payment",
+      "latestPrice": "Latest Price (Just Updated)",
+      "youPay": "You Pay",
+      "youReceive": "You Receive",
+      "cancelButton": "Cancel",
+      "proceedButton": "Proceed to Payment",
+      "processing": "Processing...",
+      "fetchingPrices": "Fetching latest prices...",
+      "redirecting": "Redirecting to payment gateway...",
+      "redirectSuccess": "Redirecting to payment...",
+      "errorSSO": "Please login with SSO to purchase with Rial",
+      "errorPayment": "Failed to create payment",
+      "errorFetchPrice": "Failed to fetch latest prices. Please try again.",
+      "paymentInfo": "You will be redirected to iCart payment gateway to complete your payment securely.",
+      "priceUpdate": "Prices update every 30 seconds.",
+      "currentRate": "Current Rate:",
+      "refresh": "Refresh",
+      "refreshPrices": "Refresh prices",
+      "amountLabel": "Amount (Rials)",
+      "amountHint": "Minimum 10,000 Rials • Must be multiples of 1,000 (e.g., 10,000, 20,000, 50,000)",
+      "youWillReceive": "You will receive approximately:",
+      "payButton": "Pay with Rial",
+      "rialBalance": "Rial Balance:",
+      "loadingBalance": "Loading balance...",
+      "sufficient": "Sufficient",
+      "insufficient": "Insufficient",
+      "paymentMethod": "Payment Method",
+      "useWalletBalance": "Use Wallet Balance",
+      "instantPurchase": "Instant purchase with your current balance",
+      "recommended": "Recommended",
+      "faster": "Faster",
+      "optional": "Optional",
+      "chargeWallet": "Charge Wallet",
+      "buyViaGateway": "Buy via Payment Gateway",
+      "redirectToPayment": "Add funds via payment gateway",
+      "payAndAutoReceive": "Pay and automatically receive tokens",
+      "useBalancePlusGateway": "Use your balance + pay the difference",
+      "required": "Required",
+      "purchaseNow": "Purchase Now",
+      "chargeAndPurchase": "Charge Wallet",
+      "buyNowViaGateway": "Buy Now",
+      "purchasing": "Purchasing...",
+      "purchaseSuccess": "Token purchase successful!",
+      "errorPurchase": "Failed to purchase tokens. Please try again.",
+      "confirmPurchase": "Confirm Purchase",
+      "confirmPurchaseSubtitle": "You are about to purchase tokens using your wallet balance",
+      "confirmCharge": "Confirm Charge",
+      "confirmGatewayPurchase": "Confirm Token Purchase",
+      "confirmGatewaySubtitle": "You will be redirected to the payment gateway. Tokens will be automatically added to your account after payment.",
+      "walletPurchaseInfo": "Tokens will be purchased instantly using your wallet balance.",
+      "gatewayPurchaseInfo": "After completing payment, tokens will be automatically purchased and added to your account.",
+      "confirmPurchaseButton": "Confirm Purchase",
+      "smartPayment": "Smart Payment Breakdown",
+      "useBalancePlusCharge": "Use balance + charge the difference",
+      "fromWallet": "From Wallet Balance",
+      "toCharge": "To Charge via Gateway",
+      "viaGateway": "Via Payment Gateway",
+      "total": "Total",
+      "paymentBreakdown": "Payment Breakdown",
+      "useMyWalletBalance": "Use my wallet balance",
+      "combineBalanceDescription": "Combine wallet balance with gateway payment to save on fees",
+      "walletBalanceNotUsed": "Your wallet balance will remain untouched. Paying full amount via gateway.",
+      "availableBalance": "Available Balance",
+      "buyNow": "Buy Now",
+      "buyWithWallet": "Buy with Wallet Balance",
+      "chargeAndBuy": "Charge & Buy",
+      "amountAdjusted": "Amount adjusted to {amount} Rials (max purchasable from balance)",
+      "priceTolerance": "Price Tolerance",
+      "priceToleranceLabel": "Price Tolerance",
+      "priceToleranceExplanation": "This protects you from price changes. Any extra amount will be refunded to your wallet.",
+      "priceToleranceDetail": "Your wallet will be charged up to this tolerance. If the actual price is lower, the difference will be returned to your wallet balance. If the price exceeds this tolerance, the transaction will fail to protect you.",
+      "priceToleranceProtection": "{percent}% price tolerance - Extra amount refunded if price is lower",
+      "priceToleranceFailInfo": "Transaction will fail if price increases beyond {percent}% to protect your funds"
+    }
+  },
+  "payment": {
+    "success": {
+      "title": "Payment Successful!",
+      "subtitle": "Your payment has been processed successfully",
+      "trackId": "Transaction ID",
+      "autoPurchaseSuccess": "Tokens Purchased Automatically",
+      "tokensReceived": "Your tokens have been automatically purchased and added to your wallet:",
+      "autoPurchaseFailed": "Auto-Purchase Failed",
+      "manualPurchaseRequired": "Your wallet was charged successfully, but automatic token purchase failed. Please purchase tokens manually from the presales page.",
+      "walletCharged": "Your wallet has been charged successfully. You can now purchase tokens from the presales page.",
+      "tryPurchaseAgain": "Try Purchase Again",
+      "viewDashboard": "View Dashboard",
+      "backHome": "Back to Home"
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "subtitle": "Unfortunately, your payment could not be processed",
+      "trackId": "Transaction ID",
+      "possibleReasons": "Possible reasons:",
+      "reason1": "Insufficient funds in your account",
+      "reason2": "Payment was cancelled by you",
+      "reason3": "Technical issue with the payment gateway",
+      "reason4": "Bank declined the transaction",
+      "tryAgain": "Try Again",
+      "backHome": "Back to Home"
     }
   }
 }
