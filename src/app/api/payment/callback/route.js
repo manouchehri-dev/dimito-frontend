@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.dimito.ir";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.dimito.ir";
 
 /**
  * Payment Gateway Callback Handler
