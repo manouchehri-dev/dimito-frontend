@@ -13,6 +13,7 @@ export default function LanguageSwitcher({ isMobile = false }) {
   const router = useRouter();
   const pathname = usePathname();
   const dropdownRef = useRef(null);
+  const isRTL = useLocale() === "fa";
 
   const languages = {
     en: { name: "English", flag: "🇺🇸", code: "EN" },
@@ -81,7 +82,7 @@ export default function LanguageSwitcher({ isMobile = false }) {
       {/* Dropdown Menu */}
       {isOpen && !isChanging && (
         <div
-          className={`absolute ${isMobile ? "right-0 bottom-full mb-2" : "right-0 mt-2"
+          className={`absolute ${isMobile ? `${isRTL ? "left-0" : "right-0"} bottom-full mb-2` : `${isRTL ? "left-0" : "right-0"} mt-2`}
             } w-44 xl:w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-[60] overflow-hidden backdrop-blur-sm`}
         >
           <div className="py-2">
@@ -91,8 +92,8 @@ export default function LanguageSwitcher({ isMobile = false }) {
                 onClick={() => switchLanguage(lang)}
                 disabled={lang === locale}
                 className={`w-full flex items-center gap-3 px-3 xl:px-4 py-2.5 xl:py-3 text-sm hover:bg-gray-50 transition-all duration-150 active:scale-98 ${locale === lang
-                    ? "bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 text-[#FF5D1B] font-medium cursor-default"
-                    : "text-gray-700 cursor-pointer hover:text-[#FF5D1B]"
+                  ? "bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 text-[#FF5D1B] font-medium cursor-default"
+                  : "text-gray-700 cursor-pointer hover:text-[#FF5D1B]"
                   }`}
                 role="menuitem"
               >

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-import { useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -13,8 +13,11 @@ import {
   Rocket,
   TrendingUp,
   Headphones,
+  Wallet,
+  Shield,
 } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import useAuthStore from "@/stores/useAuthStore";
 
 export default function DashboardSidebar({
   isOpen,
@@ -23,16 +26,45 @@ export default function DashboardSidebar({
   onToggleCollapse,
 }) {
   const t = useTranslations("dashboard");
+  const tAuth = useTranslations("auth");
   const locale = useLocale();
   const isRTL = locale === "fa";
   const pathname = usePathname();
   const router = useRouter();
   const { disconnect } = useDisconnect();
+  const { address, isConnected } = useAccount();
+  const { isAuthenticated, logout, authMethod } = useAuthStore();
 
-  const handleLogout = () => {
+  // Handle wallet disconnect
+  const handleWalletDisconnect = () => {
     disconnect();
-    router.push("/");
     if (onClose) onClose(); // Close mobile sidebar
+  };
+
+  // Handle SSO logout
+  const handleSSOLogout = async () => {
+    try {
+      // Import OIDC configuration
+      const { generateLogoutUrl } = await import('@/lib/auth/oidcConfig');
+
+      // Generate logout URL
+      const logoutUrl = generateLogoutUrl({
+        postLogoutRedirectUri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/sign-out`,
+      });
+
+      if (onClose) onClose(); // Close mobile sidebar
+
+      // Redirect to OIDC provider logout
+      router.push(logoutUrl);
+    } catch (error) {
+      console.error('Error during SSO logout:', error);
+
+      // Fallback: clear local state and redirect
+      logout();
+      sessionStorage.clear();
+      if (onClose) onClose();
+      router.push('/?logout=fallback');
+    }
   };
 
   const navigation = [
@@ -148,14 +180,37 @@ export default function DashboardSidebar({
               );
             })}
 
-            {/* Logout button */}
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full cursor-pointer"
-            >
-              <LogOut className="w-5 h-5" />
-              {t("logout")}
-            </button>
+            {/* Logout buttons */}
+            {/* Wallet Disconnect */}
+            {isConnected && (
+              <button
+                onClick={handleWalletDisconnect}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-orange-600 hover:bg-orange-50 transition-all duration-200 w-full cursor-pointer"
+              >
+                <Wallet className="w-5 h-5" />
+                {tAuth("disconnectWallet")}
+              </button>
+            )}
+
+            {/* SSO Logout */}
+            {isAuthenticated && (
+              <button
+                onClick={handleSSOLogout}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full cursor-pointer"
+              >
+                <LogOut className="w-5 h-5" />
+                {tAuth("logout")}
+              </button>
+            )}
+
+            {/* Nothing to logout message */}
+            {!isConnected && !isAuthenticated && (
+              <div className="px-3 py-3 bg-gray-100 rounded-xl border border-gray-200">
+                <div className="flex items-center justify-center gap-2 text-gray-600">
+                  <span className="text-sm">{tAuth("notLoggedIn")}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -227,16 +282,41 @@ export default function DashboardSidebar({
               );
             })}
 
-            {/* Logout button */}
-            <button
-              onClick={handleLogout}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full ${isCollapsed ? "justify-center cursor-pointer" : ""
-                }`}
-              title={isCollapsed ? t("logout") : ""}
-            >
-              <LogOut className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && <span className="truncate">{t("logout")}</span>}
-            </button>
+            {/* Logout buttons */}
+            {/* Wallet Disconnect */}
+            {isConnected && (
+              <button
+                onClick={handleWalletDisconnect}
+                className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-orange-600 hover:bg-orange-50 transition-all duration-200 w-full ${isCollapsed ? "justify-center cursor-pointer" : ""
+                  }`}
+                title={isCollapsed ? tAuth("disconnectWallet") : ""}
+              >
+                <Wallet className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span className="truncate">{tAuth("disconnectWallet")}</span>}
+              </button>
+            )}
+
+            {/* SSO Logout */}
+            {isAuthenticated && (
+              <button
+                onClick={handleSSOLogout}
+                className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 w-full ${isCollapsed ? "justify-center cursor-pointer" : ""
+                  }`}
+                title={isCollapsed ? tAuth("logout") : ""}
+              >
+                <LogOut className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span className="truncate">{tAuth("logout")}</span>}
+              </button>
+            )}
+
+            {/* Nothing to logout message - only show when not collapsed */}
+            {!isConnected && !isAuthenticated && !isCollapsed && (
+              <div className="px-3 py-3 bg-gray-100 rounded-xl border border-gray-200">
+                <div className="flex items-center justify-center gap-2 text-gray-600">
+                  <span className="text-xs">{tAuth("notLoggedIn")}</span>
+                </div>
+              </div>
+            )}
 
             {/* Expand button when collapsed */}
             {isCollapsed && (
