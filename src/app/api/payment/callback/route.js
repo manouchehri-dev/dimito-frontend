@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { createRedirectUrl } from "@/lib/url-utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.dimito.ir";
 
@@ -34,13 +35,8 @@ export async function GET(request) {
     const authTokenFromCookie = cookieStore.get("auth_token")?.value;
     const authToken = authTokenFromQuery || authTokenFromCookie;
 
-    console.log(
-      `[Payment Callback] Received: success=${success}, track_id=${trackId}`
-    );
-
     // Payment failed
     if (success === "0" || !success) {
-      console.log(`[Payment Callback] Payment failed for track_id: ${trackId}`);
 
       // Update intent to mark payment as failed (if track_id exists)
       if (trackId && authToken) {
@@ -58,9 +54,6 @@ export async function GET(request) {
               completed_at: new Date().toISOString(),
             }),
           });
-          console.log(
-            `[Payment Callback] Intent updated (payment failed) for track_id: ${trackId}`
-          );
         } catch (updateError) {
           console.error(
             "[Payment Callback] Failed to update intent on payment failure:",
@@ -70,9 +63,11 @@ export async function GET(request) {
       }
 
       return NextResponse.redirect(
-        new URL(
-          `/${locale}/payment/failed?track_id=${trackId || "unknown"}`,
-          request.url
+        createRedirectUrl(
+          request,
+          "/payment/failed",
+          locale,
+          { track_id: trackId || "unknown" }
         )
       );
     }
@@ -82,13 +77,6 @@ export async function GET(request) {
       try {
         // Step 1: Check if there's a purchase intent for this track_id
         // Note: We get auth_token FROM the intent, not from cookies
-        console.log(
-          `[Payment Callback] Checking for purchase intent: ${trackId}`
-        );
-        console.log(
-          `[Payment Callback] API URL: ${API_URL}/presale/payment-intent-by-track/${trackId}/`
-        );
-
         const intentResponse = await fetch(
           `${API_URL}/presale/payment-intent-by-track/${trackId}/`,
           {
@@ -96,10 +84,6 @@ export async function GET(request) {
               "Content-Type": "application/json",
             },
           }
-        );
-
-        console.log(
-          `[Payment Callback] Intent response status: ${intentResponse.status}`
         );
 
         if (!intentResponse.ok) {
@@ -114,47 +98,40 @@ export async function GET(request) {
 
           // No intent found or expired - just redirect to success page
           return NextResponse.redirect(
-            new URL(
-              `/${locale}/payment/success?track_id=${trackId}&auto_purchase=false&reason=intent_fetch_failed`,
-              request.url
+            createRedirectUrl(
+              request,
+              "/payment/success",
+              locale,
+              {
+                track_id: trackId,
+                auto_purchase: "false",
+                reason: "intent_fetch_failed"
+              }
             )
           );
         }
 
         const intentData = await intentResponse.json();
-        console.log(`[Payment Callback] Intent data received:`, intentData);
 
         // Check if intent exists and has purchase data
         if (!intentData.has_intent || !intentData.purchase_intent) {
-          console.log(
-            `[Payment Callback] Track ${trackId} has no purchase intent, showing success page`
-          );
           return NextResponse.redirect(
-            new URL(
-              `/${locale}/payment/success?track_id=${trackId}&auto_purchase=false`,
-              request.url
+            createRedirectUrl(
+              request,
+              "/payment/success",
+              locale,
+              {
+                track_id: trackId,
+                auto_purchase: "false"
+              }
             )
           );
         }
 
         const { purchase_intent, auth_token: intentAuthToken } = intentData;
         const authToken = intentAuthToken;
-        console.log(
-          `[Payment Callback] Found purchase intent for ${purchase_intent.token_symbol}: ${purchase_intent.token_amount}`
-        );
 
         // Step 2: Automatically purchase tokens using the stored intent
-        console.log(
-          `[Payment Callback] Attempting auto-purchase with slippage ${purchase_intent.slippage_percent}%...`
-        );
-        console.log(`[Payment Callback] Purchase details:`, {
-          token_amount: purchase_intent.token_amount,
-          rial_amount: purchase_intent.rial_amount,
-          base_cost: purchase_intent.base_cost_rial,
-          tax: purchase_intent.tax_amount_rial,
-          tax_percent: purchase_intent.tax_percent,
-        });
-
         const purchaseResponse = await fetch(
           `${API_URL}/presale/purchase-token/`,
           {
@@ -198,11 +175,7 @@ export async function GET(request) {
               }
             );
 
-            if (updateResponse.ok) {
-              console.log(
-                `[Payment Callback] Intent updated (purchase failed) for track_id: ${trackId}`
-              );
-            } else {
+            if (!updateResponse.ok) {
               const updateError = await updateResponse.json();
               console.error(
                 "[Payment Callback] Failed to update intent:",
@@ -218,20 +191,20 @@ export async function GET(request) {
 
           // Purchase failed - redirect with error
           return NextResponse.redirect(
-            new URL(
-              `/${locale}/payment/success?track_id=${trackId}&auto_purchase=failed&error=${encodeURIComponent(
-                errorData.error_description || "Purchase failed"
-              )}`,
-              request.url
+            createRedirectUrl(
+              request,
+              "/payment/success",
+              locale,
+              {
+                track_id: trackId,
+                auto_purchase: "failed",
+                error: errorData.error_description || "Purchase failed"
+              }
             )
           );
         }
 
         const purchaseData = await purchaseResponse.json();
-        console.log(
-          `[Payment Callback] Auto-purchase successful!`,
-          purchaseData
-        );
 
         // Step 3: Update purchase intent status to completed
         try {
@@ -250,11 +223,7 @@ export async function GET(request) {
             }
           );
 
-          if (updateResponse.ok) {
-            console.log(
-              `[Payment Callback] Intent updated successfully for track_id: ${trackId}`
-            );
-          } else {
+          if (!updateResponse.ok) {
             const updateError = await updateResponse.json();
             console.error(
               "[Payment Callback] Failed to update intent:",
@@ -271,9 +240,16 @@ export async function GET(request) {
 
         // Step 4: Redirect to success page with purchase confirmation
         return NextResponse.redirect(
-          new URL(
-            `/${locale}/payment/success?track_id=${trackId}&auto_purchase=true&token_amount=${purchase_intent.token_amount}&token_symbol=${purchase_intent.token_symbol}`,
-            request.url
+          createRedirectUrl(
+            request,
+            "/payment/success",
+            locale,
+            {
+              track_id: trackId,
+              auto_purchase: "true",
+              token_amount: purchase_intent.token_amount,
+              token_symbol: purchase_intent.token_symbol
+            }
           )
         );
       } catch (error) {
@@ -281,21 +257,28 @@ export async function GET(request) {
 
         // Error during auto-purchase - still show success for payment
         return NextResponse.redirect(
-          new URL(
-            `/${locale}/payment/success?track_id=${trackId}&auto_purchase=failed&error=${encodeURIComponent(
-              error.message
-            )}`,
-            request.url
+          createRedirectUrl(
+            request,
+            "/payment/success",
+            locale,
+            {
+              track_id: trackId,
+              auto_purchase: "failed",
+              error: error.message
+            }
           )
         );
       }
     }
 
     // Fallback - redirect to home
-    console.warn(
-      "[Payment Callback] No valid success/track_id, redirecting to home"
+    return NextResponse.redirect(
+      createRedirectUrl(
+        request,
+        "/",
+        locale
+      )
     );
-    return NextResponse.redirect(new URL(`/${locale}`, request.url));
   } catch (error) {
     console.error("[Payment Callback] Unexpected error:", error);
 
@@ -309,9 +292,11 @@ export async function GET(request) {
     }
 
     return NextResponse.redirect(
-      new URL(
-        `/${locale}/payment/error?error=${encodeURIComponent(error.message)}`,
-        request.url
+      createRedirectUrl(
+        request,
+        "/payment/error",
+        locale,
+        { error: error.message }
       )
     );
   }
