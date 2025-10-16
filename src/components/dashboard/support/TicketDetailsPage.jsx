@@ -19,7 +19,9 @@ import {
     FileText,
     Trash2,
     Info,
-    CheckCheck
+    CheckCheck,
+    Wallet,
+    LogIn
 } from "lucide-react";
 import {
     useTicketDetails,
@@ -69,9 +71,10 @@ export default function TicketDetailsPage({ ticketId }) {
     const isRTL = locale === "fa";
     const dateLocale = locale === "fa" ? faIR : enUS;
     const router = useRouter();
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, authMethod } = useAuthStore();
 
-    const hasAuthToken = typeof window !== "undefined" && localStorage.getItem('auth_token');
+    const hasAuthToken = typeof window !== "undefined" && !!localStorage.getItem('auth_token');
+    const hasSSOAuth = isAuthenticated && authMethod === 'sso' && hasAuthToken;
 
     const {
         data: ticketDetails,
@@ -79,7 +82,7 @@ export default function TicketDetailsPage({ ticketId }) {
         error: detailsError,
         refetch: refetchDetails
     } = useTicketDetails(ticketId, {
-        enabled: !!ticketId && hasAuthToken && isAuthenticated
+        enabled: !!ticketId && hasSSOAuth
     });
 
     const {
@@ -87,7 +90,7 @@ export default function TicketDetailsPage({ ticketId }) {
         isLoading: commentsLoading,
         refetch: refetchComments
     } = useTicketComments(ticketId, {
-        enabled: !!ticketId && hasAuthToken && isAuthenticated
+        enabled: !!ticketId && hasSSOAuth
     });
 
     const {
@@ -95,7 +98,7 @@ export default function TicketDetailsPage({ ticketId }) {
         isLoading: attachmentsLoading,
         refetch: refetchAttachments
     } = useTicketAttachments(ticketId, {
-        enabled: !!ticketId && hasAuthToken && isAuthenticated
+        enabled: !!ticketId && hasSSOAuth
     });
 
     const comments = commentsData?.results || [];
@@ -222,7 +225,34 @@ export default function TicketDetailsPage({ ticketId }) {
         router.push('/dashboard/support');
     };
 
-    if (!hasAuthToken || !isAuthenticated) {
+    // Show SSO required message for wallet-only users
+    if (isAuthenticated && authMethod === 'wallet') {
+        return (
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="text-center max-w-md mx-auto p-6">
+                    <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Wallet className="w-8 h-8 text-orange-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {t("ssoRequired")}
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                        {t("ssoRequiredDesc")}
+                    </p>
+                    <button
+                        onClick={() => window.location.href = `/${locale}/auth/login`}
+                        className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center gap-2 mx-auto"
+                    >
+                        <LogIn className="w-4 h-4" />
+                        {t("loginWithSSO")}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // Show authentication required message if no authentication at all
+    if (!hasSSOAuth) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
                 <div className="text-center max-w-md mx-auto p-6">
@@ -237,8 +267,9 @@ export default function TicketDetailsPage({ ticketId }) {
                     </p>
                     <button
                         onClick={() => window.location.href = `/${locale}/auth/login`}
-                        className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-200"
+                        className="bg-gradient-to-r from-[#FF5D1B] to-[#FF363E] text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center gap-2 mx-auto"
                     >
+                        <LogIn className="w-4 h-4" />
                         {t("loginNow")}
                     </button>
                 </div>
