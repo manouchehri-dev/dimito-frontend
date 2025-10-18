@@ -189,7 +189,7 @@ export default function SSOTransactionsCard({ transactions = {} }) {
         <div className="mt-6 pt-4 border-t border-gray-100">
           <button
             onClick={() => {
-              /* TODO: Navigate to full transactions page */
+              router.push("/dashboard/purchases/?tab=sso");
             }}
             className="w-full flex items-center justify-center gap-2 text-orange-600 hover:text-orange-700 font-medium text-sm transition-colors duration-200"
           >

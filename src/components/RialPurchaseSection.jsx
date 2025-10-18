@@ -36,6 +36,7 @@ export default function RialPurchaseSection({ presale }) {
   const [confirmData, setConfirmData] = useState(null);
   const [useWalletBalance, setUseWalletBalance] = useState(true); // Use wallet balance when available
   const [purchaseDetails, setPurchaseDetails] = useState(null); // Stores complete purchase breakdown with tax
+  const [calculatingDetails, setCalculatingDetails] = useState(false); // Loading state for price calculations
   const [showAdvanced, setShowAdvanced] = useState(false); // Show advanced options
   const [customSlippage, setCustomSlippage] = useState(0.2); // User-selected price tolerance (slippage)
 
@@ -112,12 +113,15 @@ export default function RialPurchaseSection({ presale }) {
   useEffect(() => {
     if (!rawRialAmount || !currentAsset || parseFloat(rawRialAmount) <= 0) {
       setPurchaseDetails(null);
+      setCalculatingDetails(false);
       return;
     }
 
     const calculatePurchaseWithTax = async () => {
-      const rialInput = parseFloat(rawRialAmount);
-      const currentPrice = currentAsset.buy_unit_price;
+      setCalculatingDetails(true);
+      try {
+        const rialInput = parseFloat(rawRialAmount);
+        const currentPrice = currentAsset.buy_unit_price;
 
       // Step 1: Round user's input to clean amount (what user pays - CONSTANT!)
       const totalCostRial = roundToCleanAmount(rialInput);
@@ -143,19 +147,25 @@ export default function RialPurchaseSection({ presale }) {
       const reductionMultiplier = 1 - totalReductionPercent / 100;
       const finalTokenAmount = baseTokenAmount * reductionMultiplier;
 
-      // Step 7: Prepare breakdown for display and backend
-      const details = {
-        token_amount: finalTokenAmount.toFixed(18), // 18 decimals for web3
-        token_price_rial: Math.ceil(currentPrice), // No decimals
-        total_cost: totalCostRial, // What user pays (includes tax)
-        base_cost_rial: Math.floor(baseCostRial), // Base cost before tax (rounded down)
-        tax_amount_rial: Math.ceil(taxAmountRial), // Tax amount in Rials (rounded up)
-        tax_percent: taxPercent,
-        slippage_percent: slippagePercent,
-        total_reduction_percent: totalReductionPercent, // Combined reduction
-      };
+        // Step 7: Prepare breakdown for display and backend
+        const details = {
+          token_amount: finalTokenAmount.toFixed(18), // 18 decimals for web3
+          token_price_rial: Math.ceil(currentPrice), // No decimals
+          total_cost: totalCostRial, // What user pays (includes tax)
+          base_cost_rial: Math.floor(baseCostRial), // Base cost before tax (rounded down)
+          tax_amount_rial: Math.ceil(taxAmountRial), // Tax amount in Rials (rounded up)
+          tax_percent: taxPercent,
+          slippage_percent: slippagePercent,
+          total_reduction_percent: totalReductionPercent, // Combined reduction
+        };
 
-      setPurchaseDetails(details);
+        setPurchaseDetails(details);
+      } catch (error) {
+        console.error("Error calculating purchase details:", error);
+        setPurchaseDetails(null);
+      } finally {
+        setCalculatingDetails(false);
+      }
     };
 
     calculatePurchaseWithTax();
@@ -660,7 +670,7 @@ export default function RialPurchaseSection({ presale }) {
       </div>
 
       {/* Tokens to Receive & Cost Breakdown */}
-      {rawRialAmount && purchaseDetails && (
+      {rawRialAmount && (calculatingDetails || purchaseDetails) && (
         <div className="space-y-3">
           {/* Token Amount */}
           <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 border-2 border-green-300">
@@ -668,10 +678,19 @@ export default function RialPurchaseSection({ presale }) {
               {tRial("youWillReceive")}
             </div>
             <div
-              className="text-2xl sm:text-3xl font-bold text-green-900"
+              className="text-2xl sm:text-3xl font-bold text-green-900 flex items-center gap-2"
               dir="ltr"
             >
-              {tokensToReceive.toFixed(6)} {presale?.mine_token?.token_symbol}
+              {calculatingDetails ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  {locale === "fa" ? "محاسبه..." : "Calculating..."}
+                </>
+              ) : (
+                <>
+                  {tokensToReceive.toFixed(6)} {presale?.mine_token?.token_symbol}
+                </>
+              )}
             </div>
           </div>
 
@@ -683,7 +702,12 @@ export default function RialPurchaseSection({ presale }) {
                 {locale === "fa" ? "جزئیات هزینه" : "Cost Breakdown"}
               </span>
             </div>
-            <div className="space-y-2 text-sm">
+            {calculatingDetails ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              </div>
+            ) : (
+              <div className="space-y-2 text-sm">
               {/* Total Cost (What user pays) */}
               <div className="flex items-center justify-between pb-2">
                 <span className="text-blue-700 font-semibold">
@@ -718,20 +742,11 @@ export default function RialPurchaseSection({ presale }) {
               )}
 
               {/* Price Tolerance Percentage */}
-              <div className="flex items-center justify-between text-orange-700">
+              {/* Price Tolerance - Protection buffer, not actual reduction */}
+              <div className="flex items-center justify-between text-blue-700">
                 <span className="text-xs">{tRial("priceTolerance")}</span>
                 <span className="font-semibold" dir="ltr">
-                  -{purchaseDetails.slippage_percent.toFixed(2)}%
-                </span>
-              </div>
-
-              {/* Total Reduction */}
-              <div className="flex items-center justify-between text-red-700 font-bold pt-1 border-t border-blue-200">
-                <span className="text-xs">
-                  {locale === "fa" ? "کل کاهش" : "Total Reduction"}
-                </span>
-                <span className="font-semibold" dir="ltr">
-                  -{purchaseDetails.total_reduction_percent.toFixed(2)}%
+                  {purchaseDetails.slippage_percent.toFixed(2)}%
                 </span>
               </div>
 
@@ -752,6 +767,7 @@ export default function RialPurchaseSection({ presale }) {
                 </div>
               </div>
             </div>
+            )}
           </div>
         </div>
       )}
@@ -903,6 +919,8 @@ export default function RialPurchaseSection({ presale }) {
           parseFloat(rawRialAmount) % 1000 !== 0 ||
           purchasing ||
           charging ||
+          calculatingDetails ||
+          !purchaseDetails ||
           paymentBreakdown?.gatewayBelowMinimum
         }
         className={`w-full font-bold py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg transform hover:scale-[1.02] cursor-pointer ${hasEnoughBalance
@@ -910,23 +928,28 @@ export default function RialPurchaseSection({ presale }) {
           : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white"
           }`}
       >
-        {purchasing || charging ? (
+        {calculatingDetails ? (
+          <>
+            <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
+            {locale === "fa" ? "در حال محاسبه..." : "Calculating..."}
+          </>
+        ) : purchasing || charging ? (
           <>
             <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
             {tRial("processing")}
           </>
-        ) : hasEnoughBalance ? (
-          <>
-            <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-            {tRial("purchaseNow")}
-          </>
-        ) : (
+        ) : paymentBreakdown?.needsGateway ? (
           <>
             <Banknote className="w-5 h-5 sm:w-6 sm:h-6" />
-            {tRial("buyNow")}
+            {tRial("chargeAndBuy")}
             <ArrowRight
               className={`w-5 h-5 sm:w-6 sm:h-6 ${isRTL ? "rotate-180" : ""}`}
             />
+          </>
+        ) : (
+          <>
+            <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            {tRial("purchaseNow")}
           </>
         )}
       </button>
@@ -983,10 +1006,14 @@ export default function RialPurchaseSection({ presale }) {
                     )}
                   </div>
                   <h2 className="text-base sm:text-lg font-bold text-white mb-1">
-                    {tRial("confirmPurchase")}
+                    {paymentBreakdown?.needsGateway
+                      ? tRial("confirmGatewayPurchase")
+                      : tRial("confirmPurchase")}
                   </h2>
                   <p className="text-white/90 text-xs">
-                    {tRial("confirmPurchaseSubtitle")}
+                    {paymentBreakdown?.needsGateway
+                      ? tRial("confirmGatewaySubtitle")
+                      : tRial("confirmPurchaseSubtitle")}
                   </p>
                 </div>
 
@@ -1073,23 +1100,11 @@ export default function RialPurchaseSection({ presale }) {
                           </div>
                         )}
 
-                        {/* Price Tolerance */}
-                        <div className="flex items-center justify-between text-xs text-orange-700">
+                        {/* Price Tolerance - Protection buffer, not actual reduction */}
+                        <div className="flex items-center justify-between text-xs text-blue-700">
                           <span>{tRial("priceTolerance")}</span>
                           <span className="font-semibold" dir="ltr">
-                            -{purchaseDetails.slippage_percent.toFixed(2)}%
-                          </span>
-                        </div>
-
-                        {/* Total Reduction */}
-                        <div className="flex items-center justify-between text-xs text-red-700 font-bold pt-1 border-t border-blue-200">
-                          <span>
-                            {locale === "fa" ? "کل کاهش" : "Total Reduction"}
-                          </span>
-                          <span dir="ltr">
-                            -
-                            {purchaseDetails.total_reduction_percent.toFixed(2)}
-                            %
+                            {purchaseDetails.slippage_percent.toFixed(2)}%
                           </span>
                         </div>
                       </>
@@ -1172,6 +1187,11 @@ export default function RialPurchaseSection({ presale }) {
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
                         {tRial("processing")}
+                      </>
+                    ) : paymentBreakdown?.needsGateway ? (
+                      <>
+                        <Banknote className="w-5 h-5" />
+                        {tRial("proceedToGateway")}
                       </>
                     ) : (
                       <>

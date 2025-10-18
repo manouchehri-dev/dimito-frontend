@@ -677,7 +677,8 @@
       "of": "of",
       "assets": "assets",
       "filteredValue": "Filtered value",
-      "viewAll": "View All Assets"
+      "viewAll": "View All Assets",
+      "allAssets": "All Assets"
     },
     "transactions": {
       "title": "Transaction History",
@@ -2205,6 +2206,7 @@
       "walletPurchaseInfo": "Tokens will be purchased instantly using your wallet balance.",
       "gatewayPurchaseInfo": "After completing payment, tokens will be automatically purchased and added to your account.",
       "confirmPurchaseButton": "Confirm Purchase",
+      "proceedToGateway": "Proceed to Payment Gateway",
       "smartPayment": "Smart Payment Breakdown",
       "useBalancePlusCharge": "Use balance + charge the difference",
       "fromWallet": "From Wallet Balance",
