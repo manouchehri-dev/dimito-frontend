@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createRedirectUrl } from "@/lib/url-utils";
+import { getLocaleFromCookies } from "@/lib/locale-cookie-server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.dimito.ir";
 
@@ -25,12 +26,13 @@ export async function GET(request) {
     const success = searchParams.get("success");
     const trackId = searchParams.get("track_id");
 
-    // Get locale from cookie or default to 'en'
-    const cookieStore = await cookies();
-    const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+    // Get locale from cookie set by middleware
+    const locale = await getLocaleFromCookies();
+    console.log(`🍪 Payment callback using locale from cookie: ${locale}`);
 
     // Get auth token from localStorage (passed via query param from gateway)
     // Or from cookie if available (for SSR)
+    const cookieStore = await cookies();
     const authTokenFromQuery = searchParams.get("auth_token");
     const authTokenFromCookie = cookieStore.get("auth_token")?.value;
     const authToken = authTokenFromQuery || authTokenFromCookie;
@@ -280,13 +282,14 @@ export async function GET(request) {
   } catch (error) {
     console.error("[Payment Callback] Unexpected error:", error);
 
-    // Get locale safely
-    let locale = "en";
+    // Get locale safely from cookie
+    let locale;
     try {
-      const cookieStore = await cookies();
-      locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+      locale = await getLocaleFromCookies();
     } catch (e) {
-      // Cookie reading failed, use default
+      // If cookie reading fails, use domain-based default
+      const currentHost = request.headers.get("host") || "";
+      locale = currentHost.includes(".ir") ? "fa" : "en";
     }
 
     return NextResponse.redirect(
