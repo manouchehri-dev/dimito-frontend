@@ -65,10 +65,14 @@ export function useAssetPrices(updateIntervalMinutes = 5) {
 
   /**
    * Calculate tokens for a given Rial amount
+   * ✅ NEW: Uses currency symbol instead of asset_id
+   * Backend assets have unit field (e.g., "usdt") - we match with lowercase symbol
    */
   const calculateTokens = useCallback(
-    (assetId, rialAmount) => {
-      const asset = assets.find((a) => a.asset_id === assetId);
+    (currency, rialAmount) => {
+      // Find asset by unit - matches token_symbol (lowercased) from presale
+      // E.g., "USDT" -> "usdt" matches asset.unit
+      const asset = assets.find((a) => a.unit === currency.toLowerCase());
       if (!asset || asset.buy_unit_price <= 0) return 0;
 
       return rialAmount / asset.buy_unit_price;
@@ -77,11 +81,15 @@ export function useAssetPrices(updateIntervalMinutes = 5) {
   );
 
   /**
-   * Get asset by ID
+   * Get asset by currency symbol
+   * ✅ NEW: Uses currency symbol instead of asset_id
+   * Backend assets have unit field (e.g., "usdt") - we match with lowercase symbol
    */
   const getAsset = useCallback(
-    (assetId) => {
-      return assets.find((a) => a.asset_id === assetId);
+    (currency) => {
+      // Find asset by unit - matches token_symbol (lowercased) from presale
+      // E.g., "USDT" -> "usdt" matches asset.unit
+      return assets.find((a) => a.unit === currency.toLowerCase());
     },
     [assets]
   );
@@ -174,7 +182,7 @@ export function useCalculateTax() {
   const { token } = useAuthStore();
 
   const calculateTax = useCallback(
-    async (assetType, assetId, tokenAmount) => {
+    async (currency, tokenAmount) => {
       if (!token) {
         setError("Not authenticated");
         return { percent: 0, amountInRial: 0 };
@@ -191,8 +199,7 @@ export function useCalculateTax() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            asset_type: assetType,
-            asset_id: assetId,
+            currency: currency, // ✅ NEW: Just currency name (e.g., "USDT")
             amount: tokenAmount,
           }),
         });
@@ -247,7 +254,7 @@ export function useChargeWallet() {
   const { token, isAuthenticated, authMethod } = useAuthStore();
 
   const chargeWallet = useCallback(
-    async (assetType, assetId, amount, purchaseIntent = null) => {
+    async (currency, amount, purchaseIntent = null) => {
       // Validate authentication
       if (!isAuthenticated || authMethod !== "sso" || !token) {
         setError("Please login with SSO to charge wallet");
@@ -255,7 +262,7 @@ export function useChargeWallet() {
       }
 
       // Validate inputs
-      if (!assetType || !assetId || !amount || amount <= 0) {
+      if (!currency || !amount || amount <= 0) {
         setError("Invalid charge parameters");
         return null;
       }
@@ -274,10 +281,9 @@ export function useChargeWallet() {
             ? `${window.location.origin}/api/payment/callback`
             : "https://dimito.ir/api/payment/callback");
 
-        // Build request body
+        // Build request body - NEW API structure
         const requestBody = {
-          asset_type: assetType,
-          asset_id: assetId,
+          currency: currency, // ✅ NEW: Just currency name (e.g., "Yen")
           amount: amount,
           redirect_url: redirectUrl,
         };
@@ -355,9 +361,7 @@ export function usePurchaseToken() {
   const purchaseToken = useCallback(
     async (
       amount,
-      assetType = 53,
-      assetId = DEFAULT_ASSET_ID,
-      unit = "usdt",
+      currency,
       rialAmount = null,
       slippagePercent = 0.2
     ) => {
@@ -373,6 +377,12 @@ export function usePurchaseToken() {
         return null;
       }
 
+      // Validate currency
+      if (!currency) {
+        setError("Currency is required");
+        return null;
+      }
+
       setPurchasing(true);
       setError(null);
 
@@ -384,10 +394,8 @@ export function usePurchaseToken() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            currency: currency, // ✅ NEW: Just currency name (e.g., "USDT")
             amount,
-            asset_type: assetType,
-            asset_id: assetId,
-            unit,
             rial_amount: rialAmount,
             slippage_percent: slippagePercent,
           }),
@@ -427,6 +435,9 @@ export function usePurchaseToken() {
 }
 
 /**
+ * @deprecated This function is no longer needed. Use currency names (token symbols) directly instead.
+ * The backend now handles asset_id lookups internally based on currency names.
+ * 
  * Get asset ID from token data or use default
  */
 export function getAssetId(tokenData) {
