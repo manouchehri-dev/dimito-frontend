@@ -677,7 +677,8 @@
       "of": "of",
       "assets": "assets",
       "filteredValue": "Filtered value",
-      "viewAll": "View All Assets"
+      "viewAll": "View All Assets",
+      "allAssets": "All Assets"
     },
     "transactions": {
       "title": "Transaction History",
