@@ -141,10 +141,8 @@ export async function GET(request) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              currency: purchase_intent.currency, // ✅ Asset name from purchase intent (e.g., "Tether")
               amount: parseFloat(purchase_intent.token_amount), // Convert from string to number
-              asset_type: purchase_intent.asset_type,
-              asset_id: purchase_intent.asset_id,
-              unit: purchase_intent.unit,
               rial_amount: purchase_intent.rial_amount, // Use rial_amount field
               slippage_percent: purchase_intent.slippage_percent ?? 0.2, // Default 0.2% if not provided
               track_id: trackId, // ✅ PASS track_id to prevent duplicate intent creation

@@ -22,7 +22,6 @@ import {
   useChargeWallet,
   usePurchaseToken,
   useRialBalance,
-  getAssetId,
 } from "@/hooks/useRialPurchase";
 
 export default function RialPurchaseSection({ presale }) {
@@ -40,11 +39,11 @@ export default function RialPurchaseSection({ presale }) {
   const [showAdvanced, setShowAdvanced] = useState(false); // Show advanced options
   const [customSlippage, setCustomSlippage] = useState(0.2); // User-selected price tolerance (slippage)
 
-  // Get asset ID from presale data or use default
-  const assetId = getAssetId(
-    presale?.mine_token?.asset_id || "b0bbfeb5-dd77-4e44-ba2c-22e84ff9ea4a"
-  );
-  const assetType = presale?.mine_token?.asset_type || 53; // Default to 53 for USDT
+  // ✅ NEW: Get currency from presale data
+  // Backend assets have: name="Tether", unit="usdt" (lowercase symbol)
+  // We use token_symbol (e.g., "USDT") lowercased to match asset.unit
+  const tokenCurrency = presale?.mine_token?.token_symbol || "USDT"; // Token symbol for display
+  const tokenUnit = tokenCurrency.toLowerCase(); // Lowercase for matching asset.unit (e.g., "usdt")
 
   // Price tolerance configuration - use user's custom tolerance or default
   const slippagePercent = customSlippage; // User-selected or default 0.2%
@@ -85,10 +84,11 @@ export default function RialPurchaseSection({ presale }) {
     return Math.floor(rialBalance / slippageBuffer);
   }, [rialBalance, slippageBuffer]);
 
-  // Get current asset data
+  // Get current asset data by matching unit (lowercase symbol)
   const currentAsset = useMemo(() => {
-    return assets.find((a) => a.asset_id === assetId);
-  }, [assets, assetId]);
+    // ✅ NEW: Match asset by unit field (e.g., "usdt" matches token_symbol "USDT" lowercased)
+    return assets.find((a) => a.unit === tokenUnit);
+  }, [assets, tokenUnit]);
 
   /**
    * Round amount to clean increments
@@ -126,7 +126,8 @@ export default function RialPurchaseSection({ presale }) {
       const baseTokenAmount = totalCostRial / currentPrice;
 
       // Step 3: Get tax percentage (we need percent, not Rial amount)
-      let taxInfo = await calculateTax(assetType, assetId, baseTokenAmount);
+      // ✅ NEW: Backend expects asset.name ("Tether") not token_symbol ("USDT")
+      let taxInfo = await calculateTax(currentAsset.name, baseTokenAmount);
       let taxPercent = taxInfo.percent;
 
       // Step 4: Calculate tax amount in Rials (reverse calculation from total)
@@ -161,8 +162,7 @@ export default function RialPurchaseSection({ presale }) {
   }, [
     rawRialAmount,
     currentAsset,
-    assetType,
-    assetId,
+    tokenCurrency,
     slippagePercent,
     calculateTax,
   ]);
@@ -273,8 +273,9 @@ export default function RialPurchaseSection({ presale }) {
     await refetch();
     toast.dismiss("fetch-price");
 
-    // Get latest asset data
-    const latestAsset = assets.find((a) => a.asset_id === assetId);
+    // Get latest asset data by matching unit
+    // ✅ NEW: Match asset by unit field (e.g., "usdt" matches token_symbol "USDT" lowercased)
+    const latestAsset = assets.find((a) => a.unit === tokenUnit);
     if (!latestAsset) {
       toast.error(tRial("errorFetchPrice"));
       return;
@@ -282,7 +283,8 @@ export default function RialPurchaseSection({ presale }) {
 
     // Calculate tokens with latest price using effective Rial (with price tolerance applied)
     const effectiveRialAmount = parseFloat(rawRialAmount) * slippageMultiplier;
-    const tokensWithLatestPrice = calculateTokens(assetId, effectiveRialAmount);
+    // ✅ NEW: Use currency name instead of asset_id
+    const tokensWithLatestPrice = calculateTokens(tokenCurrency, effectiveRialAmount);
 
     // Show confirmation dialog
     setConfirmData({
@@ -312,11 +314,10 @@ export default function RialPurchaseSection({ presale }) {
       });
 
       // Use purchase details with tax already calculated
+      // ✅ NEW: Backend expects asset.name ("Tether") not token_symbol ("USDT")
       const result = await purchaseToken(
         parseFloat(purchaseDetails.token_amount), // 18-decimal precision token amount
-        assetType,
-        assetId,
-        presale?.mine_token?.token_symbol?.toLowerCase() || "usdt",
+        currentAsset?.name || "Tether", // ✅ Backend expects asset name
         purchaseDetails.total_cost, // Total cost including tax
         purchaseDetails.slippage_percent // Price tolerance for backend validation
       );
@@ -347,11 +348,11 @@ export default function RialPurchaseSection({ presale }) {
             toast.error(
               locale === "fa"
                 ? `موجودی کافی نیست. ${shortfall.toFixed(
-                    2
-                  )} ریال کم دارید. لطفاً مقدار کمتری وارد کنید یا کیف پول را شارژ کنید.`
+                  2
+                )} ریال کم دارید. لطفاً مقدار کمتری وارد کنید یا کیف پول را شارژ کنید.`
                 : `Insufficient balance. You need ${shortfall.toFixed(
-                    2
-                  )} more Rials. Please reduce the amount or charge your wallet.`,
+                  2
+                )} more Rials. Please reduce the amount or charge your wallet.`,
               { duration: 7000 }
             );
           } else {
@@ -380,12 +381,11 @@ export default function RialPurchaseSection({ presale }) {
     const walletUsed = Math.floor(paymentBreakdown.walletBalanceUsed);
 
     // Create complete purchase intent with all new fields from documentation
+    // ✅ NEW: Backend expects asset.name ("Tether") not token_symbol ("USDT")
     const purchaseIntent = {
+      currency: currentAsset?.name || "Tether", // ✅ Backend expects asset name (e.g., "Tether")
       token_amount: purchaseDetails.token_amount, // 18-decimal precision string
       token_symbol: presale?.mine_token?.token_symbol,
-      asset_type: assetType,
-      asset_id: assetId,
-      unit: presale?.mine_token?.token_symbol?.toLowerCase() || "usdt",
       token_price_rial: purchaseDetails.token_price_rial, // Price snapshot
       rial_amount: chargeAmount, // Amount to charge via gateway (for backend compatibility)
       total_cost: purchaseDetails.total_cost, // Total cost of purchase (base + tax)
@@ -397,9 +397,9 @@ export default function RialPurchaseSection({ presale }) {
       charge_amount: chargeAmount,
     };
 
+    // ✅ NEW: Pass asset name for charging (must match backend asset names)
     const result = await chargeWallet(
-      assetType,
-      assetId,
+      currentAsset?.name || "Tether", // ✅ Use asset name (e.g., "Tether"), not symbol (e.g., "USDT")
       chargeAmount, // Gateway charge amount (matches what UI shows)
       purchaseIntent // Complete purchase intent with all fields
     );
@@ -502,8 +502,8 @@ export default function RialPurchaseSection({ presale }) {
                 {balanceLoading
                   ? tRial("loadingBalance")
                   : Math.floor(rialBalance).toLocaleString(
-                      locale === "fa" ? "fa-IR" : "en-US"
-                    )}
+                    locale === "fa" ? "fa-IR" : "en-US"
+                  )}
               </span>
               {maxSpendableAmount > 0 && (
                 <button
@@ -609,9 +609,8 @@ export default function RialPurchaseSection({ presale }) {
             {locale === "fa" ? "تنظیمات پیشرفته" : "Advanced Settings"}
           </span>
           <svg
-            className={`w-5 h-5 text-gray-600 transition-transform ${
-              showAdvanced ? "rotate-180" : ""
-            }`}
+            className={`w-5 h-5 text-gray-600 transition-transform ${showAdvanced ? "rotate-180" : ""
+              }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -637,11 +636,10 @@ export default function RialPurchaseSection({ presale }) {
                   <button
                     key={value}
                     onClick={() => setCustomSlippage(value)}
-                    className={`py-2 px-3 text-sm font-semibold rounded-lg transition-all ${
-                      customSlippage === value
-                        ? "bg-green-600 text-white border-2 border-green-600"
-                        : "bg-gray-100 text-gray-700 border-2 border-gray-200 hover:border-green-400"
-                    }`}
+                    className={`py-2 px-3 text-sm font-semibold rounded-lg transition-all ${customSlippage === value
+                      ? "bg-green-600 text-white border-2 border-green-600"
+                      : "bg-gray-100 text-gray-700 border-2 border-gray-200 hover:border-green-400"
+                      }`}
                   >
                     {value}%
                   </button>
@@ -770,20 +768,20 @@ export default function RialPurchaseSection({ presale }) {
                 <p className="font-semibold mb-1">
                   {locale === "fa"
                     ? `💡 حداکثر مبلغ قابل خرج: ${maxSpendableAmount.toLocaleString(
-                        "fa-IR"
-                      )} ریال`
+                      "fa-IR"
+                    )} ریال`
                     : `💡 Max spendable: ${maxSpendableAmount.toLocaleString(
-                        "en-US"
-                      )} Rials`}
+                      "en-US"
+                    )} Rials`}
                 </p>
                 <p>
                   {locale === "fa"
                     ? `${(rialBalance - maxSpendableAmount).toFixed(
-                        0
-                      )} ریال (${slippagePercent}%) برای تلورانس قیمت رزرو شده است. اگر قیمت کمتر باشد، به موجودی شما برمی‌گردد.`
+                      0
+                    )} ریال (${slippagePercent}%) برای تلورانس قیمت رزرو شده است. اگر قیمت کمتر باشد، به موجودی شما برمی‌گردد.`
                     : `${(rialBalance - maxSpendableAmount).toFixed(
-                        0
-                      )} Rials (${slippagePercent}%) reserved for price tolerance. Will be refunded if price is lower.`}
+                      0
+                    )} Rials (${slippagePercent}%) reserved for price tolerance. Will be refunded if price is lower.`}
                 </p>
               </div>
             </div>
@@ -882,11 +880,11 @@ export default function RialPurchaseSection({ presale }) {
                   <p>
                     {locale === "fa"
                       ? `حداقل مبلغ شارژ کیف پول ${GATEWAY_MINIMUM.toLocaleString(
-                          "fa-IR"
-                        )} ریال است. لطفاً مبلغ بیشتری وارد کنید.`
+                        "fa-IR"
+                      )} ریال است. لطفاً مبلغ بیشتری وارد کنید.`
                       : `Minimum gateway charge is ${GATEWAY_MINIMUM.toLocaleString(
-                          "en-US"
-                        )} Rials. Please increase the amount.`}
+                        "en-US"
+                      )} Rials. Please increase the amount.`}
                   </p>
                 </div>
               </div>
@@ -907,11 +905,10 @@ export default function RialPurchaseSection({ presale }) {
           charging ||
           paymentBreakdown?.gatewayBelowMinimum
         }
-        className={`w-full font-bold py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg transform hover:scale-[1.02] cursor-pointer ${
-          hasEnoughBalance
-            ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-            : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white"
-        }`}
+        className={`w-full font-bold py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg transform hover:scale-[1.02] cursor-pointer ${hasEnoughBalance
+          ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+          : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white"
+          }`}
       >
         {purchasing || charging ? (
           <>
@@ -938,9 +935,8 @@ export default function RialPurchaseSection({ presale }) {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
         <div className="flex items-start gap-2">
           <Info
-            className={`w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0 ${
-              isRTL ? "ml-2" : "mr-2"
-            }`}
+            className={`w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0 ${isRTL ? "ml-2" : "mr-2"
+              }`}
           />
           <div className="text-xs text-blue-700 space-y-1">
             <p>
@@ -949,11 +945,11 @@ export default function RialPurchaseSection({ presale }) {
             <p className="font-semibold">
               {locale === "fa"
                 ? `حداقل مبلغ شارژ کیف پول: ${GATEWAY_MINIMUM.toLocaleString(
-                    "fa-IR"
-                  )} ریال`
+                  "fa-IR"
+                )} ریال`
                 : `Minimum gateway charge: ${GATEWAY_MINIMUM.toLocaleString(
-                    "en-US"
-                  )} Rials`}
+                  "en-US"
+                )} Rials`}
             </p>
           </div>
         </div>
@@ -1047,13 +1043,13 @@ export default function RialPurchaseSection({ presale }) {
                       >
                         {purchaseDetails
                           ? Math.ceil(
-                              purchaseDetails.total_cost
-                            ).toLocaleString(
-                              locale === "fa" ? "fa-IR" : "en-US"
-                            )
+                            purchaseDetails.total_cost
+                          ).toLocaleString(
+                            locale === "fa" ? "fa-IR" : "en-US"
+                          )
                           : Math.ceil(confirmData.rialAmount).toLocaleString(
-                              locale === "fa" ? "fa-IR" : "en-US"
-                            )}{" "}
+                            locale === "fa" ? "fa-IR" : "en-US"
+                          )}{" "}
                         {locale === "fa" ? "ریال" : "Rials"}
                       </span>
                     </div>

@@ -13,7 +13,7 @@ import { useERC20Approval } from "@/hooks/useERC20Approval";
 import { usePresalePurchase } from "@/hooks/usePresalePurchase";
 import AddTokenToWallet from "@/components/AddTokenToWallet";
 import RialPurchaseSection from "@/components/RialPurchaseSection";
-import { useAssetPrices, getAssetId } from "@/hooks/useRialPurchase";
+import { useAssetPrices } from "@/hooks/useRialPurchase";
 import {
   ArrowLeft,
   AlertCircle,
@@ -214,7 +214,7 @@ export default function PresaleBuyPage({ preSaleId }) {
     if (
       balance &&
       parseFloat(rawPaymentAmount) >
-        parseFloat(formatUnits(balance.value, balance.decimals))
+      parseFloat(formatUnits(balance.value, balance.decimals))
     ) {
       return t("errors.insufficientBalance");
     }
@@ -631,19 +631,16 @@ export default function PresaleBuyPage({ preSaleId }) {
                     <div className="flex items-center justify-center gap-2 sm:gap-3">
                       {/* Rial Price */}
                       {(() => {
-                        const assetId = getAssetId(presale.mine_token);
+                        // ✅ NEW: Match asset by unit field (lowercase symbol)
+                        // Backend: name="Tether", unit="usdt"
+                        const tokenSymbol = presale.mine_token?.token_symbol || "USDT";
                         const rialAsset = assets.find(
-                          (a) => a.asset_id === assetId
+                          (a) => a.unit === tokenSymbol.toLowerCase()
                         );
-                        if (rialAsset) {
-                          console.log(assetId);
-                          console.log("in if");
-                          console.log(assets);
-                          console.log(rialAsset);
-                        }
                         return (
                           rialAsset && (
                             <span className="text-white/90 text-xs sm:text-sm lg:text-base font-semibold">
+
                               {Math.floor(
                                 rialAsset.buy_unit_price
                               ).toLocaleString(
@@ -686,22 +683,20 @@ export default function PresaleBuyPage({ preSaleId }) {
                   <div className="flex">
                     <button
                       onClick={() => setActiveTab("wallet")}
-                      className={`flex-1 py-4 px-6 text-center font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                        activeTab === "wallet"
-                          ? "bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 text-[#FF5D1B] border-b-2 border-[#FF5D1B]"
-                          : "text-gray-600 hover:bg-gray-50"
-                      }`}
+                      className={`flex-1 py-4 px-6 text-center font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${activeTab === "wallet"
+                        ? "bg-gradient-to-r from-[#FF5D1B]/10 to-[#FF363E]/10 text-[#FF5D1B] border-b-2 border-[#FF5D1B]"
+                        : "text-gray-600 hover:bg-gray-50"
+                        }`}
                     >
                       <Wallet className="w-5 h-5" />
                       <span>{t("tabs.wallet")}</span>
                     </button>
                     <button
                       onClick={() => setActiveTab("fiat")}
-                      className={`flex-1 py-4 px-6 text-center font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                        activeTab === "fiat"
-                          ? "bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 border-b-2 border-green-600"
-                          : "text-gray-600 hover:bg-gray-50"
-                      }`}
+                      className={`flex-1 py-4 px-6 text-center font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${activeTab === "fiat"
+                        ? "bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 border-b-2 border-green-600"
+                        : "text-gray-600 hover:bg-gray-50"
+                        }`}
                     >
                       <Banknote className="w-5 h-5" />
                       <span>{t("tabs.fiat")}</span>
@@ -864,8 +859,8 @@ export default function PresaleBuyPage({ preSaleId }) {
                           {status === "upcoming"
                             ? t("status.notStarted")
                             : status === "ended"
-                            ? t("status.ended")
-                            : t("status.inactive")}
+                              ? t("status.ended")
+                              : t("status.inactive")}
                         </button>
                       ) : validationError ? (
                         <button
