@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { LogOut, Loader2 } from 'lucide-react';
 import useAuthStore from '@/stores/useAuthStore';
+import toast from 'react-hot-toast';
 
 export default function SSOLogoutButton({
   className = "",
@@ -14,11 +15,15 @@ export default function SSOLogoutButton({
   const [isLoading, setIsLoading] = useState(false);
   const { logout, authMethod } = useAuthStore();
   const router = useRouter();
+  const t = useTranslations('auth');
 
   const handleSSOLogout = async () => {
     setIsLoading(true);
 
     try {
+      // Show loading toast
+      const loadingToast = toast.loading(t('loggingOut') || 'Logging out...');
+      
       // Import OIDC configuration
       const { generateLogoutUrl } = await import('@/lib/auth/oidcConfig');
 
@@ -28,17 +33,19 @@ export default function SSOLogoutButton({
       });
 
       console.log('Redirecting to OIDC provider logout:', logoutUrl);
+      toast.dismiss(loadingToast);
 
       // Redirect to OIDC provider logout - cleanup happens after provider confirms
-      router.push(logoutUrl);
+      window.location.href = logoutUrl;
     } catch (error) {
       console.error('Error during SSO logout:', error);
+      toast.error(t('logoutFailed') || 'Logout failed. Please try again.');
       setIsLoading(false);
 
-      // Fallback: clear local state and redirect
+      // Fallback: clear local state and redirect to home with hard refresh
       logout();
       sessionStorage.clear();
-      router.push('/?logout=fallback');
+      window.location.href = '/';
     }
   };
 

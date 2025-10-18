@@ -1638,6 +1638,7 @@
     "authenticationSuccess": "Authentication successful! Redirecting...",
     "sessionExpired": "Your session has expired. Please login again.",
     "logoutSuccess": "You have been logged out successfully",
+    "logoutFailed": "Logout failed. Please try again.",
     "unauthorizedAccess": "Unauthorized access. Please login to continue.",
     "userMenu": "User Menu",
     "notLoggedIn": "You are not logged in",
