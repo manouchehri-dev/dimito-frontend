@@ -20,7 +20,7 @@ export default function SSOTransactionsCard({ transactions = {} }) {
   const { results = [] } = transactions;
 
   // Show only recent 5 transactions
-  const recentTransactions = results.slice(0, 5);
+  const recentTransactions = results.slice(0, 10);
 
   // Format number
   const formatNumber = (num) => {

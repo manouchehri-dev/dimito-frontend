@@ -94,19 +94,6 @@ export default function SSOAssetsCard({ assets = [] }) {
               <p className="font-semibold text-gray-900 text-sm">
                 {formatNumber(asset.item_value || 0)} IRR
               </p>
-              {asset.change !== null && (
-                <p
-                  className={`text-xs flex items-center justify-end gap-1 ${asset.change > 0 ? "text-green-600" : "text-red-600"
-                    }`}
-                >
-                  {asset.change > 0 ? (
-                    <TrendingUp className="w-3 h-3" />
-                  ) : (
-                    <TrendingDown className="w-3 h-3" />
-                  )}
-                  {Math.abs(asset.change)}%
-                </p>
-              )}
             </div>
           </div>
         ))}

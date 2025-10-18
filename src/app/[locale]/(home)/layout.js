@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingPresaleButton from "@/components/FloatingPresaleButton";
 import FloatingActionStack from "@/components/FloatingActionStack";
+import LogoutSuccessHandler from "@/components/LogoutSuccessHandler";
 
 export function generateViewport() {
   return {
@@ -134,6 +135,7 @@ export default async function Layout({ children }) {
         }}></div>
       </div>
 
+      <LogoutSuccessHandler />
       <Header />
       {children}
       <Footer />

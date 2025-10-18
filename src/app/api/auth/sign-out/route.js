@@ -34,9 +34,9 @@ export async function GET(request) {
     
     if (error) {
       console.error('OIDC logout error:', error, errorDescription);
-      // Redirect to login with error (preserve user's locale and domain)
+      // Redirect to home page with error (preserve user's locale and domain)
       const response = NextResponse.redirect(
-        createRedirectUrl(request, '/auth/login', userLocale, {
+        createRedirectUrl(request, '/', userLocale, {
           error,
           error_description: errorDescription || 'Logout failed'
         }, originalDomain)
@@ -45,10 +45,10 @@ export async function GET(request) {
       return response;
     }
     
-    // Successful logout - redirect to login page with cleanup flag (preserve user's locale and domain)
+    // Successful logout - redirect to home page with cleanup flag (preserve user's locale and domain)
     console.log(`🎯 Redirecting to original domain: ${originalDomain || 'current domain'}`);
     const response = NextResponse.redirect(
-      createRedirectUrl(request, '/auth/login', userLocale, {
+      createRedirectUrl(request, '/', userLocale, {
         logout: 'success',
         cleanup: 'true'
       }, originalDomain)
@@ -62,16 +62,16 @@ export async function GET(request) {
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
     
-    console.log('User successfully logged out by provider, redirecting to login');
+    console.log('User successfully logged out by provider, redirecting to home');
     return response;
   } catch (error) {
     console.error('Sign-out callback error:', error);
     
-    // Fallback: redirect to login page with error (preserve user's locale and domain)
+    // Fallback: redirect to home page with error (preserve user's locale and domain)
     const userLocale = await getLocaleFromCookies();
     const originalDomain = request.cookies.get('sso_original_domain')?.value;
     const response = NextResponse.redirect(
-      createRedirectUrl(request, '/auth/login', userLocale, {
+      createRedirectUrl(request, '/', userLocale, {
         error: 'sign_out_error'
       }, originalDomain)
     );

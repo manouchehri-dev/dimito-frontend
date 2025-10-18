@@ -7,6 +7,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useAccount, useDisconnect } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import useAuthStore from '@/stores/useAuthStore';
+import toast from 'react-hot-toast';
 
 export default function UserIconDropdown({ className = "", isMobile = false, showLoginOnly = false, showLogoutOnly = false }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,9 +43,11 @@ export default function UserIconDropdown({ className = "", isMobile = false, sho
   // Handle SSO logout
   const handleSSOLogout = async () => {
     try {
+      // Show loading toast
+      const loadingToast = toast.loading(t('loggingOut') || 'Logging out...');
+      
       // Import OIDC configuration
       const { generateLogoutUrl } = await import('@/lib/auth/oidcConfig');
-
 
       // Generate logout URL - DON'T clear state yet, let provider handle it
       const logoutUrl = generateLogoutUrl({
@@ -53,17 +56,19 @@ export default function UserIconDropdown({ className = "", isMobile = false, sho
 
       console.log('Redirecting to OIDC provider logout:', logoutUrl);
       setIsOpen(false);
+      toast.dismiss(loadingToast);
 
       // Redirect to OIDC provider logout - cleanup happens after provider confirms
-      router.push(logoutUrl);
+      window.location.href = logoutUrl;
     } catch (error) {
       console.error('Error during SSO logout:', error);
+      toast.error(t('logoutFailed') || 'Logout failed. Please try again.');
 
-      // Fallback: clear local state and redirect
+      // Fallback: clear local state and redirect to home with hard refresh
       logout();
       sessionStorage.clear();
       setIsOpen(false);
-      router.push('/?logout=fallback');
+      window.location.href = '/';
     }
   };
 

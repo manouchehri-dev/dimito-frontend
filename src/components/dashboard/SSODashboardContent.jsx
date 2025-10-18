@@ -47,7 +47,7 @@ export default function SSODashboardContent() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {t("welcome")} {displayName || userInfo?.first_name || "User"}! 👋
+              <span dir="ltr">{displayName || userInfo?.first_name || "User"}</span> {t("welcome")}!
             </h1>
             <p className="text-gray-600 mt-2">{t("ssoWelcomeDescription")}</p>
           </div>
