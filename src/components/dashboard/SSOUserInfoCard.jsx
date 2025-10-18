@@ -59,7 +59,7 @@ export default function SSOUserInfoCard({ userInfo }) {
           </div>
           <div className="flex-1">
             <h4 className="text-xl font-bold text-gray-900">
-              {displayName}
+              <span dir="ltr">{displayName}</span>
               {last_name && ` ${last_name}`}
             </h4>
             <div className="flex items-center gap-2">
@@ -81,7 +81,7 @@ export default function SSOUserInfoCard({ userInfo }) {
                     {t("phoneNumber")}
                   </p>
                   <p className="text-sm font-medium text-gray-900">
-                    {phone_number}
+                    <span dir="ltr">{phone_number}</span>
                   </p>
                 </div>
               </div>
@@ -94,7 +94,7 @@ export default function SSOUserInfoCard({ userInfo }) {
                   <p className="text-xs text-gray-500 uppercase tracking-wide">
                     {t("email")}
                   </p>
-                  <p className="text-sm font-medium text-gray-900">{email}</p>
+                  <p className="text-sm font-medium text-gray-900"><span dir="ltr">{email}</span></p>
                 </div>
               </div>
             )}
