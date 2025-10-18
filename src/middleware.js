@@ -32,25 +32,30 @@ export default function middleware(req) {
     const existingLocale = req.cookies.get(LOCALE_COOKIE_NAME)?.value;
     let targetLocale = null;
     
-    if (existingLocale && routing.locales.includes(existingLocale)) {
-      // Respect user's existing locale preference
+    if (existingLocale && existingLocale !== 'none' && routing.locales.includes(existingLocale)) {
+      // Respect user's existing locale preference (if valid and not "none")
       targetLocale = existingLocale;
       console.log(`🍪 Middleware: Using existing locale cookie: ${existingLocale}`);
-    } else if (hostname.endsWith("dimito.ir")) {
-      // Default to Farsi for .ir domain only if no existing preference
-      targetLocale = "fa";
-      console.log(`🌐 Middleware: No locale cookie, defaulting to "fa" for dimito.ir domain`);
-    } else if (hostname.endsWith("dimito.io")) {
-      // Default to English for .io domain only if no existing preference
-      targetLocale = "en";
-      console.log(`🌐 Middleware: No locale cookie, defaulting to "en" for dimito.io domain`);
+    } else if (!existingLocale || existingLocale === 'none') {
+      // First visit or invalid cookie - set based on domain
+      if (hostname.endsWith("dimito.ir")) {
+        targetLocale = "fa";
+        console.log(`🌐 Middleware: First visit or invalid cookie ("${existingLocale || 'none'}"), setting to "fa" for dimito.ir domain`);
+      } else if (hostname.endsWith("dimito.io")) {
+        targetLocale = "en";
+        console.log(`🌐 Middleware: First visit or invalid cookie ("${existingLocale || 'none'}"), setting to "en" for dimito.io domain`);
+      } else {
+        // For localhost/development, default to "en"
+        targetLocale = "en";
+        console.log(`🌐 Middleware: First visit or invalid cookie ("${existingLocale || 'none'}"), defaulting to "en" for development`);
+      }
     }
     
     if (targetLocale) {
       url.pathname = `/${targetLocale}${url.pathname}`;
       const redirectResponse = NextResponse.redirect(url);
-      // Only update cookie if it's different from existing
-      if (!existingLocale || existingLocale !== targetLocale) {
+      // Always update cookie if it's different from existing or if it was "none"
+      if (!existingLocale || existingLocale === 'none' || existingLocale !== targetLocale) {
         redirectResponse.cookies.set(LOCALE_COOKIE_NAME, targetLocale, {
           ...LOCALE_COOKIE_OPTIONS,
           httpOnly: false,
@@ -59,7 +64,6 @@ export default function middleware(req) {
       }
       return redirectResponse;
     }
-    // For development (localhost) or other domains, let intl middleware handle default locale
   }
 
   // --- Fallback to intl middleware ---
@@ -74,12 +78,31 @@ export default function middleware(req) {
     // Validate and set locale cookie if it's a valid locale
     if (routing.locales.includes(localeFromPath)) {
       const currentCookie = req.cookies.get(LOCALE_COOKIE_NAME);
+      const currentCookieValue = currentCookie?.value;
       
-      // Only update cookie if it's different from current value
-      if (!currentCookie || currentCookie.value !== localeFromPath) {
-        console.log(`🍪 Middleware: Updating locale cookie from "${currentCookie?.value || 'none'}" to "${localeFromPath}"`);
+      // Determine target locale based on domain when cookie is "none" or empty
+      let targetLocale = localeFromPath;
+      
+      if (!currentCookieValue || currentCookieValue === 'none') {
+        // First visit or invalid cookie - set based on domain
+        if (hostname.endsWith("dimito.ir")) {
+          targetLocale = "fa";
+          console.log(`🍪 Middleware: Cookie is "${currentCookieValue || 'none'}", setting to "fa" for .ir domain`);
+        } else if (hostname.endsWith("dimito.io")) {
+          targetLocale = "en";
+          console.log(`🍪 Middleware: Cookie is "${currentCookieValue || 'none'}", setting to "en" for .io domain`);
+        } else {
+          // For localhost/development, use the path locale
+          targetLocale = localeFromPath;
+          console.log(`🍪 Middleware: Cookie is "${currentCookieValue || 'none'}", setting to "${localeFromPath}" from URL`);
+        }
+      }
+      
+      // Update cookie if it's different from current value or was "none"
+      if (!currentCookie || currentCookieValue === 'none' || currentCookieValue !== targetLocale) {
+        console.log(`🍪 Middleware: Updating locale cookie from "${currentCookieValue || 'none'}" to "${targetLocale}"`);
         
-        response.cookies.set(LOCALE_COOKIE_NAME, localeFromPath, {
+        response.cookies.set(LOCALE_COOKIE_NAME, targetLocale, {
           ...LOCALE_COOKIE_OPTIONS,
           httpOnly: false, // Allow client-side access
         });
