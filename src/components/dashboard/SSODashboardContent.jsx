@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useAccount } from "wagmi";
 import useAuthStore from "@/stores/useAuthStore";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import DashboardLoadingSpinner from "@/components/dashboard/DashboardLoadingSpinner";
 import ErrorState from "@/components/dashboard/ErrorState";
 import SSOUserInfoCard from "@/components/dashboard/SSOUserInfoCard";
 import SSOStatsCards from "@/components/dashboard/SSOStatsCards";
@@ -15,17 +15,37 @@ import { RefreshCw } from "lucide-react";
 export default function SSODashboardContent() {
   const t = useTranslations("dashboard");
   const { address } = useAccount();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated, authMethod } = useAuthStore();
 
-  // Use wallet address if available, otherwise use user ID or a placeholder for SSO-only users
-  const walletAddress = address || user?.id?.toString() || "sso_user";
+  // Wait for auth store to hydrate after SSO login redirect
+  const isAuthReady = isAuthenticated && authMethod === 'sso' && user?.id;
+  
+  // Use wallet address if available, otherwise use user ID
+  const walletAddress = address || user?.id?.toString() || null;
+  
+  // Only fetch data when we have a valid wallet address
   const { dashboardData, loading, error, refetch } = useDashboardData(
     walletAddress,
     "sso"
   );
 
+  // Show loading state while auth is hydrating OR data is loading
+  if (!isAuthReady) {
+    return <DashboardLoadingSpinner message={t('loadingSSOAuth')} />;
+  }
+  
   if (loading) {
-    return <LoadingSpinner />;
+    return <DashboardLoadingSpinner message={t('loadingSSOData')} showSkeleton={true} />;
+  }
+
+  // Show error if wallet address is not available after hydration
+  if (!walletAddress) {
+    return (
+      <ErrorState 
+        error={t("noUserData")} 
+        onRetry={() => window.location.reload()} 
+      />
+    );
   }
 
   if (error) {

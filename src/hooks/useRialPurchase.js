@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import useAuthStore from "@/stores/useAuthStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.dimito.ir";
@@ -9,26 +9,39 @@ const DEFAULT_ASSET_ID = "ab8acf5f-2e61-499d-aa37-f0e8ac65ea16";
 /**
  * Hook to fetch asset prices from iCart
  * Auto-updates every 5 minutes
+ * ✅ NOW PUBLIC: Works for both authenticated and non-authenticated users
+ * ✅ TAX INCLUDED: Returns tax data (tax_buy, tax_sell, tax_buy_percent, tax_sell_percent)
+ * ✅ FRONTEND FILTERING: Fetches all assets once, filters on frontend
+ * 
+ * @param {number} updateIntervalMinutes - Update interval in minutes
  */
 export function useAssetPrices(updateIntervalMinutes = 5) {
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { token, isAuthenticated, authMethod } = useAuthStore();
+  const isInitialFetch = useRef(true);
 
   const fetchPrices = useCallback(async () => {
-    // Only fetch for authenticated SSO users
-    if (!isAuthenticated || authMethod !== "sso" || !token) {
-      setLoading(false);
-      return;
+    // Only show loading on initial fetch, not on refetches
+    // This prevents flickering and keeps old data visible while updating
+    if (isInitialFetch.current) {
+      setLoading(true);
     }
-
+    
     try {
+      // Build headers - add Authorization only if user is authenticated with SSO
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      // Add auth header if available (optional for public access)
+      if (isAuthenticated && authMethod === "sso" && token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_URL}/presale/asset-prices/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers,
       });
 
       if (!response.ok) {
@@ -40,6 +53,7 @@ export function useAssetPrices(updateIntervalMinutes = 5) {
       if (data.success && data.assets) {
         setAssets(data.assets);
         setError(null);
+        isInitialFetch.current = false; // Mark that we've completed initial fetch
       } else {
         throw new Error("Invalid response format");
       }
@@ -67,6 +81,9 @@ export function useAssetPrices(updateIntervalMinutes = 5) {
    * Calculate tokens for a given Rial amount
    * ✅ NEW: Uses currency symbol instead of asset_id
    * Backend assets have unit field (e.g., "usdt") - we match with lowercase symbol
+   * 
+   * @deprecated Consider calculating directly from asset data to avoid stale closure issues:
+   * `const tokens = rialAmount / currentAsset.buy_unit_price`
    */
   const calculateTokens = useCallback(
     (currency, rialAmount) => {
@@ -84,6 +101,9 @@ export function useAssetPrices(updateIntervalMinutes = 5) {
    * Get asset by currency symbol
    * ✅ NEW: Uses currency symbol instead of asset_id
    * Backend assets have unit field (e.g., "usdt") - we match with lowercase symbol
+   * 
+   * @deprecated When using backend filtering, assets[0] is usually sufficient:
+   * `const currentAsset = assets.length === 1 ? assets[0] : assets.find(a => a.unit === currency.toLowerCase())`
    */
   const getAsset = useCallback(
     (currency) => {
@@ -172,6 +192,9 @@ export function useCalculateTokens() {
 }
 
 /**
+ * @deprecated This hook is no longer needed. Tax data is now included in the asset prices response.
+ * Use currentAsset.tax_buy_percent directly from useAssetPrices() instead.
+ * 
  * Hook to calculate tax for a token purchase (via backend proxy to iCart)
  * Frontend does NOT have access to iCart OIDC tokens, so we call backend
  */

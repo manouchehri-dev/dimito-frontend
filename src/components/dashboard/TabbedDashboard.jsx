@@ -10,6 +10,7 @@ import { Wallet, User, RefreshCw } from "lucide-react";
 // Dashboard content components
 import WalletDashboardContent from "./WalletDashboardContent";
 import SSODashboardContent from "./SSODashboardContent";
+import DashboardLoadingSpinner from "./DashboardLoadingSpinner";
 
 export default function TabbedDashboard() {
   const t = useTranslations("dashboard");
@@ -17,6 +18,17 @@ export default function TabbedDashboard() {
   const searchParams = useSearchParams();
   const { address, isConnected } = useAccount();
   const { isAuthenticated, authMethod, user } = useAuthStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Wait for auth store to hydrate (especially important after SSO redirect)
+  useEffect(() => {
+    // Give auth store time to hydrate from localStorage
+    const timer = setTimeout(() => {
+      setIsHydrated(true);
+    }, 100); // Small delay to ensure Zustand persist has loaded
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Get active tab from URL params, with smart defaults
   const [activeTab, setActiveTab] = useState(() => {
@@ -58,6 +70,11 @@ export default function TabbedDashboard() {
     }
   }, [searchParams, activeTab]);
 
+  // Show loading while auth store hydrates (prevents flashing wrong content after SSO login)
+  if (!isHydrated) {
+    return <DashboardLoadingSpinner message={t('loadingDashboard')} />;
+  }
+
   // Determine available tabs based on authentication status
   const availableTabs = [];
 
@@ -82,18 +99,25 @@ export default function TabbedDashboard() {
   }
 
   // If no tabs available, show connection prompt
+  // IMPORTANT: Prioritize SSO authentication - if user is authenticated via SSO, don't show wallet prompt
   if (availableTabs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <div className="bg-gray-50 rounded-full p-4 mb-4">
-          <User className="w-8 h-8 text-gray-400" />
+        <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-full p-6 mb-6">
+          <User className="w-12 h-12 text-[#FF5D1B]" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">
           {t('noDataAvailable')}
         </h3>
-        <p className="text-gray-600 max-w-md">
+        <p className="text-gray-600 max-w-md mb-6">
           {t('connectWalletOrLogin')}
         </p>
+        {/* Only show wallet connect if user is NOT authenticated via SSO */}
+        {!isAuthenticated && (
+          <div className="text-sm text-gray-500">
+            {t('pleaseConnectToAccess')}
+          </div>
+        )}
       </div>
     );
   }

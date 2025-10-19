@@ -6,7 +6,7 @@ import DashboardStatsCards from "@/components/dashboard/DashboardStatsCards";
 import RecentPurchasesCard from "@/components/dashboard/RecentPurchasesCard";
 import ParticipatedPresalesCard from "@/components/dashboard/ParticipatedPresalesCard";
 import UserTokenBalances from "@/components/dashboard/UserTokenBalances";
-import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import DashboardLoadingSpinner from "@/components/dashboard/DashboardLoadingSpinner";
 import ErrorState from "@/components/dashboard/ErrorState";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { RefreshCw } from "lucide-react";
@@ -16,7 +16,7 @@ export default function WalletDashboardContent({ walletAddress }) {
   const { dashboardData, loading, error, refetch } = useDashboardData(walletAddress, 'wallet');
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <DashboardLoadingSpinner message={t('loadingWalletData')} showSkeleton={true} />;
   }
 
   if (error) {

@@ -116,10 +116,11 @@ export default function AuthCallbackHandler() {
             setStatus("success");
             setMessage(t("authenticationSuccess"));
 
-            // Redirect to dashboard after 2 seconds
+            // Redirect to dashboard after 1 second (faster redirect for better UX)
             setTimeout(() => {
+              console.log("🚀 Redirecting to dashboard...");
               router.push("/dashboard");
-            }, 2000);
+            }, 1000);
           } catch (tokenError) {
             console.error("Error processing token:", tokenError);
             setStatus("error");

@@ -18,7 +18,6 @@ import toast from "react-hot-toast";
 import useAuthStore from "@/stores/useAuthStore";
 import {
   useAssetPrices,
-  useCalculateTax,
   useChargeWallet,
   usePurchaseToken,
   useRialBalance,
@@ -54,15 +53,13 @@ export default function RialPurchaseSection({ presale }) {
   // Gateway minimum charge amount
   const GATEWAY_MINIMUM = 10000; // 10,000 Rial minimum for gateway payments
 
-  // Hooks
+  // Hooks - fetch all assets, filter on frontend
   const {
     assets,
     loading: pricesLoading,
     error: pricesError,
-    calculateTokens,
     refetch,
-  } = useAssetPrices(0.5); // Update every 30 seconds
-  const { calculateTax } = useCalculateTax();
+  } = useAssetPrices(2); // Update every 2 minutes
   const { chargeWallet, charging, error: chargeError } = useChargeWallet();
   const {
     purchaseToken,
@@ -85,10 +82,15 @@ export default function RialPurchaseSection({ presale }) {
     return Math.floor(rialBalance / slippageBuffer);
   }, [rialBalance, slippageBuffer]);
 
-  // Get current asset data by matching unit (lowercase symbol)
+  // Get current asset data by filtering on frontend
   const currentAsset = useMemo(() => {
-    // ✅ NEW: Match asset by unit field (e.g., "usdt" matches token_symbol "USDT" lowercased)
-    return assets.find((a) => a.unit === tokenUnit);
+    // Find asset by matching unit, symbol, or name (case-insensitive)
+    // This handles cases where presale has "DMT1" but asset has unit="dmt"
+    return assets.find((a) => 
+      a.unit?.toLowerCase() === tokenUnit ||
+      a.symbol?.toLowerCase() === tokenUnit ||
+      a.name?.toLowerCase() === tokenUnit
+    );
   }, [assets, tokenUnit]);
 
   /**
@@ -117,37 +119,35 @@ export default function RialPurchaseSection({ presale }) {
       return;
     }
 
-    const calculatePurchaseWithTax = async () => {
+    const calculatePurchaseWithTax = () => {
       setCalculatingDetails(true);
       try {
         const rialInput = parseFloat(rawRialAmount);
         const currentPrice = currentAsset.buy_unit_price;
+        
+        // ✅ OPTIMIZED: Get tax percentage directly from asset data (no API call needed)
+        const taxPercent = currentAsset.tax_buy_percent || 0;
 
-      // Step 1: Round user's input to clean amount (what user pays - CONSTANT!)
-      const totalCostRial = roundToCleanAmount(rialInput);
+        // Step 1: Round user's input to clean amount (what user pays - CONSTANT!)
+        const totalCostRial = roundToCleanAmount(rialInput);
 
-      // Step 2: Calculate base token amount from Rial cost
-      const baseTokenAmount = totalCostRial / currentPrice;
+        // Step 2: Calculate base token amount from Rial cost
+        const baseTokenAmount = totalCostRial / currentPrice;
 
-      // Step 3: Get tax percentage (we need percent, not Rial amount)
-      // ✅ NEW: Backend expects asset.name ("Tether") not token_symbol ("USDT")
-      let taxInfo = await calculateTax(currentAsset.name, baseTokenAmount);
-      let taxPercent = taxInfo.percent;
+        // Step 3: Calculate tax amount in Rials (reverse calculation from total)
+        // total_cost includes tax, so we need to extract it
+        // Formula: tax_amount = (total * tax_percent) / (100 + tax_percent)
+        const taxAmountRial = (totalCostRial * taxPercent) / (100 + taxPercent);
+        const baseCostRial = totalCostRial - taxAmountRial;
 
-      // Step 4: Calculate tax amount in Rials (reverse calculation from total)
-      // total_cost includes tax, so we need to extract it
-      // Formula: tax_amount = (total * tax_percent) / (100 + tax_percent)
-      const taxAmountRial = (totalCostRial * taxPercent) / (100 + taxPercent);
-      const baseCostRial = totalCostRial - taxAmountRial;
+        // Step 4: Sum tax and price tolerance percentages
+        const totalReductionPercent = taxPercent + slippagePercent;
 
-      // Step 5: Sum tax and price tolerance percentages
-      const totalReductionPercent = taxPercent + slippagePercent;
+        // Step 5: Apply total reduction to tokens (NOT to Rial!)
+        const reductionMultiplier = 1 - totalReductionPercent / 100;
+        const finalTokenAmount = baseTokenAmount * reductionMultiplier;
 
-      // Step 6: Apply total reduction to tokens (NOT to Rial!)
-      const reductionMultiplier = 1 - totalReductionPercent / 100;
-      const finalTokenAmount = baseTokenAmount * reductionMultiplier;
-
-        // Step 7: Prepare breakdown for display and backend
+        // Step 6: Prepare breakdown for display and backend
         const details = {
           token_amount: finalTokenAmount.toFixed(18), // 18 decimals for web3
           token_price_rial: Math.ceil(currentPrice), // No decimals
@@ -172,9 +172,7 @@ export default function RialPurchaseSection({ presale }) {
   }, [
     rawRialAmount,
     currentAsset,
-    tokenCurrency,
     slippagePercent,
-    calculateTax,
   ]);
 
   // Calculate tokens to receive from purchase details (includes tax adjustment)
@@ -283,9 +281,13 @@ export default function RialPurchaseSection({ presale }) {
     await refetch();
     toast.dismiss("fetch-price");
 
-    // Get latest asset data by matching unit
-    // ✅ NEW: Match asset by unit field (e.g., "usdt" matches token_symbol "USDT" lowercased)
-    const latestAsset = assets.find((a) => a.unit === tokenUnit);
+    // Get latest asset data by filtering on frontend (flexible matching)
+    const latestAsset = assets.find((a) => 
+      a.unit?.toLowerCase() === tokenUnit ||
+      a.symbol?.toLowerCase() === tokenUnit ||
+      a.name?.toLowerCase() === tokenUnit
+    );
+    
     if (!latestAsset) {
       toast.error(tRial("errorFetchPrice"));
       return;
@@ -293,8 +295,8 @@ export default function RialPurchaseSection({ presale }) {
 
     // Calculate tokens with latest price using effective Rial (with price tolerance applied)
     const effectiveRialAmount = parseFloat(rawRialAmount) * slippageMultiplier;
-    // ✅ NEW: Use currency name instead of asset_id
-    const tokensWithLatestPrice = calculateTokens(tokenCurrency, effectiveRialAmount);
+    // Calculate directly using latestAsset instead of helper function to avoid stale closure
+    const tokensWithLatestPrice = effectiveRialAmount / latestAsset.buy_unit_price;
 
     // Show confirmation dialog
     setConfirmData({
