@@ -41,11 +41,17 @@ export default function PresaleBuyPage({ preSaleId }) {
   const isRTL = locale === "fa";
   const router = useRouter();
 
-  // Get rial prices for header display
-  const { assets } = useAssetPrices(0.5); // Update every 30 seconds
+  // API data
+  const {
+    data: presale,
+    isLoading,
+    error: apiError,
+    refetch,
+  } = usePresaleDetails(preSaleId);
 
-  console.log("assets");
-  console.log(assets);
+  // Get rial prices for header display
+  const { assets, loading: pricesLoading } = useAssetPrices(2); // Update every 2 minutes
+
 
   // Wagmi hooks
   const { address, isConnected } = useAccount();
@@ -60,14 +66,6 @@ export default function PresaleBuyPage({ preSaleId }) {
   const [wasPurchasing, setWasPurchasing] = useState(false);
   const [showAddTokenModal, setShowAddTokenModal] = useState(false);
   const [hasTriggeredPurchase, setHasTriggeredPurchase] = useState(false);
-
-  // API data
-  const {
-    data: presale,
-    isLoading,
-    error: apiError,
-    refetch,
-  } = usePresaleDetails(preSaleId);
 
   // Get payment token balance
   const { data: balance, refetch: refetchBalance } = useBalance({
@@ -631,16 +629,26 @@ export default function PresaleBuyPage({ preSaleId }) {
                     <div className="flex items-center justify-center gap-2 sm:gap-3">
                       {/* Rial Price */}
                       {(() => {
-                        // ✅ NEW: Match asset by unit field (lowercase symbol)
-                        // Backend: name="Tether", unit="usdt"
+                        // Show loading state while fetching prices
+                        if (pricesLoading) {
+                          return (
+                            <span className="text-white/70 text-xs sm:text-sm lg:text-base font-semibold animate-pulse">
+                              {locale === "fa" ? "در حال بارگذاری..." : "Loading..."}
+                            </span>
+                          );
+                        }
+                        
+                        // Filter assets on frontend to find matching token
                         const tokenSymbol = presale.mine_token?.token_symbol || "USDT";
-                        const rialAsset = assets.find(
-                          (a) => a.unit === tokenSymbol.toLowerCase()
+                        const tokenLower = tokenSymbol.toLowerCase();
+                        const rialAsset = assets.find((a) => 
+                          a.unit?.toLowerCase() === tokenLower ||
+                          a.symbol?.toLowerCase() === tokenLower ||
+                          a.name?.toLowerCase() === tokenLower
                         );
                         return (
                           rialAsset && (
                             <span className="text-white/90 text-xs sm:text-sm lg:text-base font-semibold">
-
                               {Math.floor(
                                 rialAsset.buy_unit_price
                               ).toLocaleString(
