@@ -27,6 +27,9 @@ COPY package.json package-lock.json ./
 # Install dependencies (use clean install with lockfile)
 RUN npm ci
 
+# Force rebuild native modules for Alpine (lightningcss)
+RUN npm rebuild lightningcss --verbose
+
 # Copy source files and config files
 COPY jsconfig.json ./
 COPY next.config.mjs ./
