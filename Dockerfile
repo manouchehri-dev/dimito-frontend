@@ -2,9 +2,6 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies for native modules (lightningcss)
-RUN apk add --no-cache python3 make g++
-
 # Define build arguments for Next.js public environment variables
 ARG NEXT_PUBLIC_PROJECT_ID
 ARG NEXT_PUBLIC_API_BASE_URL
@@ -26,9 +23,6 @@ COPY package.json package-lock.json ./
 
 # Install dependencies (use clean install with lockfile)
 RUN npm ci
-
-# Force rebuild native modules for Alpine (lightningcss)
-RUN npm rebuild lightningcss --verbose
 
 # Copy source files and config files
 COPY jsconfig.json ./
