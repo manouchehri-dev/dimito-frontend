@@ -1,6 +1,9 @@
-FROM node:24-slim AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
+
+# Install build dependencies for native modules (lightningcss)
+RUN apk add --no-cache python3 make g++
 
 # Define build arguments for Next.js public environment variables
 ARG NEXT_PUBLIC_PROJECT_ID
@@ -36,7 +39,7 @@ COPY *.config.* ./
 RUN npm run build
 
 # Production stage - use a smaller base image
-FROM node:24-slim AS runner
+FROM node:24-alpine AS runner
 
 # Set working directory
 WORKDIR /app
