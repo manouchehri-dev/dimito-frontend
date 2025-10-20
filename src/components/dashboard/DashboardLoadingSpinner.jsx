@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { RingLoader, PulseLoader } from "react-spinners";
 
 export default function DashboardLoadingSpinner({ message, showSkeleton = false }) {
   const t = useTranslations("dashboard");
@@ -60,17 +59,30 @@ export default function DashboardLoadingSpinner({ message, showSkeleton = false 
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[500px] space-y-6">
-      {/* React Spinners - RingLoader */}
-      <div className="relative">
-        <RingLoader
-          color="#FF5D1B"
-          size={80}
-          speedMultiplier={0.8}
-          cssOverride={{
-            display: "block",
-            borderWidth: "4px",
+      {/* Custom CSS Ring Spinner */}
+      <div className="relative w-20 h-20">
+        {/* Outer static ring */}
+        <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+        
+        {/* Spinning gradient ring */}
+        <div 
+          className="absolute inset-0 rounded-full border-4 border-transparent animate-spin"
+          style={{
+            borderTopColor: '#FF5D1B',
+            borderRightColor: '#FF363E',
+            animationDuration: '1.2s'
           }}
-        />
+        ></div>
+        
+        {/* Inner pulsing dot */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div 
+            className="w-3 h-3 rounded-full animate-pulse"
+            style={{
+              background: 'linear-gradient(to right, #FF5D1B, #FF363E)'
+            }}
+          ></div>
+        </div>
       </div>
 
       {/* Loading Text */}
@@ -83,13 +95,33 @@ export default function DashboardLoadingSpinner({ message, showSkeleton = false 
         </p>
       </div>
 
-      {/* React Spinners - PulseLoader for dots */}
-      <PulseLoader
-        color="#FF5D1B"
-        size={8}
-        margin={6}
-        speedMultiplier={0.8}
-      />
+      {/* Custom CSS Pulse Dots */}
+      <div className="flex items-center gap-2">
+        <div 
+          className="w-2 h-2 rounded-full animate-bounce"
+          style={{ 
+            backgroundColor: '#FF5D1B',
+            animationDelay: '0ms',
+            animationDuration: '1s'
+          }}
+        ></div>
+        <div 
+          className="w-2 h-2 rounded-full animate-bounce"
+          style={{ 
+            backgroundColor: '#FF363E',
+            animationDelay: '150ms',
+            animationDuration: '1s'
+          }}
+        ></div>
+        <div 
+          className="w-2 h-2 rounded-full animate-bounce"
+          style={{ 
+            backgroundColor: '#FF5D1B',
+            animationDelay: '300ms',
+            animationDuration: '1s'
+          }}
+        ></div>
+      </div>
     </div>
   );
 }
